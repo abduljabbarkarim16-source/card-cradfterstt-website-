@@ -1224,15 +1224,28 @@
               </nav>
             </div>
 
-            <button onclick="app.openCart()" class="inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
-              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
-                <circle cx="9" cy="20" r="1.5" />
-                <circle cx="18" cy="20" r="1.5" />
-                <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H7" />
-              </svg>
-              Cart
-              ${cartCount > 0 ? `<span class="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-xs font-bold">${cartCount}</span>` : ""}
-            </button>
+            <div class="flex items-center gap-3">
+              <a
+                href="contact.html"
+                aria-label="Profile"
+                class="inline-flex h-12 w-12 items-center justify-center rounded-[1.2rem] border border-white/10 bg-white/[0.03] text-zinc-200 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)] transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-200"
+              >
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M20 21a8 8 0 0 0-16 0" />
+                  <circle cx="12" cy="8" r="4" />
+                </svg>
+              </a>
+
+              <button onclick="app.openCart()" class="inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="9" cy="20" r="1.5" />
+                  <circle cx="18" cy="20" r="1.5" />
+                  <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H7" />
+                </svg>
+                Cart
+                ${cartCount > 0 ? `<span class="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-xs font-bold">${cartCount}</span>` : ""}
+              </button>
+            </div>
           </div>
         </header>
 
