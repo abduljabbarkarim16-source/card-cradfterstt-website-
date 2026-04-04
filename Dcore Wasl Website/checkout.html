@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - Card Crafters</title>
+  <meta name="description" content="Review your Card Crafters order and continue to checkout." />
+  <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    const PAYMENT_METHODS = [
+      {
+        key: "bank-transfer",
+        title: "Bank Transfer / Deposit",
+        subtitle: "First Citizens",
+        type: "details",
+        accent: "#D4AF37",
+        href: "",
+        details: [
+          "Bank: First Citizens",
+          "Account Name: Card Crafters Limited",
+          "Account Number: 3136319",
+          "Account type: Saving",
+        ],
+      },
+      {
+        key: "endcash",
+        title: "EndCash",
+        subtitle: "Direct payment link",
+        type: "link",
+        href: "https://endcash.me/CardCrafters",
+        accent: "#34D399",
+      },
+      {
+        key: "quick-pay",
+        title: "Quick Pay",
+        subtitle: "Current hosted payment page",
+        type: "link",
+        href: "https://cardcrafterstt.com/quick-pay",
+        accent: "#60A5FA",
+      },
+    ];
+
+    function formatCurrency(value) {
+      return `TT$${Number(value || 0).toFixed(2)}`;
+    }
+
+    function normalizeCartItem(item, index) {
+      return {
+        id: String(item?.id ?? `cart-item-${index}`),
+        title: item?.title || item?.name || "Cart Item",
+        subtitle: item?.subtitle || "",
+        price: Number(item?.price || 0),
+        quantity: Math.max(1, Number(item?.quantity || 1)),
+      };
+    }
+
+    function loadCart() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem("cardCraftersCart")) || [];
+        return Array.isArray(parsed) ? parsed.map(normalizeCartItem) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function getOrderNumber() {
+      if (window.__checkoutOrderNumber) return window.__checkoutOrderNumber;
+
+      const existing = localStorage.getItem("cardCraftersCheckoutOrderNumber");
+      if (existing) {
+        window.__checkoutOrderNumber = existing;
+        return existing;
+      }
+
+      const now = new Date();
+      const orderNumber = `CC-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+      window.__checkoutOrderNumber = orderNumber;
+      localStorage.setItem("cardCraftersCheckoutOrderNumber", orderNumber);
+      return orderNumber;
+    }
+
+    function renderPaymentBadge(method) {
+      return `
+        <div class="relative overflow-hidden rounded-full border border-yellow-500/20 bg-[#050505] px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-zinc-200 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">
+          <div class="absolute inset-x-0 top-0 h-full opacity-70" style="background: linear-gradient(180deg, ${method.accent}22 0%, transparent 100%);"></div>
+          <span class="relative" style="color:${method.accent}; text-shadow: 0 0 14px ${method.accent}55;">${method.title}</span>
+        </div>
+      `;
+    }
+
+    function renderPaymentOptionCard(method, selectedKey) {
+      const isActive = selectedKey === method.key;
+      return `
+        <button
+          type="button"
+          onclick="setSelectedPaymentMethod('${method.key}')"
+          class="relative overflow-hidden rounded-[1.6rem] border ${isActive ? "border-yellow-400/40" : "border-white/10"} bg-[#050505] p-5 text-left shadow-[0_18px_48px_rgba(0,0,0,0.28)] transition hover:border-yellow-500/30"
+        >
+          <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.10)]"></div>
+          <div class="absolute inset-x-0 top-0 h-20 opacity-80" style="background: linear-gradient(180deg, ${method.accent}33 0%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_42%)]"></div>
+          <div class="relative">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Payment Method</div>
+                <h3 class="mt-3 text-lg font-semibold text-white">${method.title}</h3>
+                ${method.subtitle ? `<p class="mt-2 text-xs uppercase tracking-[0.18em] text-zinc-400">${method.subtitle}</p>` : ""}
+              </div>
+              <div class="rounded-full border border-yellow-500/20 bg-black/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em]" style="color:${method.accent}; text-shadow: 0 0 14px ${method.accent}55;">
+                ${isActive ? "Selected" : "Choose"}
+              </div>
+            </div>
+          </div>
+        </button>
+      `;
+    }
+
+    function getSelectedPaymentMethod() {
+      return window.__selectedPaymentMethod || PAYMENT_METHODS[0].key;
+    }
+
+    function getCheckoutFormState() {
+      return window.__checkoutFormState || {
+        firstName: "",
+        email: "",
+        phone: "",
+        notes: "",
+        transferDate: "",
+        transactionId: "",
+      };
+    }
+
+    function updateCheckoutFormState(field, value) {
+      window.__checkoutFormState = { ...getCheckoutFormState(), [field]: value };
+    }
+
+    function setSelectedPaymentMethod(key) {
+      window.__selectedPaymentMethod = key;
+      window.__scrollToPaymentInstructions = true;
+      renderCheckout();
+    }
+
+    function handleProofUpload(input) {
+      const file = input.files && input.files[0] ? input.files[0] : null;
+      window.__checkoutProofFileName = file ? file.name : "";
+      const proofName = document.getElementById("proof-file-name");
+      if (proofName) {
+        proofName.textContent = file ? `Selected file: ${file.name}` : "";
+      }
+    }
+
+    function renderInstructionList(items) {
+      return `
+        <div class="space-y-3">
+          ${items.map((item) => `
+            <div class="flex gap-3 text-sm leading-7 text-zinc-300">
+              <span class="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-yellow-300"></span>
+              <span>${item}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function scrollToPaymentInstructions() {
+      const section = document.getElementById("payment-instructions");
+      if (!section) return;
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderPaymentInstructions(selectedMethod, orderNumber, total, formState) {
+      if (selectedMethod.key === "bank-transfer") {
+        return `
+          <div id="payment-instructions" class="rounded-[1.8rem] border border-yellow-500/20 bg-[#050505] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.28)]">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Bank Transfer Instructions</div>
+                <h3 class="mt-3 text-xl font-semibold text-white">Transfer details for order ${orderNumber}</h3>
+              </div>
+              <div class="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-4 py-2 text-sm font-semibold text-yellow-200">${formatCurrency(total)}</div>
+            </div>
+
+            <div class="mt-6 grid gap-4 md:grid-cols-2">
+              ${selectedMethod.details.map((line) => `
+                <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-zinc-200">${line}</div>
+              `).join("")}
+            </div>
+
+            <div class="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm leading-7 text-zinc-200">
+              Please enter the transfer date and transaction ID, and upload a screenshot or photo of your transfer confirmation. This helps us verify and process your order faster.
+            </div>
+
+            <div class="mt-6 grid gap-4 md:grid-cols-2">
+              <div>
+                <label for="transfer-date" class="mb-2 block text-sm font-medium text-zinc-300">Date transfer was made or intended to be made</label>
+                <div class="relative">
+                  <input id="transfer-date" type="date" value="${formState.transferDate}" oninput="updateCheckoutFormState('transferDate', this.value)" class="w-full rounded-[1.35rem] border border-yellow-500/20 bg-[linear-gradient(135deg,rgba(18,18,18,0.98),rgba(8,8,8,0.96))] px-4 py-3 pr-14 text-white outline-none shadow-[inset_0_0_0_1px_rgba(255,215,0,0.08),0_16px_36px_rgba(0,0,0,0.24)] transition [color-scheme:dark] focus:border-yellow-400/40" />
+                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-lg text-yellow-200 shadow-[0_0_24px_rgba(234,179,8,0.12)]">
+                      &#128197;
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label for="transaction-id" class="mb-2 block text-sm font-medium text-zinc-300">Transaction ID / Reference Number</label>
+                <input id="transaction-id" type="text" value="${formState.transactionId}" oninput="updateCheckoutFormState('transactionId', this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-yellow-500/50" placeholder="Reference number" />
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <label for="payment-proof" class="mb-2 block text-sm font-medium text-zinc-300">Upload screenshot or photo of transfer confirmation</label>
+              <input id="payment-proof" type="file" accept="image/*" onchange="handleProofUpload(this)" class="w-full rounded-2xl border border-dashed border-yellow-500/30 bg-black/30 px-4 py-3 text-sm text-zinc-300 file:mr-4 file:rounded-xl file:border-0 file:bg-yellow-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-black" />
+              <div id="proof-file-name" class="mt-2 text-xs text-zinc-400">${window.__checkoutProofFileName ? `Selected file: ${window.__checkoutProofFileName}` : ""}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (selectedMethod.key === "endcash") {
+        return `
+          <div id="payment-instructions" class="rounded-[1.8rem] border border-yellow-500/20 bg-[#050505] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.28)]">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">EndCash Instructions</div>
+                <h3 class="mt-3 text-xl font-semibold text-white">Use the exact checkout amount and reference</h3>
+              </div>
+              <a href="${selectedMethod.href}" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/15">Pay with EndCash</a>
+            </div>
+
+            <div class="mt-6 grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div class="text-[11px] uppercase tracking-[0.22em] text-zinc-400">Order Number</div>
+                <div class="mt-2 text-lg font-semibold text-white">${orderNumber}</div>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div class="text-[11px] uppercase tracking-[0.22em] text-zinc-400">Payment Link</div>
+                <a href="${selectedMethod.href}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/15">Open EndCash Link <span>&rarr;</span></a>
+              </div>
+            </div>
+
+            <div class="mt-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+              ${renderInstructionList([
+                "Use the exact checkout amount shown on this page.",
+                "Enter the order number in the EndCash description/reference if applicable.",
+                "Make sure the payment details match the checkout information exactly.",
+                "Incorrect or incomplete details may delay your order.",
+              ])}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div id="payment-instructions" class="rounded-[1.8rem] border border-yellow-500/20 bg-[#050505] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.28)]">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Quick Pay Instructions</div>
+              <h3 class="mt-3 text-xl font-semibold text-white">Continue with the hosted payment page</h3>
+            </div>
+            <a href="${selectedMethod.href}" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/15">Continue to Quick Pay</a>
+          </div>
+
+          <div class="mt-6 grid gap-4 md:grid-cols-2">
+            <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div class="text-[11px] uppercase tracking-[0.22em] text-zinc-400">Order Number</div>
+              <div class="mt-2 text-lg font-semibold text-white">${orderNumber}</div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div class="text-[11px] uppercase tracking-[0.22em] text-zinc-400">Payment Link</div>
+              <a href="${selectedMethod.href}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-2 rounded-2xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/15">Open Quick Pay Link <span>&rarr;</span></a>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border border-sky-400/20 bg-sky-400/10 p-4">
+            ${renderInstructionList([
+              "Use the exact checkout amount shown on this page.",
+              "Make sure the payment details you enter on Quick Pay match the checkout information here.",
+              "Include the correct order number and customer details where applicable.",
+              "Incorrect or incomplete details may delay your order.",
+            ])}
+          </div>
+
+          <div class="mt-4 text-sm leading-7 text-zinc-400">
+            Quick Pay may later become more automated, so this payment flow is structured to be easy to upgrade.
+          </div>
+        </div>
+      `;
+    }
+
+    function buildOrderMessage(formData, cart, orderNumber, total) {
+      const lines = [
+        "Hello, I am submitting my order details.",
+        "",
+        `Name: ${formData.firstName || "Not provided"}`,
+        `Phone: ${formData.phone || "Not provided"}`,
+        `Email: ${formData.email || "Not provided"}`,
+        `Order Number: ${orderNumber}`,
+        `Amount: ${formatCurrency(total)}`,
+        `Payment Method: ${formData.paymentMethod}`,
+        "",
+        "Please review and confirm my order.",
+      ];
+
+      if (formData.paymentMethod === "Bank Transfer / Deposit") {
+        lines.push("");
+        lines.push(`Transfer Date: ${formData.transferDate || "Not provided"}`);
+        lines.push(`Transaction ID / Reference Number: ${formData.transactionId || "Not provided"}`);
+        lines.push(`Proof of Payment File: ${formData.proofFileName || "Not uploaded"}`);
+      }
+
+      if (formData.notes) {
+        lines.push("");
+        lines.push(`Notes: ${formData.notes}`);
+      }
+
+      return lines.join("\n");
+    }
+
+    function validateCheckoutForm(selectedMethod) {
+      const firstName = document.getElementById("customer-first-name");
+      const email = document.getElementById("customer-email");
+      const phone = document.getElementById("customer-phone");
+
+      if (!firstName.value.trim() || !email.value.trim() || !phone.value.trim()) {
+        alert("Please complete First Name, Email Address, and Phone Number before continuing.");
+        return false;
+      }
+
+      if (selectedMethod.key === "bank-transfer") {
+        const transferDate = document.getElementById("transfer-date");
+        const transactionId = document.getElementById("transaction-id");
+        const proofFile = document.getElementById("payment-proof");
+
+        if (!transferDate.value || !transactionId.value.trim() || !(proofFile.files && proofFile.files[0])) {
+          alert("Please complete the bank transfer date, transaction ID, and upload your transfer confirmation.");
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function renderCheckout() {
+      const cart = loadCart();
+      const root = document.getElementById("checkout-root");
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const selectedPaymentMethod = getSelectedPaymentMethod();
+      const selectedMethod = PAYMENT_METHODS.find((method) => method.key === selectedPaymentMethod) || PAYMENT_METHODS[0];
+      const formState = getCheckoutFormState();
+      const orderNumber = getOrderNumber();
+
+      root.innerHTML = `
+        <header class="sticky top-0 z-50 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl">
+          <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+            <a href="index.html" class="flex items-center gap-4">
+              <div class="shrink-0 rounded-[1.65rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] via-[#0d0d0d] to-[#090909] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.4)]">
+                <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-12 w-12 rounded-[1.1rem] object-cover" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.34em] text-yellow-300">Card Crafters</p>
+                <p class="mt-1 text-xs text-zinc-400">Checkout</p>
+              </div>
+            </a>
+            <div class="hidden lg:flex items-center gap-4">
+              <nav class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] p-1.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)]">
+                <a href="index.html" class="rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm text-zinc-300 transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-white">Home</a>
+                <a href="about.html" class="rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm text-zinc-300 transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-white">About</a>
+                <a href="services.html" class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-5 py-2.5 text-sm text-yellow-300 transition">Services</a>
+              </nav>
+            </div>
+            <a href="services.html" class="rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">Back to Services</a>
+          </div>
+        </header>
+
+        <main class="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div class="grid gap-8 lg:grid-cols-[1.02fr_0.98fr]">
+            <section class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-8">
+              <div class="inline-flex rounded-[1.75rem] border border-yellow-400/15 bg-gradient-to-br from-[#16110a] via-[#0e0a08] to-[#070707] p-3 shadow-[0_22px_60px_rgba(0,0,0,0.42)]">
+                <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-16 w-16 rounded-[1.2rem] object-cover" />
+              </div>
+              <h1 class="mt-6 text-4xl font-semibold tracking-tight text-white">Complete your checkout</h1>
+              <p class="mt-3 max-w-2xl text-base leading-8 text-zinc-300">Review your order, enter your details, and choose the active payment method that works best for you.</p>
+
+              ${
+                cart.length === 0
+                  ? `
+                    <div class="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6 text-zinc-300">
+                      Your cart is empty. Add items from the services page to continue.
+                    </div>
+                    <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">Browse Services</a>
+                  `
+                  : `
+                    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                      <div class="rounded-3xl border border-yellow-500/20 bg-[#050505] p-5">
+                        <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Order Number</div>
+                        <div class="mt-3 text-xl font-semibold text-white">${orderNumber}</div>
+                      </div>
+                      <div class="rounded-3xl border border-yellow-500/20 bg-[#050505] p-5">
+                        <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Final Checkout Total</div>
+                        <div class="mt-3 text-xl font-semibold text-yellow-100">${formatCurrency(total)}</div>
+                      </div>
+                    </div>
+
+                    <div class="mt-8 space-y-4">
+                      ${cart.map((item) => `
+                        <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+                          <div class="flex items-start justify-between gap-4">
+                            <div>
+                              <p class="text-lg font-semibold text-white">${item.title}</p>
+                              <p class="mt-1 text-xs uppercase tracking-[0.14em] text-zinc-400">${item.subtitle || "Standard item"}</p>
+                            </div>
+                            <p class="text-sm text-zinc-300">Qty ${item.quantity}</p>
+                          </div>
+                          <div class="mt-4 text-lg font-semibold text-yellow-200">${formatCurrency(item.price * item.quantity)}</div>
+                        </div>
+                      `).join("")}
+                    </div>
+                  `
+              }
+            </section>
+
+            <aside class="space-y-6">
+              <section class="rounded-[2rem] border border-yellow-500/20 bg-[linear-gradient(180deg,rgba(234,179,8,0.12),rgba(255,255,255,0.03))] p-8">
+                <div>
+                  <h2 class="text-2xl font-semibold text-white">Checkout details</h2>
+                  <p class="mt-2 text-sm leading-7 text-zinc-300">Enter your information clearly so your order and payment details stay aligned from start to finish.</p>
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-2">
+                  ${PAYMENT_METHODS.map(renderPaymentBadge).join("")}
+                </div>
+
+                <form id="checkout-form" class="mt-6 space-y-6">
+                  <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+                    <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Customer Information</div>
+                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label for="customer-first-name" class="mb-2 block text-sm font-medium text-zinc-300">First Name</label>
+                        <input id="customer-first-name" required type="text" value="${formState.firstName}" oninput="updateCheckoutFormState('firstName', this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-yellow-500/50" placeholder="First name" />
+                      </div>
+                      <div>
+                        <label for="customer-email" class="mb-2 block text-sm font-medium text-zinc-300">Email Address</label>
+                        <input id="customer-email" required type="email" value="${formState.email}" oninput="updateCheckoutFormState('email', this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-yellow-500/50" placeholder="you@example.com" />
+                      </div>
+                    </div>
+                    <div class="mt-4">
+                      <label for="customer-phone" class="mb-2 block text-sm font-medium text-zinc-300">Phone Number</label>
+                      <input id="customer-phone" required type="text" value="${formState.phone}" oninput="updateCheckoutFormState('phone', this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-yellow-500/50" placeholder="1-868-..." />
+                    </div>
+                    <div class="mt-4 grid gap-4 md:grid-cols-2">
+                      <div class="rounded-2xl border border-white/10 bg-[#050505] px-4 py-4">
+                        <div class="text-[11px] uppercase tracking-[0.22em] text-zinc-400">Order Number</div>
+                        <div class="mt-2 text-lg font-semibold text-white">${orderNumber}</div>
+                      </div>
+                      <div class="rounded-2xl border border-white/10 bg-[#050505] px-4 py-4">
+                        <div class="text-[11px] uppercase tracking-[0.22em] text-zinc-400">Final Checkout Total</div>
+                        <div class="mt-2 text-lg font-semibold text-yellow-100">${formatCurrency(total)}</div>
+                      </div>
+                    </div>
+                    <div class="mt-4">
+                      <label for="checkout-notes" class="mb-2 block text-sm font-medium text-zinc-300">Notes</label>
+                      <textarea id="checkout-notes" rows="4" oninput="updateCheckoutFormState('notes', this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-yellow-500/50" placeholder="Anything we should know about this order?">${formState.notes}</textarea>
+                    </div>
+                  </div>
+
+                  <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+                    <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Payment Method</div>
+                    <div class="mt-5 grid gap-4">
+                      ${PAYMENT_METHODS.map((method) => renderPaymentOptionCard(method, selectedPaymentMethod)).join("")}
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              ${cart.length === 0 ? "" : renderPaymentInstructions(selectedMethod, orderNumber, total, formState)}
+
+              <section class="rounded-[1.8rem] border border-white/10 bg-black/20 p-6">
+                <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Order Summary</div>
+                <div class="mt-5 flex items-center justify-between text-sm text-zinc-300">
+                  <span>Items</span>
+                  <span>${itemCount}</span>
+                </div>
+                <div class="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+                  <span class="text-base font-semibold text-white">Final Checkout Total</span>
+                  <span class="text-2xl font-bold text-yellow-100">${formatCurrency(total)}</span>
+                </div>
+              </section>
+
+              <section class="rounded-[1.8rem] border border-yellow-500/20 bg-[#050505] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.28)]">
+                <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Fulfillment Timing</div>
+                <p class="mt-4 text-sm leading-7 text-zinc-300">
+                  Once payment is confirmed, fulfillment usually takes between 1 hour and 2 business days.
+                </p>
+                <p class="mt-3 text-sm leading-7 text-zinc-400">
+                  In some cases, delays may occur due to holidays, bank processing issues, payment processor delays, or other external factors. If that happens, fulfillment may take longer than the usual timeframe.
+                </p>
+              </section>
+
+              <section class="grid gap-3">
+                <button type="button" id="whatsapp-checkout" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60" ${cart.length === 0 ? "disabled" : ""}>Checkout on WhatsApp</button>
+              </section>
+            </aside>
+          </div>
+        </main>
+      `;
+
+      if (window.__scrollToPaymentInstructions) {
+        window.__scrollToPaymentInstructions = false;
+        requestAnimationFrame(scrollToPaymentInstructions);
+      }
+
+      if (cart.length === 0) return;
+
+      const whatsappButton = document.getElementById("whatsapp-checkout");
+
+      function getFormData() {
+        const method = PAYMENT_METHODS.find((item) => item.key === getSelectedPaymentMethod()) || PAYMENT_METHODS[0];
+        return {
+          firstName: document.getElementById("customer-first-name").value.trim(),
+          email: document.getElementById("customer-email").value.trim(),
+          phone: document.getElementById("customer-phone").value.trim(),
+          notes: document.getElementById("checkout-notes").value.trim(),
+          paymentMethod: method.title,
+          transferDate: document.getElementById("transfer-date") ? document.getElementById("transfer-date").value.trim() : "",
+          transactionId: document.getElementById("transaction-id") ? document.getElementById("transaction-id").value.trim() : "",
+          proofFileName: window.__checkoutProofFileName || "",
+        };
+      }
+
+      whatsappButton.addEventListener("click", function() {
+        if (!validateCheckoutForm(selectedMethod)) return;
+        const formData = getFormData();
+        const message = encodeURIComponent(buildOrderMessage(formData, cart, orderNumber, total));
+        window.open(`https://wa.me/18684651282?text=${message}`, "_blank");
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", renderCheckout);
+  </script>
+</head>
+<body class="min-h-screen bg-[#070707] text-white">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+    <div class="absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
+    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
+  </div>
+  <div id="checkout-root"></div>
+</body>
+</html>
+

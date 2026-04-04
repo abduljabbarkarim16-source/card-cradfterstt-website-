@@ -1,0 +1,522 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Crafters | Premium Digital Services and Sourcing</title>
+  <meta
+    name="description"
+    content="Card Crafters offers digital services, gift cards, bill payments, and sourcing through a cleaner, faster, more premium website experience."
+  />
+  <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hero-collage-shell {
+      position: relative;
+      min-height: 34rem;
+      overflow: hidden;
+    }
+
+    .hero-collage-shell::before {
+      content: "";
+      position: absolute;
+      inset: 6% 4% 0 18%;
+      border-radius: 2.5rem;
+      background:
+        radial-gradient(circle at top right, rgba(255, 215, 64, 0.18), transparent 34%),
+        radial-gradient(circle at 22% 22%, rgba(255, 255, 255, 0.08), transparent 26%),
+        linear-gradient(135deg, rgba(18, 18, 18, 0.9), rgba(6, 6, 6, 0.3));
+      border: 1px solid rgba(212, 175, 55, 0.12);
+      box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.05), 0 30px 90px rgba(0, 0, 0, 0.45);
+      transform: rotate(-11deg);
+      filter: blur(0.2px);
+    }
+
+    .hero-collage-grid {
+      position: absolute;
+      inset: 1.25rem -3.5rem -2rem 2.75rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      transform: rotate(-12deg) translate3d(0, 0, 0);
+      transform-origin: top right;
+    }
+
+    .hero-collage-fade {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, #070707 0%, rgba(7, 7, 7, 0.94) 20%, rgba(7, 7, 7, 0.38) 52%, rgba(7, 7, 7, 0.08) 74%, rgba(7, 7, 7, 0.58) 100%),
+        linear-gradient(180deg, rgba(7, 7, 7, 0.88) 0%, rgba(7, 7, 7, 0.06) 28%, rgba(7, 7, 7, 0.18) 72%, rgba(7, 7, 7, 0.86) 100%);
+      pointer-events: none;
+    }
+
+    .hero-media-card {
+      position: relative;
+      min-height: 9.75rem;
+      overflow: hidden;
+      border-radius: 1.65rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 38%),
+        linear-gradient(145deg, rgba(10, 10, 10, 0.98), rgba(4, 4, 4, 0.94));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 215, 0, 0.08),
+        0 22px 52px rgba(0, 0, 0, 0.34);
+    }
+
+    .hero-media-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 46%);
+      pointer-events: none;
+    }
+
+    .hero-media-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 18% 0.75rem 18%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.9), transparent);
+      opacity: 0.7;
+    }
+
+    @media (max-width: 1023px) {
+      .hero-collage-shell {
+        min-height: 24rem;
+      }
+
+      .hero-collage-grid {
+        inset: 1rem -1rem -1rem 0.75rem;
+        gap: 0.8rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .hero-collage-shell {
+        min-height: 17rem;
+      }
+
+      .hero-collage-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        inset: 0.75rem -0.5rem -0.5rem 0.25rem;
+      }
+
+      .hero-media-card:nth-child(n + 5) {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    function loadCartCount() {
+      try {
+        const items = JSON.parse(localStorage.getItem('cardCraftersCart')) || [];
+        return Array.isArray(items)
+          ? items.reduce((total, item) => total + Math.max(1, Number(item?.quantity || 1)), 0)
+          : 0;
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function updateCartCount() {
+      const badge = document.getElementById('cart-count');
+      if (!badge) return;
+      const count = loadCartCount();
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+
+    function openSharedCart(event) {
+      if (event) event.preventDefault();
+      window.location.href = 'services.html?cart=open';
+    }
+
+    document.addEventListener('DOMContentLoaded', updateCartCount);
+    window.addEventListener('storage', function(event) {
+      if (event.key === 'cardCraftersCart') updateCartCount();
+    });
+  </script>
+</head>
+<body class="min-h-screen bg-[#070707] text-white">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden">
+    <div class="absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+    <div class="absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
+    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
+  </div>
+
+  <header class="sticky top-0 z-30 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+      <a href="index.html" class="flex items-center gap-4">
+        <div class="shrink-0 rounded-[1.65rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] via-[#0d0d0d] to-[#090909] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.4)]">
+          <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-12 w-12 rounded-[1.1rem] object-cover" onerror="this.style.display='none'" />
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.34em] text-yellow-300">Card Crafters</p>
+          <p class="mt-1 text-xs text-zinc-400">Premium digital services and sourcing</p>
+        </div>
+      </a>
+
+      <div class="hidden lg:flex items-center gap-4">
+        <nav class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] p-1.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)]">
+          <a href="index.html" class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-5 py-2.5 text-sm text-yellow-300 transition">Home</a>
+          <a href="about.html" class="rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm text-zinc-300 transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-white">About</a>
+          <a href="services.html" class="rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm text-zinc-300 transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-white">Services</a>
+        </nav>
+      </div>
+
+      <a href="services.html?cart=open" onclick="openSharedCart(event)" class="inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
+        Cart
+        <span id="cart-count" class="inline-flex min-w-[24px] items-center justify-center rounded-full bg-black/10 px-2 py-1 text-xs" style="display:none;">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="relative z-10">
+    <section class="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 lg:px-8 lg:pb-14 lg:pt-20">
+      <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-yellow-300">
+            Trusted Digital Services
+          </div>
+
+          <h1 class="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Streaming, gift cards, bill payments, and online shopping support — all in one place.
+          </h1>
+
+          <p class="mt-5 max-w-2xl text-base leading-8 text-zinc-300">
+            Card Crafters makes it easy to access the services you use most, with clear options, fast support, and a premium experience built around convenience.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="services.html" class="rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">
+              Explore Services
+            </a>
+            <a href="contact.html" class="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-white transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-200">
+              Contact Us
+            </a>
+          </div>
+
+          <div class="mt-8 flex flex-wrap gap-2">
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Netflix</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Disney+</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Crunchyroll</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">PlayStation</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Xbox</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Amazon</div>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div class="hero-collage-shell">
+            <div class="hero-collage-grid">
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(229,9,20,0.34) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Streaming</div>
+                      <div class="mt-2 text-[11px] uppercase tracking-[0.22em] text-zinc-400">Featured</div>
+                    </div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#E50914; text-shadow:0 0 20px rgba(229,9,20,0.6);">NF</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#E50914; text-shadow:0 0 24px rgba(229,9,20,0.32);">Netflix</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Entertainment Access</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(17,60,207,0.34) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Streaming</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#8CC8FF; text-shadow:0 0 20px rgba(140,200,255,0.52);">D+</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#DCE9FF; text-shadow:0 0 22px rgba(17,60,207,0.34);">Disney+</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Family Streaming</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(244,117,33,0.36) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Anime</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#F47521; text-shadow:0 0 20px rgba(244,117,33,0.52);">CR</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#F9A25A; text-shadow:0 0 22px rgba(244,117,33,0.34);">Crunchyroll</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Premium Access</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(0,55,145,0.34) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Gift Cards</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#7FB2FF; text-shadow:0 0 20px rgba(0,55,145,0.55);">PS</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#DCE8FF; text-shadow:0 0 22px rgba(0,55,145,0.34);">PlayStation</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Wallet &amp; Top-Up</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(16,124,16,0.36) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Gaming</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#8AE98A; text-shadow:0 0 20px rgba(16,124,16,0.55);">XB</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#CCF7CC; text-shadow:0 0 22px rgba(16,124,16,0.34);">Xbox</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Digital Value</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(255,153,0,0.36) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Retail</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#FFB649; text-shadow:0 0 20px rgba(255,153,0,0.55);">AM</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#FFE0A8; text-shadow:0 0 22px rgba(255,153,0,0.34);">Amazon</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Gift Cards</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(30,215,96,0.34) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Music</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#56F19A; text-shadow:0 0 20px rgba(30,215,96,0.55);">SP</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#D8FFE9; text-shadow:0 0 22px rgba(30,215,96,0.34);">Spotify</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Gift Cards</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(102,192,244,0.34) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Gaming</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#9BDAFF; text-shadow:0 0 20px rgba(102,192,244,0.55);">ST</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#E0F5FF; text-shadow:0 0 22px rgba(102,192,244,0.34);">Steam</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Wallet Codes</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-media-card p-4">
+                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(37,99,235,0.34) 0%,transparent 100%);"></div>
+                <div class="relative flex h-full flex-col justify-between">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Digital</div>
+                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#80AFFF; text-shadow:0 0 20px rgba(37,99,235,0.55);">VC</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-semibold tracking-tight" style="color:#DDE9FF; text-shadow:0 0 22px rgba(37,99,235,0.34);">Visa</div>
+                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Digital Gift Cards</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-collage-fade"></div>
+          </div>
+
+          <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Fast service</div>
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Secure ordering</div>
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Wide service variety</div>
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Convenient local support</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+          Service Categories
+        </div>
+        <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          Choose the service that matches what you need most.
+        </h2>
+        <p class="mt-4 text-base leading-8 text-zinc-300">
+          Browse the core categories below and move straight into the right flow for streaming, gift cards, bill payments, or shopping support.
+        </p>
+      </div>
+
+      <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-start gap-4">
+            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
+              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
+              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(229,9,20,0.33) 0%,transparent 100%);"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
+              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
+                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#E50914; text-shadow:0 0 18px #E50914,0 0 30px rgba(229,9,20,0.35);">ST</div>
+                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Streaming</div>
+              </div>
+              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Streaming Services</h3>
+              <p class="mt-2 text-sm leading-7 text-zinc-400">Popular entertainment platforms presented clearly and routed into the right service flow.</p>
+            </div>
+          </div>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Netflix</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Disney+</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Prime Video</div>
+          </div>
+          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Go to Services<span>&rarr;</span></a>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-start gap-4">
+            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
+              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
+              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(212,175,55,0.33) 0%,transparent 100%);"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
+              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
+                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#D4AF37; text-shadow:0 0 18px rgba(212,175,55,0.8),0 0 30px rgba(212,175,55,0.35);">GC</div>
+                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Gift Cards</div>
+              </div>
+              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Gift Cards</h3>
+              <p class="mt-2 text-sm leading-7 text-zinc-400">Gaming, streaming, shopping, and top-up cards in one clean storefront experience.</p>
+            </div>
+          </div>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">PlayStation</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Xbox</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Amazon</div>
+          </div>
+          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Browse Cards<span>&rarr;</span></a>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-start gap-4">
+            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
+              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
+              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(96,165,250,0.33) 0%,transparent 100%);"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
+              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
+                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#60A5FA; text-shadow:0 0 18px rgba(96,165,250,0.8),0 0 30px rgba(96,165,250,0.35);">BP</div>
+                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Payments</div>
+              </div>
+              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Bill Payments</h3>
+              <p class="mt-2 text-sm leading-7 text-zinc-400">Selected local bill payments with a guided request flow that stays simple and clear.</p>
+            </div>
+          </div>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Fast</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Local</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Simple</div>
+          </div>
+          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">View Payments<span>&rarr;</span></a>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-start gap-4">
+            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
+              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
+              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(245,158,11,0.33) 0%,transparent 100%);"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
+              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
+                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#F59E0B; text-shadow:0 0 18px rgba(245,158,11,0.8),0 0 30px rgba(245,158,11,0.35);">SS</div>
+                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Sourcing</div>
+              </div>
+              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Shopping &amp; Sourcing</h3>
+              <p class="mt-2 text-sm leading-7 text-zinc-400">A compact request path for sourcing, estimates, and delivery direction without clutter.</p>
+            </div>
+          </div>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Amazon</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Shein</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Temu</div>
+          </div>
+          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Start Request<span>&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="relative z-10 border-t border-white/10 bg-[#080808]">
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:px-8">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="rounded-[1.2rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] to-[#090909] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.36)]">
+            <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-12 w-12 rounded-xl object-cover" onerror="this.style.display='none'" />
+          </div>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.26em] text-yellow-300">Card Crafters</p>
+            <p class="mt-1 text-xs text-zinc-400">Premium digital service access</p>
+          </div>
+        </div>
+        <p class="mt-4 max-w-sm text-sm leading-7 text-zinc-400">
+          Premium digital services, gift cards, bill payments, and sourcing with a clean local checkout flow.
+        </p>
+      </div>
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Navigation</p>
+        <div class="mt-4 space-y-3 text-sm text-zinc-400">
+          <a href="index.html" class="block transition hover:text-white">Home</a>
+          <a href="about.html" class="block transition hover:text-white">About</a>
+          <a href="services.html" class="block transition hover:text-white">Services</a>
+          <a href="faq.html" class="block transition hover:text-white">FAQ</a>
+          <a href="contact.html" class="block transition hover:text-white">Contact</a>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Contact</p>
+        <div class="mt-4 space-y-3 text-sm text-zinc-400">
+          <a href="mailto:support@cardcrafterstt.com" class="block transition hover:text-white">support@cardcrafterstt.com</a>
+          <a href="tel:+18684651282" class="block transition hover:text-white">1-868-465-1282</a>
+        </div>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-yellow-200 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">Bank Transfer</span>
+          <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">EndCash</span>
+          <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">Quick Pay</span>
+          <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">VISA</span>
+          <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">MasterCard</span>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-white/10 px-4 py-4 text-center text-xs text-zinc-500 sm:px-6 lg:px-8">
+      &copy; Card Crafters Limited - Trinidad & Tobago
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,1498 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Crafters Services</title>
+  <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), opacity 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.5);
+    }
+    select {
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.92) 50%),
+        linear-gradient(135deg, rgba(255,255,255,0.92) 50%, transparent 50%);
+      background-position:
+        calc(100% - 22px) calc(50% - 3px),
+        calc(100% - 15px) calc(50% - 3px);
+      background-size: 7px 7px, 7px 7px;
+      background-repeat: no-repeat;
+      padding-right: 3.5rem;
+    }
+    select option {
+      background: #111111;
+      color: #f8fafc;
+    }
+  </style>
+  <script>
+    // ============================================================================
+    // CONSTANTS & DATA
+    // ============================================================================
+
+    const BILL_FEE = 5;
+    const MARKET_RATE = 7;
+    const CUSTOMER_RATE = 8.5;
+    const DEFAULT_DELIVERY_FEE = 35;
+
+    const categories = [
+      {
+        id: "streaming",
+        title: "Streaming",
+        description: "Open a streaming platform, then choose the exact account option.",
+        cta: "Get Started",
+      },
+      {
+        id: "gift-cards",
+        title: "Gift Cards",
+        description: "Use a guided builder with category, brand, denomination, and region.",
+        cta: "Browse Cards",
+      },
+      {
+        id: "bill-payments",
+        title: "Bill Payments",
+        description: "Pick the provider and fill in a short payment form.",
+        cta: "Pay Bills",
+      },
+      {
+        id: "shopping",
+        title: "Shopping & Sourcing",
+        description: "Choose a store, submit the request, and preview the estimate.",
+        cta: "Request Quote",
+      },
+    ];
+
+    const streamingItems = [
+      {
+        id: "netflix",
+        title: "Netflix",
+        description: "Netflix combines controlled accounts and gift card account options in one selector.",
+        options: [
+          { id: "basic-controlled", label: "Basic - Controlled", price: 85, kind: "controlled" },
+          { id: "standard-controlled", label: "Standard - Controlled", price: 135, kind: "controlled" },
+          { id: "premium-controlled", label: "Premium - Controlled", price: 175, kind: "controlled" },
+          { id: "basic-gift-card", label: "Basic - Gift Card Account", price: 90, kind: "gift-card-account" },
+          { id: "standard-gift-card", label: "Standard - Gift Card Account", price: 145, kind: "gift-card-account" },
+          { id: "premium-gift-card", label: "Premium - Gift Card Account", price: 200, kind: "gift-card-account" },
+        ],
+      },
+      {
+        id: "disney-plus",
+        title: "Disney+",
+        description: "Disney+ is offered as a controlled account option.",
+        options: [{ id: "controlled", label: "Controlled Account", price: 145, kind: "controlled" }],
+      },
+      {
+        id: "prime-video",
+        title: "Prime Video",
+        description: "Prime Video is offered as a controlled account option.",
+        options: [{ id: "controlled", label: "Controlled Account", price: 70, kind: "controlled" }],
+      },
+      {
+        id: "hbo-max",
+        title: "HBO Max",
+        description: "Choose the controlled HBO option that fits the customer.",
+        options: [
+          { id: "basic-controlled", label: "Basic with Ads - Controlled", price: 70, kind: "controlled" },
+          { id: "standard-controlled", label: "Standard - Controlled", price: 90, kind: "controlled" },
+          { id: "premium-controlled", label: "Premium - Controlled", price: 115, kind: "controlled" },
+        ],
+      },
+      {
+        id: "other-streaming",
+        title: "Other",
+        description: "Need a platform that is not listed? Use the premium custom request option.",
+        options: [{ id: "custom-request", label: "Custom Request", price: 0, kind: "custom-request" }],
+      },
+    ];
+
+    const billItems = [
+      { id: "wasa", title: "WASA", description: "Water bill payment with account number and amount entry." },
+      { id: "ttec", title: "T&TEC", description: "Electricity bill payment with TT$5 fee handling." },
+      { id: "flow", title: "Flow", description: "Internet and cable payment flow." },
+      { id: "digicel", title: "Digicel", description: "Telecom payment flow." },
+      { id: "bmobile", title: "Bmobile", description: "Local provider payment flow." },
+    ];
+
+    const shoppingStores = [
+      { id: "amazon", title: "Amazon", description: "Sourcing request for Amazon items." },
+      { id: "shein", title: "Shein", description: "Sourcing request for Shein items." },
+      { id: "temu", title: "Temu", description: "Sourcing request for Temu items." },
+      { id: "ebay", title: "eBay", description: "Sourcing request for eBay items." },
+      { id: "other", title: "Other", description: "Use this when the website is not listed." },
+    ];
+
+    const giftCardCategories = [
+      {
+        id: "gaming",
+        label: "Gaming & Entertainment",
+        brands: ["PlayStation Network", "Xbox", "Nintendo eShop", "Steam", "Blizzard", "Roblox", "Other"],
+      },
+      {
+        id: "streaming",
+        label: "Streaming & Entertainment Credits",
+        brands: ["Netflix", "Spotify", "Apple / iTunes", "Google Play", "Other"],
+      },
+      {
+        id: "shopping",
+        label: "Retail & Shopping",
+        brands: ["Amazon", "Other"],
+      },
+      {
+        id: "topup",
+        label: "Credits & Top-Ups",
+        brands: ["Visa Rewardable", "Swipe Visa Gift Card", "Razer Gold", "Google Play", "Other"],
+      },
+    ];
+
+    const giftCardDenominations = [
+      { id: "5", label: "$5", price: 45 },
+      { id: "10", label: "$10", price: 90 },
+      { id: "15", label: "$15", price: 145 },
+      { id: "20", label: "$20", price: 200 },
+      { id: "25", label: "$25", price: 250 },
+      { id: "50", label: "$50", price: 400 },
+      { id: "100", label: "$100", price: 800 },
+    ];
+
+    const giftCardRegions = ["United States", "United Kingdom", "Canada", "Europe", "Global"];
+
+    const customsCategories = [
+      { key: "clothing", label: "Clothing", duty: 0.2, vat: 0.125 },
+      { key: "shoes", label: "Shoes", duty: 0.2, vat: 0.125 },
+      { key: "cell-phone", label: "Cell Phone", duty: 0, vat: 0 },
+      { key: "laptop", label: "Laptop", duty: 0, vat: 0 },
+      { key: "computer", label: "Computer", duty: 0, vat: 0 },
+      { key: "smart-watch", label: "Smart Watch", duty: 0, vat: 0.125 },
+      { key: "speakers", label: "Speakers", duty: 0.2, vat: 0.125 },
+      { key: "cosmetics", label: "Cosmetics", duty: 0.2, vat: 0.125 },
+      { key: "toys", label: "Toys", duty: 0.2, vat: 0.125 },
+    ];
+
+    const CATEGORY_THEMES = {
+      streaming: { badge: "ST", accent: "#E50914", glow: "rgba(229, 9, 20, 0.45)", sublabel: "Streaming" },
+      "gift-cards": { badge: "GC", accent: "#D4AF37", glow: "rgba(212, 175, 55, 0.35)", sublabel: "Cards" },
+      "bill-payments": { badge: "BP", accent: "#60A5FA", glow: "rgba(96, 165, 250, 0.35)", sublabel: "Payments" },
+      shopping: { badge: "SS", accent: "#F59E0B", glow: "rgba(245, 158, 11, 0.35)", sublabel: "Sourcing" },
+    };
+    const PRODUCT_THEMES = {
+      netflix: { key: "netflix", title: "Netflix", accent: "#E50914", glow: "rgba(229, 9, 20, 0.45)", sublabel: "Streaming", category: "Entertainment" },
+      disneyplus: { key: "disneyplus", title: "Disney+", accent: "#113CCF", glow: "rgba(17, 60, 207, 0.45)", sublabel: "Streaming", category: "Entertainment" },
+      crunchyroll: { key: "crunchyroll", title: "Crunchyroll", accent: "#F47521", glow: "rgba(244, 117, 33, 0.45)", sublabel: "Anime", category: "Entertainment" },
+      primevideo: { key: "primevideo", title: "Prime Video", accent: "#00A8E1", glow: "rgba(0, 168, 225, 0.35)", sublabel: "Streaming", category: "Entertainment" },
+      hbomax: { key: "hbomax", title: "HBO Max", accent: "#8B5CF6", glow: "rgba(139, 92, 246, 0.35)", sublabel: "Streaming", category: "Entertainment" },
+      playstation: { key: "playstation", title: "PlayStation", accent: "#003791", glow: "rgba(0, 55, 145, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
+      playstationnetwork: { key: "playstationnetwork", title: "PlayStation Network", accent: "#003791", glow: "rgba(0, 55, 145, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
+      xbox: { key: "xbox", title: "Xbox", accent: "#107C10", glow: "rgba(16, 124, 16, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
+      nintendoeshop: { key: "nintendoeshop", title: "Nintendo eShop", accent: "#E60012", glow: "rgba(230, 0, 18, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
+      steam: { key: "steam", title: "Steam", accent: "#66C0F4", glow: "rgba(102, 192, 244, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
+      blizzard: { key: "blizzard", title: "Blizzard", accent: "#3B82F6", glow: "rgba(59, 130, 246, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
+      roblox: { key: "roblox", title: "Roblox", accent: "#E5E7EB", glow: "rgba(229, 231, 235, 0.22)", sublabel: "Gaming", category: "Gift Cards" },
+      amazon: { key: "amazon", title: "Amazon", accent: "#FF9900", glow: "rgba(255, 153, 0, 0.45)", sublabel: "Shopping", category: "Gift Cards" },
+      spotify: { key: "spotify", title: "Spotify", accent: "#1ED760", glow: "rgba(30, 215, 96, 0.35)", sublabel: "Music", category: "Gift Cards" },
+      appleitunes: { key: "appleitunes", title: "Apple / iTunes", accent: "#CBD5E1", glow: "rgba(203, 213, 225, 0.25)", sublabel: "Digital", category: "Gift Cards" },
+      googleplay: { key: "googleplay", title: "Google Play", accent: "#34A853", glow: "rgba(52, 168, 83, 0.35)", sublabel: "Digital", category: "Gift Cards" },
+      visarewardable: { key: "visarewardable", title: "Visa Rewardable", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Top-Up", category: "Gift Cards" },
+      swipevisagiftcard: { key: "swipevisagiftcard", title: "Swipe Visa Gift Card", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Top-Up", category: "Gift Cards" },
+      razergold: { key: "razergold", title: "Razer Gold", accent: "#84CC16", glow: "rgba(132, 204, 22, 0.35)", sublabel: "Top-Up", category: "Gift Cards" },
+      wasa: { key: "wasa", title: "WASA", accent: "#38BDF8", glow: "rgba(56, 189, 248, 0.35)", sublabel: "Bills", category: "Payments" },
+      ttec: { key: "ttec", title: "T&TEC", accent: "#60A5FA", glow: "rgba(96, 165, 250, 0.35)", sublabel: "Bills", category: "Payments" },
+      flow: { key: "flow", title: "Flow", accent: "#A855F7", glow: "rgba(168, 85, 247, 0.35)", sublabel: "Bills", category: "Payments" },
+      digicel: { key: "digicel", title: "Digicel", accent: "#DC2626", glow: "rgba(220, 38, 38, 0.35)", sublabel: "Bills", category: "Payments" },
+      bmobile: { key: "bmobile", title: "Bmobile", accent: "#06B6D4", glow: "rgba(6, 182, 212, 0.35)", sublabel: "Bills", category: "Payments" },
+      shein: { key: "shein", title: "Shein", accent: "#B8A17A", glow: "rgba(184, 161, 122, 0.35)", sublabel: "Fashion", category: "Shopping & Sourcing" },
+      temu: { key: "temu", title: "Temu", accent: "#F15A24", glow: "rgba(241, 90, 36, 0.4)", sublabel: "Shopping", category: "Shopping & Sourcing" },
+      ebay: { key: "ebay", title: "eBay", accent: "#C9A227", glow: "rgba(201, 162, 39, 0.35)", sublabel: "Shopping", category: "Shopping & Sourcing" },
+      other: { key: "other", title: "Other", accent: "#D4AF37", glow: "rgba(212, 175, 55, 0.35)", sublabel: "Custom Request", category: "Card Crafters" },
+      giftcardbuilder: { key: "giftcardbuilder", title: "Gift Card Builder", accent: "#D4AF37", glow: "rgba(212, 175, 55, 0.35)", sublabel: "Gift Cards", category: "Card Crafters" },
+      streaming: { key: "streaming", title: "Streaming", accent: "#E50914", glow: "rgba(229, 9, 20, 0.45)", sublabel: "Streaming", category: "Services" },
+      giftcards: { key: "giftcards", title: "Gift Cards", accent: "#D4AF37", glow: "rgba(212, 175, 55, 0.35)", sublabel: "Cards", category: "Services" },
+      billpayments: { key: "billpayments", title: "Bill Payments", accent: "#60A5FA", glow: "rgba(96, 165, 250, 0.35)", sublabel: "Payments", category: "Services" },
+      shoppingsourcing: { key: "shoppingsourcing", title: "Shopping & Sourcing", accent: "#F59E0B", glow: "rgba(245, 158, 11, 0.35)", sublabel: "Sourcing", category: "Services" },
+    };
+    const PRODUCT_THEME_ALIASES = {
+      'disney': 'disneyplus',
+      'disney+': 'disneyplus',
+      'disney-plus': 'disneyplus',
+      'prime-video': 'primevideo',
+      'hbo-max': 'hbomax',
+      'other-streaming': 'other',
+      'playstation network': 'playstationnetwork',
+      'playstation': 'playstation',
+      'apple / itunes': 'appleitunes',
+      'apple itunes': 'appleitunes',
+      'google play': 'googleplay',
+      'visa rewardable': 'visarewardable',
+      'swipe visa gift card': 'swipevisagiftcard',
+      'razer gold': 'razergold',
+      'gift card': 'giftcardbuilder',
+      'gift cards': 'giftcards',
+      'bill payments': 'billpayments',
+      'shopping sourcing': 'shoppingsourcing',
+    };
+
+    const streamingCardImages = {};
+    const streamingOptionImages = {};
+    const giftCardBrandImages = {};
+    const billItemImages = {};
+    const shoppingStoreImages = {};
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
+
+    function formatCurrency(value) {
+      return `TT$${Number(value || 0).toFixed(2)}`;
+    }
+
+    function makeId() {
+      return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function normalizeCartItem(item, index) {
+      return {
+        id: String(item?.id ?? `cart-item-${index}`),
+        title: item?.title || item?.name || "Cart Item",
+        subtitle: item?.subtitle || "",
+        price: Number(item?.price || 0),
+        quantity: Math.max(1, Number(item?.quantity || 1)),
+      };
+    }
+
+    function createEmptyShoppingItem() {
+      return {
+        id: makeId(),
+        url: "",
+        description: "",
+        priceUsd: 0,
+        priceTtd: 0,
+      };
+    }
+
+    function normalizeShoppingItem(item, index) {
+      return {
+        id: String(item?.id ?? `shopping-item-${index}`),
+        url: String(item?.url || ""),
+        description: String(item?.description || ""),
+        priceUsd: Number(item?.priceUsd || 0),
+        priceTtd: Number(item?.priceTtd || 0),
+      };
+    }
+
+    function getShoppingItemsTotalUSD() {
+      return state.shoppingItems.reduce((sum, item) => sum + Number(item.priceUsd || 0), 0);
+    }
+
+    function getShoppingItemsTotalTTD() {
+      return state.shoppingItems.reduce((sum, item) => sum + Number(item.priceTtd || 0), 0);
+    }
+
+    const state = {
+      view: { screen: "categories" },
+      cart: [],
+      cartOpen: false,
+      selectedStreamingOption: streamingItems[0].options[0].id,
+      giftCategoryId: giftCardCategories[0].id,
+      giftBrand: giftCardCategories[0].brands[0],
+      giftCustomName: "",
+      giftDenominationId: giftCardDenominations[1].id,
+      giftRegion: giftCardRegions[0],
+      billName: "",
+      billContact: "",
+      billAmount: 0,
+      billAccountNumber: "",
+      shoppingStoreName: "",
+      shoppingNotes: "",
+      shoppingItems: [createEmptyShoppingItem()],
+      shoppingDestination: "company-delivery",
+      shoppingSkyboxAddress: "",
+      shoppingCustomsKey: customsCategories[0].key,
+      deliveryFeeTTD: DEFAULT_DELIVERY_FEE,
+    };
+
+    function saveCart() {
+      try {
+        localStorage.setItem("cardCraftersCart", JSON.stringify(state.cart.map(normalizeCartItem)));
+      } catch (error) {
+        console.warn("Unable to save cart", error);
+      }
+    }
+
+    function loadCart() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("cardCraftersCart") || "[]");
+        state.cart = Array.isArray(saved) ? saved.map(normalizeCartItem) : [];
+      } catch (error) {
+        console.warn("Unable to load cart", error);
+        state.cart = [];
+      }
+    }
+
+    function setState(updates) {
+      Object.assign(state, updates);
+      saveCart();
+      render();
+    }
+
+    function normalizeThemeKey(value) {
+      return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    function getProductTheme(value, fallbackKey = 'other') {
+      const rawKey = normalizeThemeKey(value);
+      const mappedKey = PRODUCT_THEME_ALIASES[rawKey] || rawKey.replace(/\s+/g, '');
+      return PRODUCT_THEMES[mappedKey] || PRODUCT_THEMES[fallbackKey] || PRODUCT_THEMES.other;
+    }
+
+    function getBadgeLabel(title) {
+      const theme = getProductTheme(title);
+      const words = String(theme.title || title || 'CC').replace(/[^A-Za-z0-9+ ]/g, '').split(/\s+/).filter(Boolean);
+      if (theme.title === 'Disney+') return 'D+';
+      if (theme.title === 'Prime Video') return 'PV';
+      if (theme.title === 'HBO Max') return 'HM';
+      if (theme.title === 'Other') return 'OT';
+      if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+      return `${words[0][0] || ''}${words[1][0] || ''}`.toUpperCase();
+    }
+
+    function getCategoryTheme(categoryId) {
+      return CATEGORY_THEMES[categoryId] || CATEGORY_THEMES['gift-cards'];
+    }
+
+    function renderServiceTile(title, size = 'md', sublabel, overrides = {}) {
+      const theme = { ...getProductTheme(title), ...overrides };
+      const sizeMap = {
+        sm: 'h-12 w-12 rounded-[1rem] text-[13px]',
+        md: 'h-16 w-16 rounded-[1.2rem] text-[16px]',
+        lg: 'h-20 w-20 rounded-[1.35rem] text-[19px]',
+      };
+      const sizeClass = sizeMap[size] || sizeMap.md;
+      const badge = overrides.badge || getBadgeLabel(title);
+      return `
+        <div class="relative ${sizeClass} shrink-0 overflow-hidden border border-yellow-500/20 bg-[#050505] shadow-[0_0_0_1px_rgba(255,215,0,0.08),0_18px_48px_rgba(0,0,0,0.28)]">
+          <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.12)]"></div>
+          <div class="absolute inset-x-0 top-0 h-1/2 opacity-90" style="background: linear-gradient(180deg, ${theme.accent}55 0%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
+          <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+          <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
+            <div class="font-bold tracking-[0.25em]" style="color:${theme.accent}; text-shadow: 0 0 18px ${theme.accent}, 0 0 30px ${theme.glow};">${badge}</div>
+            <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">${sublabel || theme.sublabel || 'Card Crafters'}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLogoBadge(title, size = 'md', overrides = {}) {
+      return renderServiceTile(title, size, overrides.sublabel || getProductTheme(title).sublabel || 'Card Crafters', overrides);
+    }
+
+    function renderProductPosterTile({ title, sublabel = '', meta = '', category = '', accent, badge = '', className = '', mode = 'default' }) {
+      const theme = getProductTheme(title);
+      const displayAccent = accent || theme.accent;
+      const displaySublabel = sublabel || theme.sublabel || 'Card Crafters';
+      const displayCategory = category || theme.category || 'Card Crafters';
+      const displayBadge = badge || getBadgeLabel(title);
+      const compactMode = mode === 'compact' || className.includes('aspect-[4/3]');
+      return `
+        <div class="relative overflow-hidden rounded-[1.75rem] border border-yellow-500/20 bg-[#050505] ${compactMode ? 'aspect-[4/3] p-5' : 'aspect-[16/10] p-6'} ${className}">
+          <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.12)]"></div>
+          <div class="absolute inset-x-0 top-0 h-24 opacity-80" style="background: linear-gradient(180deg, ${displayAccent}33 0%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_42%)]"></div>
+          <div class="absolute right-5 top-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500">${displayCategory}</div>
+          <div class="relative flex h-full flex-col justify-between">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Card Crafters</div>
+                <div class="mt-3 text-xs uppercase tracking-[0.22em] text-zinc-400">${displaySublabel}</div>
+              </div>
+              <div class="text-sm font-bold tracking-[0.28em]" style="color:${displayAccent}; text-shadow: 0 0 18px ${displayAccent}55;">${displayBadge}</div>
+            </div>
+            <div>
+              <div class="text-3xl font-semibold tracking-tight" style="color:${displayAccent}; text-shadow: 0 0 24px ${displayAccent}44;">${title}</div>
+              ${meta ? `<div class="mt-3 max-w-md text-sm leading-7 text-zinc-400">${meta}</div>` : ''}
+            </div>
+            <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMediaCard(src, alt, className = '') {
+      const cleanTitle = String(alt || 'Other').replace(/ artwork| payment| shopping| gift card/gi, '').trim();
+      const themeSource = [
+        'Netflix',
+        'Disney+',
+        'Prime Video',
+        'HBO Max',
+        'PlayStation Network',
+        'Xbox',
+        'Nintendo eShop',
+        'Steam',
+        'Blizzard',
+        'Roblox',
+        'Amazon',
+        'Spotify',
+        'Apple / iTunes',
+        'Google Play',
+        'Visa Rewardable',
+        'Swipe Visa Gift Card',
+        'Razer Gold',
+        'WASA',
+        'T&TEC',
+        'Flow',
+        'Digicel',
+        'Bmobile',
+        'Shein',
+        'Temu',
+        'eBay',
+        'Other',
+      ].find((name) => cleanTitle.toLowerCase().includes(name.toLowerCase())) || cleanTitle;
+      return renderProductPosterTile({
+        title: cleanTitle || 'Other',
+        accent: getProductTheme(themeSource).accent,
+        category: getProductTheme(themeSource).category,
+        sublabel: getProductTheme(themeSource).sublabel,
+        badge: getBadgeLabel(themeSource),
+        meta: alt || 'Premium Card Crafters visual',
+        className,
+      });
+    }
+
+    function getStreamingOptionImage(itemId, optionId) {
+      return `${itemId}:${optionId}`;
+    }
+
+    function renderTitleWithBadge(title, subtitle = '') {
+      return `
+        <div class="flex items-start gap-4">
+          ${renderLogoBadge(title, 'md')}
+          <div>
+            <h3 class="text-xl font-semibold text-white">${title}</h3>
+            ${subtitle ? `<p class="mt-2 text-sm leading-7 text-zinc-400">${subtitle}</p>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetailHero({ title, subtitle, accentTitle = '', categoryLabel = '', badgeTitle = '', meta = '' }) {
+      const theme = getProductTheme(accentTitle || badgeTitle || title);
+      return `
+        <div class="rounded-[2rem] border border-yellow-500/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="flex items-start gap-4">
+              ${renderLogoBadge(badgeTitle || title, 'lg')}
+              <div>
+                <div class="inline-flex rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-yellow-300">${categoryLabel || theme.category || 'Card Crafters'}</div>
+                <h3 class="mt-4 text-3xl font-semibold tracking-tight text-white">${title}</h3>
+                <p class="mt-3 max-w-2xl text-sm leading-7 text-zinc-300">${subtitle}</p>
+              </div>
+            </div>
+            <div class="min-w-[220px] rounded-3xl border border-yellow-500/20 bg-black/30 p-5">
+              <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Selected</div>
+              <div class="mt-3 text-2xl font-semibold" style="color:${theme.accent}; text-shadow:0 0 22px ${theme.glow};">${accentTitle || title}</div>
+              ${meta ? `<div class="mt-3 text-sm leading-6 text-zinc-400">${meta}</div>` : ''}
+              <div class="mt-5 h-[2px] w-full bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrimaryButton(label, onClick) {
+      return `<button onclick="${onClick}" class="inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black"><span>${label}</span><span>&rarr;</span></button>`;
+    }
+    function renderPanel(innerHTML, className = '') {
+      return `<div class="rounded-3xl border border-white/10 bg-white/[0.03] ${className}">${innerHTML}</div>`;
+    }
+
+    function renderPill(label) {
+      return `<div class="inline-flex rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-yellow-300">${label}</div>`;
+    }
+
+    function renderCategories() {
+      return `
+        <div class="space-y-8">
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            ${categories.map(category => {
+              const theme = getCategoryTheme(category.id);
+              return `
+                <div class="group rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-all duration-300 hover:border-yellow-500/30 hover:bg-white/[0.06] hover:shadow-[0_20px_60px_rgba(234,179,8,0.1)] cursor-pointer" onclick="app.navigateToCategory('${category.id}')">
+                  <div class="mb-6 flex items-center justify-between">
+                    ${renderServiceTile(category.title, 'md', theme.sublabel, theme)}
+                    <div class="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-yellow-300">Premium</div>
+                  </div>
+                  <h3 class="text-2xl font-semibold text-white group-hover:text-yellow-100 transition-colors">${category.title}</h3>
+                  <p class="mt-4 text-sm leading-7 text-zinc-400 group-hover:text-zinc-300 transition-colors">${category.description}</p>
+                  <div class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-2 text-sm font-semibold text-black shadow-[0_8px_24px_rgba(234,179,8,0.12)] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2">
+                    <span>${category.cta}</span>
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStreamingItems() {
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateBack()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">Streaming Services</h2>
+              <p class="mt-1 text-sm text-zinc-400">Choose your preferred streaming platform and account type</p>
+            </div>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            ${streamingItems.map(item => `
+              <div class="group rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-all duration-300 hover:border-yellow-500/30 hover:bg-white/[0.06] hover:shadow-[0_20px_60px_rgba(234,179,8,0.1)]" onclick="app.openStreamingItem('${item.id}')">
+                <div class="flex items-center gap-3 mb-6">
+                  ${renderLogoBadge(item.title, "md")}
+                  <div>
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-yellow-300">Streaming</p>
+                    <h3 class="text-xl font-semibold text-white group-hover:text-yellow-100 transition-colors">${item.title}</h3>
+                  </div>
+                </div>
+                <p class="text-sm leading-7 text-zinc-400 group-hover:text-zinc-300 transition-colors">${item.description}</p>
+                <div class="mt-6 inline-flex items-center gap-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span class="text-sm font-semibold">View Options</span>
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBillItems() {
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateBack()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">Bill Payments</h2>
+              <p class="mt-1 text-sm text-zinc-400">Select a provider to pay your bill</p>
+            </div>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            ${billItems.map(item => `
+              <div class="group rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-all duration-300 hover:border-yellow-500/30 hover:bg-white/[0.06] hover:shadow-[0_20px_60px_rgba(234,179,8,0.1)]" onclick="app.openBillItem('${item.id}')">
+                <div class="flex items-center gap-3 mb-6">
+                  ${renderLogoBadge(item.title, "md")}
+                  <div>
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-yellow-300">Bill Payments</p>
+                    <h3 class="text-xl font-semibold text-white group-hover:text-yellow-100 transition-colors">${item.title}</h3>
+                  </div>
+                </div>
+                <p class="text-sm leading-7 text-zinc-400 group-hover:text-zinc-300 transition-colors">${item.description}</p>
+                <div class="mt-6 inline-flex items-center gap-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span class="text-sm font-semibold">Pay Bill</span>
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderShoppingStores() {
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateBack()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">Shopping & Sourcing</h2>
+              <p class="mt-1 text-sm text-zinc-400">Choose where you'd like to shop</p>
+            </div>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            ${shoppingStores.map(item => `
+              <div class="group rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-all duration-300 hover:border-yellow-500/30 hover:bg-white/[0.06] hover:shadow-[0_20px_60px_rgba(234,179,8,0.1)]" onclick="app.openShoppingStore('${item.id}')">
+                <div class="flex items-center gap-3 mb-6">
+                  ${renderLogoBadge(item.title, "md")}
+                  <div>
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-yellow-300">Shopping &amp; Sourcing</p>
+                    <h3 class="text-xl font-semibold text-white group-hover:text-yellow-100 transition-colors">${item.title}</h3>
+                  </div>
+                </div>
+                <p class="text-sm leading-7 text-zinc-400 group-hover:text-zinc-300 transition-colors">${item.description}</p>
+                <div class="mt-6 inline-flex items-center gap-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span class="text-sm font-semibold">Get Quote</span>
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStreamingDetail() {
+      const item = streamingItems.find(x => x.id === state.view.itemId);
+      if (!item) return "";
+
+      const selectedOption = item.options.find(x => x.id === state.selectedStreamingOption);
+      if (!selectedOption) return "";
+
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateBack()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">${item.title}</h2>
+              <p class="mt-1 text-sm text-zinc-400">Select your preferred account type and add to cart</p>
+            </div>
+          </div>
+          ${renderPanel(`
+            <div class="p-8">
+              ${renderDetailHero({
+                title: item.title,
+                subtitle: item.description,
+                accentTitle: selectedOption.label,
+                categoryLabel: "Streaming Services",
+                badgeTitle: item.title,
+                meta: "Choose the plan below and add it straight to your shared cart.",
+              })}
+              <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+                <div class="space-y-6">
+                  <div class="rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-6">
+                    <p class="text-sm text-yellow-200 font-semibold">Controlled Account</p>
+                    <ul class="mt-3 space-y-2 text-sm leading-7 text-zinc-200">
+                      <li>&bull; Managed by Card Crafters for continuity and billing.</li>
+                      <li>&bull; You use the service normally without managing billing.</li>
+                      <li>&bull; Best for a simpler, managed setup.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Account Option</label>
+                    <select onchange="app.setSelectedStreamingOption(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      ${item.options.map(opt => `<option value="${opt.id}" ${opt.id === state.selectedStreamingOption ? 'selected' : ''}>${opt.label} - ${formatCurrency(opt.price)}</option>`).join("")}
+                    </select>
+                  </div>
+                </div>
+                ${renderPanel(`
+                  <div class="p-6">
+                    <p class="text-xs uppercase tracking-[0.18em] text-yellow-300 font-semibold">Order Summary</p>
+                    <div class="mt-5 space-y-3 text-sm">
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Service:</span>
+                        <span class="font-medium text-white">${item.title}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Plan:</span>
+                        <span class="font-medium text-white">${selectedOption.label}</span>
+                      </div>
+                      <div class="pt-3 border-t border-white/10 flex justify-between">
+                        <span class="font-semibold text-zinc-200">Total:</span>
+                        <span class="text-2xl font-bold text-yellow-100">${formatCurrency(selectedOption.price)}</span>
+                      </div>
+                    </div>
+                    <div class="mt-6">
+                      ${renderPrimaryButton("Add to Cart", `app.addToCart('${item.title}', '${selectedOption.label}', ${selectedOption.price})`)}
+                    </div>
+                  </div>
+                `, 'border-yellow-500/20 bg-yellow-500/10')}
+              </div>
+            </div>
+          `)}
+        </div>
+      `;
+    }
+
+    function renderGiftCardDetail() {
+      const selectedCategory = giftCardCategories.find(x => x.id === state.giftCategoryId) || giftCardCategories[0];
+      const selectedDenom = giftCardDenominations.find(x => x.id === state.giftDenominationId) || giftCardDenominations[0];
+      const giftBrandLabel = state.giftBrand === "Other" ? (state.giftCustomName.trim() || "Other Gift Card") : state.giftBrand;
+
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateToCategories()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">Gift Card Builder</h2>
+              <p class="mt-1 text-sm text-zinc-400">Build your gift card by selecting category, brand, amount, and region</p>
+            </div>
+          </div>
+          ${renderPanel(`
+            <div class="p-8">
+              <div class="mb-8">
+                ${renderDetailHero({
+                  title: "Gift Card Builder",
+                  subtitle: "Build a premium card request by choosing category, brand, denomination, and region.",
+                  accentTitle: giftBrandLabel,
+                  categoryLabel: selectedCategory.label,
+                  badgeTitle: giftBrandLabel,
+                  meta: `${selectedDenom.label} for ${state.giftRegion}`,
+                })}
+              </div>
+              <div class="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+                <div class="space-y-5">
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Gift Card Category</label>
+                    <select onchange="app.setGiftCategory(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      ${giftCardCategories.map(cat => `<option value="${cat.id}" ${cat.id === state.giftCategoryId ? 'selected' : ''}>${cat.label}</option>`).join("")}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Card Brand</label>
+                    <select onchange="app.setGiftBrand(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      ${selectedCategory.brands.map(brand => `<option value="${brand}" ${brand === state.giftBrand ? 'selected' : ''}>${brand}</option>`).join("")}
+                    </select>
+                  </div>
+                  ${state.giftBrand === "Other" ? `
+                    <div>
+                      <label class="block text-sm font-semibold text-white mb-3">Gift Card Name</label>
+                      <input type="text" value="${state.giftCustomName}" onchange="app.setGiftCustomName(this.value)" placeholder="Type the gift card name" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-500 font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                    </div>
+                  ` : ""}
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Denomination (USD)</label>
+                    <select onchange="app.setGiftDenomination(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      ${giftCardDenominations.map(denom => `<option value="${denom.id}" ${denom.id === state.giftDenominationId ? 'selected' : ''}>${denom.label}</option>`).join("")}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Region</label>
+                    <select onchange="app.setGiftRegion(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      ${giftCardRegions.map(region => `<option value="${region}" ${region === state.giftRegion ? 'selected' : ''}>${region}</option>`).join("")}
+                    </select>
+                  </div>
+                </div>
+                ${renderPanel(`
+                  <div class="p-6">
+                    <p class="text-xs uppercase tracking-[0.18em] text-yellow-300 font-semibold">Order Summary</p>
+                    <div class="mt-5 space-y-3 text-sm">
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Category:</span>
+                        <span class="font-medium text-white text-right">${selectedCategory.label}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Brand:</span>
+                        <span class="font-medium text-white text-right">${giftBrandLabel}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Amount:</span>
+                        <span class="font-medium text-white text-right">${selectedDenom.label}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Region:</span>
+                        <span class="font-medium text-white text-right">${state.giftRegion}</span>
+                      </div>
+                      <div class="pt-3 border-t border-white/10 flex justify-between">
+                        <span class="font-semibold text-zinc-200">Total:</span>
+                        <span class="text-2xl font-bold text-yellow-100">${formatCurrency(selectedDenom.price)}</span>
+                      </div>
+                    </div>
+                    <div class="mt-6">
+                      ${renderPrimaryButton("Add to Cart", `app.addGiftCardToCart()`)}
+                    </div>
+                  </div>
+                `, 'border-yellow-500/20 bg-yellow-500/10')}
+            </div>
+          `)}
+        </div>
+      `;
+    }
+
+    function renderBillDetail() {
+      const item = billItems.find(x => x.id === state.view.itemId);
+      if (!item) return "";
+
+      const billTotal = state.billAmount + BILL_FEE;
+
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateBack()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">${item.title} Payment</h2>
+              <p class="mt-1 text-sm text-zinc-400">Fill in your bill details to proceed</p>
+            </div>
+          </div>
+          ${renderPanel(`
+            <div class="p-8">
+              ${renderDetailHero({
+                title: `${item.title} Payment`,
+                subtitle: item.description,
+                accentTitle: item.title,
+                categoryLabel: "Bill Payments",
+                badgeTitle: item.title,
+                meta: "Enter the account details below and add the request to your shared cart.",
+              })}
+              <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+                <div class="grid gap-4">
+                  <input type="text" value="${state.billName}" onchange="app.setBillName(this.value)" placeholder="Your full name" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-500 font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                  <input type="text" value="${state.billContact}" onchange="app.setBillContact(this.value)" placeholder="Contact number" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-500 font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                  <input type="text" value="${state.billAccountNumber}" onchange="app.setBillAccountNumber(this.value)" placeholder="Account number" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-500 font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                  <input type="number" value="${state.billAmount || ''}" onchange="app.setBillAmount(this.value)" placeholder="Bill amount" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-500 font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                </div>
+                ${renderPanel(`
+                  <div class="p-6">
+                    <p class="text-xs uppercase tracking-[0.18em] text-yellow-300 font-semibold">Payment Summary</p>
+                    <div class="mt-5 space-y-3 text-sm">
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Provider:</span>
+                        <span class="font-medium text-white">${item.title}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Bill Amount:</span>
+                        <span class="font-medium text-white">${formatCurrency(state.billAmount)}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Service Fee:</span>
+                        <span class="font-medium text-white">${formatCurrency(BILL_FEE)}</span>
+                      </div>
+                      <div class="pt-3 border-t border-white/10 flex justify-between">
+                        <span class="font-semibold text-zinc-200">Total:</span>
+                        <span class="text-2xl font-bold text-yellow-100">${formatCurrency(billTotal)}</span>
+                      </div>
+                    </div>
+                    <div class="mt-6">
+                      ${renderPrimaryButton("Add to Cart", `app.addToCart('${item.title} Payment', '${state.billName || 'Customer'} - ${state.billAccountNumber || 'N/A'}', ${billTotal})`)}
+                    </div>
+                  </div>
+                `, 'border-yellow-500/20 bg-yellow-500/10')}
+            </div>
+          `)}
+        </div>
+      `;
+    }
+
+    function renderShoppingDetail() {
+      const item = shoppingStores.find(x => x.id === state.view.itemId);
+      if (!item) return "";
+
+      const shoppingTitle = state.view.itemId === "other" ? state.shoppingStoreName || "Other Website" : item.title;
+      const destinationLabel = state.shoppingDestination === "company-delivery"
+        ? "Company Warehouse"
+        : "Your Skybox";
+      const shoppingItemsTotalUSD = getShoppingItemsTotalUSD();
+      const shoppingItemsTotalTTD = getShoppingItemsTotalTTD();
+      const completedShoppingItems = state.shoppingItems.filter(entry => entry.url || entry.description || entry.priceUsd || entry.priceTtd);
+      const shoppingAtCustomerRate = shoppingItemsTotalUSD * CUSTOMER_RATE;
+      const selectedCustoms = customsCategories.find(c => c.key === state.shoppingCustomsKey);
+      const shoppingCustomsTTD = state.shoppingDestination === "customer-skybox"
+        ? 0
+        : ((shoppingItemsTotalUSD * selectedCustoms.duty) + ((shoppingItemsTotalUSD + shoppingItemsTotalUSD * selectedCustoms.duty) * selectedCustoms.vat)) * MARKET_RATE;
+      const shoppingEstimatedTotal = shoppingAtCustomerRate + shoppingCustomsTTD + state.deliveryFeeTTD;
+
+      return `
+        <div>
+          <div class="mb-8 flex items-center gap-4">
+            <button onclick="app.navigateBack()" class="flex items-center justify-center w-10 h-10 rounded-2xl border border-white/10 hover:border-yellow-500/30 bg-white/[0.03] hover:bg-yellow-500/10 text-zinc-300 transition-colors">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div>
+              <h2 class="text-3xl font-semibold text-white">${shoppingTitle} Shopping Quote</h2>
+              <p class="mt-1 text-sm text-zinc-400">Add product links and get an instant estimate</p>
+            </div>
+          </div>
+          ${renderPanel(`
+            <div class="p-8">
+              ${renderDetailHero({
+                title: `${shoppingTitle} Shopping Quote`,
+                subtitle: item.description,
+                accentTitle: shoppingTitle,
+                categoryLabel: "Shopping & Sourcing",
+                badgeTitle: shoppingTitle,
+                meta: "Submit links, notes, and destination details for a clean estimate.",
+              })}
+
+              <div class="mt-8 space-y-6">
+                ${state.view.itemId === "other" ? `
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Website or Store Name</label>
+                    <input type="text" value="${state.shoppingStoreName}" onchange="app.setShoppingStoreName(this.value)" placeholder="Enter the website or store name" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                  </div>
+                ` : ""}
+
+                <div>
+                  <div class="mb-3 flex items-center justify-between gap-3">
+                    <label class="block text-sm font-semibold text-white">Shopping Items</label>
+                    <button type="button" onclick="app.addShoppingItem()" class="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-yellow-300 hover:bg-yellow-500/20">Add Item</button>
+                  </div>
+                  <div class="space-y-4">
+                    ${state.shoppingItems.map((entry, index) => `
+                      <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                          <p class="text-xs uppercase tracking-[0.18em] text-yellow-300">Item ${index + 1}</p>
+                          ${state.shoppingItems.length > 1 ? `<button type="button" onclick="app.removeShoppingItem('${entry.id}')" class="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300 hover:border-yellow-500/30 hover:text-white">Remove</button>` : ""}
+                        </div>
+                        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1.2fr_1fr_150px_150px]">
+                          <input type="text" value="${entry.url}" onchange="app.updateShoppingItem('${entry.id}', 'url', this.value)" placeholder="Paste item link" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                          <input type="text" value="${entry.description}" onchange="app.updateShoppingItem('${entry.id}', 'description', this.value)" placeholder="Item description" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                          <input type="number" step="0.01" min="0" value="${entry.priceUsd || ''}" onchange="app.updateShoppingItem('${entry.id}', 'priceUsd', this.value)" placeholder="Price USD" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                          <input type="number" step="0.01" min="0" value="${entry.priceTtd || ''}" onchange="app.updateShoppingItem('${entry.id}', 'priceTtd', this.value)" placeholder="Price TTD" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                        </div>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-semibold text-white mb-3">Additional Notes</label>
+                  <textarea onchange="app.setShoppingNotes(this.value)" placeholder="Delivery notes, color preferences, bundle instructions..." class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20 resize-none min-h-[100px]">${state.shoppingNotes}</textarea>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Delivery Destination</label>
+                    <select onchange="app.setShoppingDestination(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      <option value="company-delivery" ${state.shoppingDestination === "company-delivery" ? 'selected' : ''}>Company Warehouse</option>
+                      <option value="customer-skybox" ${state.shoppingDestination === "customer-skybox" ? 'selected' : ''}>Your Skybox</option>
+                    </select>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.18em] text-yellow-300">Items Entered</p>
+                    <p class="mt-2 text-2xl font-semibold text-white">${completedShoppingItems.length}</p>
+                    <p class="mt-1 text-sm text-zinc-400">USD total: US$${shoppingItemsTotalUSD.toFixed(2)}</p>
+                    <p class="mt-1 text-sm text-zinc-400">TTD entered: ${formatCurrency(shoppingItemsTotalTTD)}</p>
+                  </div>
+                </div>
+
+                ${state.shoppingDestination === "customer-skybox" ? `
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Skybox Address</label>
+                    <textarea onchange="app.setShoppingSkyboxAddress(this.value)" placeholder="Enter the full skybox address, suite number, and any delivery notes..." class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20 resize-none min-h-[96px]">${state.shoppingSkyboxAddress}</textarea>
+                  </div>
+                ` : ""}
+
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Customs Category</label>
+                    <select onchange="app.setShoppingCustomsKey(this.value)" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20">
+                      ${customsCategories.map(cat => `<option value="${cat.key}" ${cat.key === state.shoppingCustomsKey ? 'selected' : ''}>${cat.label}</option>`).join("")}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-white mb-3">Delivery Fee (starts TT$35)</label>
+                    <input type="number" step="0.01" value="${state.deliveryFeeTTD || ''}" onchange="app.setDeliveryFee(this.value)" placeholder="35.00" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white font-medium placeholder:text-zinc-500 outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+                <div class="rounded-3xl border border-white/10 bg-black/20 p-6">
+                  <p class="text-xs uppercase tracking-[0.18em] text-yellow-300 font-semibold mb-4">Estimate Breakdown</p>
+                  <div class="space-y-3 text-sm">
+                    <div class="flex justify-between text-zinc-200">
+                      <span>Items (USD):</span>
+                      <span class="font-medium">US$${shoppingItemsTotalUSD.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between text-zinc-200">
+                      <span>Items (TTD Entered):</span>
+                      <span class="font-medium">${formatCurrency(shoppingItemsTotalTTD)}</span>
+                    </div>
+                    <div class="flex justify-between text-zinc-200">
+                      <span>Item Count:</span>
+                      <span class="font-medium">${completedShoppingItems.length}</span>
+                    </div>
+                    <div class="flex justify-between text-zinc-200">
+                      <span>Customer Rate (8.5x):</span>
+                      <span class="font-medium">${formatCurrency(shoppingAtCustomerRate)}</span>
+                    </div>
+                    ${state.shoppingDestination !== "customer-skybox" ? `<div class="flex justify-between text-zinc-200">
+                      <span>Customs & Duty:</span>
+                      <span class="font-medium">${formatCurrency(shoppingCustomsTTD)}</span>
+                    </div>` : ""}
+                    <div class="flex justify-between text-zinc-200">
+                      <span>Delivery:</span>
+                      <span class="font-medium">${formatCurrency(state.deliveryFeeTTD)}</span>
+                    </div>
+                  </div>
+                </div>
+                ${renderPanel(`
+                  <div class="p-6">
+                    <p class="text-xs uppercase tracking-[0.18em] text-yellow-300 font-semibold mb-4">Quote Summary</p>
+                    <div class="space-y-3 text-sm mb-6">
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Items Submitted:</span>
+                        <span class="font-medium text-white text-right">${completedShoppingItems.length}</span>
+                      </div>
+                      <div class="flex justify-between text-zinc-200">
+                        <span>Destination:</span>
+                        <span class="font-medium text-white text-right">${destinationLabel}</span>
+                      </div>
+                      ${state.shoppingDestination === "customer-skybox" && state.shoppingSkyboxAddress ? `
+                        <div class="flex justify-between gap-4 text-zinc-200">
+                          <span>Skybox:</span>
+                          <span class="max-w-[220px] text-right font-medium text-white">${state.shoppingSkyboxAddress}</span>
+                        </div>
+                      ` : ""}
+                      <div class="pt-3 border-t border-white/10 flex justify-between">
+                        <span class="font-semibold text-zinc-200">Estimated Total:</span>
+                        <span class="text-2xl font-bold text-yellow-100">${formatCurrency(shoppingEstimatedTotal)}</span>
+                      </div>
+                    </div>
+                    <p class="text-xs text-zinc-500 mb-6">Quote may be adjusted based on final item weights and customs.</p>
+                    <div>
+                      ${renderPrimaryButton("Add to Cart", `app.addToCart('${shoppingTitle} Request', '${completedShoppingItems.length} item(s) - ${destinationLabel}${state.shoppingDestination === "customer-skybox" && state.shoppingSkyboxAddress ? " - Skybox Provided" : ""}', ${shoppingEstimatedTotal})`)}
+                    </div>
+                  </div>
+                `, 'border-yellow-500/20 bg-yellow-500/10')}
+              </div>
+            </div>
+          `)}
+        </div>
+      `;
+    }
+
+    function renderCartDrawer() {
+      const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const backdropClass = state.cartOpen ? "fixed inset-0 z-40 bg-black/60" : "hidden";
+
+      return `
+        <div class="${backdropClass}" onclick="app.closeCart()"></div>
+        <aside class="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#0b0b0b] transition-transform duration-300 ${state.cartOpen ? "translate-x-0" : "translate-x-full"}">
+          <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
+            <div>
+              <p class="text-xs uppercase tracking-[0.18em] text-yellow-300">Cart</p>
+              <h2 class="mt-1 text-2xl font-semibold text-white">Your Items</h2>
+            </div>
+            <button onclick="app.closeCart()" class="rounded-full border border-white/10 px-3 py-2 text-sm text-zinc-300">Close</button>
+          </div>
+          <div class="flex-1 overflow-y-auto px-6 py-5">
+            ${state.cart.length === 0 ? renderPanel("Nothing has been added yet.", "p-4 text-sm leading-7 text-zinc-400") : `
+              <div class="space-y-3">
+                ${state.cart.map(item => renderPanel(`
+                  <div class="p-4">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <p class="text-sm font-semibold text-white">${item.title}</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.14em] text-zinc-400">${item.subtitle}</p>
+                      </div>
+                      <button onclick="app.removeFromCart('${item.id}')" class="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300">Remove</button>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between text-sm">
+                      <span class="text-zinc-400">Qty ${item.quantity}</span>
+                      <span class="font-semibold text-yellow-200">${formatCurrency(item.price * item.quantity)}</span>
+                    </div>
+                  </div>
+                `)).join("")}
+              </div>
+            `}
+          </div>
+          <div class="border-t border-white/10 px-6 py-5">
+            <div class="rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-4">
+              <div class="flex items-center justify-between text-sm text-zinc-200">
+                <span>Total</span>
+                <span class="text-lg font-semibold text-yellow-100">${formatCurrency(total)}</span>
+              </div>
+              <button onclick="app.goToCheckout()" class="mt-4 w-full rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-3 text-sm font-semibold text-black transition hover:brightness-105 ${state.cart.length === 0 ? "opacity-60 cursor-not-allowed" : ""}" ${state.cart.length === 0 ? "disabled" : ""}>Checkout</button>
+            </div>
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderSharedFooter() {
+      return `
+        <footer class="border-t border-white/10 bg-[#080808]">
+          <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:px-8">
+            <div>
+              <div class="flex items-center gap-3">
+                <div class="rounded-[1.2rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] to-[#090909] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.36)]">
+                  <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-12 w-12 rounded-xl object-cover" onerror="this.style.display='none'" />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold uppercase tracking-[0.26em] text-yellow-300">Card Crafters</p>
+                  <p class="mt-1 text-xs text-zinc-400">Premium digital service access</p>
+                </div>
+              </div>
+              <p class="mt-4 max-w-sm text-sm leading-7 text-zinc-400">
+                Premium digital services, gift cards, bill payments, and sourcing with a clean local checkout flow.
+              </p>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Navigation</p>
+              <div class="mt-4 space-y-3 text-sm text-zinc-400">
+                <a href="index.html" class="block transition hover:text-white">Home</a>
+                <a href="about.html" class="block transition hover:text-white">About</a>
+                <a href="services.html" class="block transition hover:text-white">Services</a>
+                <a href="faq.html" class="block transition hover:text-white">FAQ</a>
+                <a href="contact.html" class="block transition hover:text-white">Contact</a>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Contact</p>
+              <div class="mt-4 space-y-3 text-sm text-zinc-400">
+                <a href="mailto:support@cardcrafterstt.com" class="block transition hover:text-white">support@cardcrafterstt.com</a>
+                <a href="tel:+18684651282" class="block transition hover:text-white">1-868-465-1282</a>
+              </div>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="relative overflow-hidden rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-yellow-200 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">Bank Transfer</span>
+                <span class="relative overflow-hidden rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">EndCash</span>
+                <span class="relative overflow-hidden rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">Quick Pay</span>
+                <span class="relative overflow-hidden rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">VISA</span>
+                <span class="relative overflow-hidden rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">MasterCard</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-white/10 px-4 py-4 text-center text-xs text-zinc-500 sm:px-6 lg:px-8">
+            &copy; Card Crafters Limited - Trinidad & Tobago
+          </div>
+        </footer>
+      `;
+    }
+
+
+    function render() {
+      const app = document.getElementById("app");
+
+      let mainContent = "";
+      let showHeroAndShowcase = state.view.screen === "categories";
+
+      if (state.view.screen === "categories") {
+        mainContent = renderCategories();
+      } else if (state.view.screen === "items") {
+        if (state.view.category === "streaming") {
+          mainContent = renderStreamingItems();
+        } else if (state.view.category === "gift-cards") {
+          mainContent = `<button onclick="app.navigateToCategories()" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-medium text-zinc-200">â† Back</button><div class="mt-4">${renderGiftCardDetail()}</div>`;
+        } else if (state.view.category === "bill-payments") {
+          mainContent = renderBillItems();
+        } else if (state.view.category === "shopping") {
+          mainContent = renderShoppingStores();
+        }
+      } else if (state.view.screen === "detail") {
+        if (state.view.category === "streaming") {
+          mainContent = renderStreamingDetail();
+        } else if (state.view.category === "gift-cards") {
+          mainContent = renderGiftCardDetail();
+        } else if (state.view.category === "bill-payments") {
+          mainContent = renderBillDetail();
+        } else if (state.view.category === "shopping") {
+          mainContent = renderShoppingDetail();
+        }
+      }
+
+      const cartCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+
+      app.innerHTML = `
+        ${renderCartDrawer()}
+        <header class="sticky top-0 z-50 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl">
+          <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+            <a href="index.html" class="flex items-center gap-4">
+              <div class="shrink-0 rounded-[1.65rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] via-[#0d0d0d] to-[#090909] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.4)]">
+                <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-12 w-12 rounded-[1.1rem] object-cover" onerror="this.style.display='none'" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.34em] text-yellow-300">Card Crafters</p>
+                <p class="mt-1 text-xs text-zinc-400">Digital access with local payment convenience</p>
+              </div>
+            </a>
+
+            <div class="hidden lg:flex items-center gap-4">
+              <nav class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] p-1.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)]">
+                <a href="index.html" class="rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm text-zinc-300 transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-white">Home</a>
+                <a href="about.html" class="rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm text-zinc-300 transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-white">About</a>
+                <a href="services.html" class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-5 py-2.5 text-sm text-yellow-300 transition">Services</a>
+              </nav>
+            </div>
+
+            <button onclick="app.openCart()" class="inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="9" cy="20" r="1.5" />
+                <circle cx="18" cy="20" r="1.5" />
+                <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H7" />
+              </svg>
+              Cart
+              ${cartCount > 0 ? `<span class="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-xs font-bold">${cartCount}</span>` : ""}
+            </button>
+          </div>
+        </header>
+
+        <main class="relative z-10">
+          ${showHeroAndShowcase ? `
+            <section class="mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 lg:px-8">
+              <div class="space-y-4 max-w-4xl">
+                <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-yellow-300">
+                  <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3z" />
+                    <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" />
+                    <path d="M5 14l1 2.5L8.5 17 6 18l-1 2.5L4 18l-2.5-1L4 16.5 5 14z" />
+                  </svg>
+                  Premium Services
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight text-white leading-tight">
+                  Digital access,
+                  <span class="block text-yellow-200">handled locally.</span>
+                </h1>
+                <p class="mt-4 text-lg leading-8 text-zinc-300 max-w-3xl">
+                  Seamless access to streaming services, gift cards, bill payments, and online shoppingâ€”all through local payment methods.
+                </p>
+              </div>
+            </section>
+
+            <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+              <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-yellow-300 mb-6">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3z" />
+                  <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" />
+                  <path d="M5 14l1 2.5L8.5 17 6 18l-1 2.5L4 18l-2.5-1L4 16.5 5 14z" />
+                </svg>
+                Start Shopping
+              </div>
+              <h2 class="text-3xl font-semibold tracking-tight text-white sm:text-3xl">
+                Choose any service to begin.
+              </h2>
+            </section>
+          ` : `
+            <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+              <button onclick="app.navigateToCategories()" class="inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-2 text-sm font-semibold text-yellow-300 hover:bg-yellow-500/20 transition-colors">
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to All Services
+              </button>
+            </section>
+          `}
+
+          <section class="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+            ${mainContent}
+          </section>
+        </main>
+        ${renderSharedFooter()}
+      `;
+    }
+
+    // ============================================================================
+    // APP API
+    // ============================================================================
+
+    const app = {
+      navigateToCategories() {
+        setState({ view: { screen: "categories" } });
+      },
+      navigateToCategory(categoryId) {
+        if (categoryId === "gift-cards") {
+          setState({
+            view: { screen: "detail", category: "gift-cards", itemId: "builder" },
+            giftCategoryId: giftCardCategories[0].id,
+            giftBrand: giftCardCategories[0].brands[0],
+            giftCustomName: "",
+            giftDenominationId: giftCardDenominations[1].id,
+            giftRegion: giftCardRegions[0],
+          });
+        } else {
+          setState({ view: { screen: "items", category: categoryId } });
+        }
+      },
+      navigateBack() {
+        if (state.view.screen === "detail") {
+          if (state.view.category === "gift-cards") {
+            setState({ view: { screen: "categories" } });
+          } else {
+            setState({ view: { screen: "items", category: state.view.category } });
+          }
+        } else if (state.view.screen === "items") {
+          setState({ view: { screen: "categories" } });
+        }
+      },
+      openStreamingItem(itemId) {
+        const item = streamingItems.find(x => x.id === itemId);
+        if (item) {
+          setState({
+            view: { screen: "detail", category: "streaming", itemId },
+            selectedStreamingOption: item.options[0].id,
+          });
+        }
+      },
+      openBillItem(itemId) {
+        setState({
+          view: { screen: "detail", category: "bill-payments", itemId },
+          billName: "",
+          billContact: "",
+          billAmount: 0,
+          billAccountNumber: "",
+        });
+      },
+      openShoppingStore(itemId) {
+        setState({
+          view: { screen: "detail", category: "shopping", itemId },
+          shoppingStoreName: "",
+          shoppingNotes: "",
+          shoppingItems: [createEmptyShoppingItem()],
+          shoppingDestination: "company-delivery",
+          shoppingSkyboxAddress: "",
+          shoppingCustomsKey: customsCategories[0].key,
+          deliveryFeeTTD: DEFAULT_DELIVERY_FEE,
+        });
+      },
+      setSelectedStreamingOption(value) {
+        setState({ selectedStreamingOption: value });
+      },
+      setGiftCategory(value) {
+        const cat = giftCardCategories.find(x => x.id === value);
+        if (cat) {
+          setState({
+            giftCategoryId: value,
+            giftBrand: cat.brands[0],
+            giftCustomName: "",
+          });
+        }
+      },
+      setGiftBrand(value) {
+        setState({ giftBrand: value, giftCustomName: value === "Other" ? state.giftCustomName : "" });
+      },
+      setGiftCustomName(value) {
+        setState({ giftCustomName: value });
+      },
+      setGiftDenomination(value) {
+        setState({ giftDenominationId: value });
+      },
+      setGiftRegion(value) {
+        setState({ giftRegion: value });
+      },
+      setBillName(value) {
+        setState({ billName: value });
+      },
+      setBillContact(value) {
+        setState({ billContact: value });
+      },
+      setBillAmount(value) {
+        setState({ billAmount: Number(value || 0) });
+      },
+      setBillAccountNumber(value) {
+        setState({ billAccountNumber: value });
+      },
+      setShoppingStoreName(value) {
+        setState({ shoppingStoreName: value });
+      },
+      setShoppingNotes(value) {
+        setState({ shoppingNotes: value });
+      },
+      setShoppingSkyboxAddress(value) {
+        setState({ shoppingSkyboxAddress: value });
+      },
+      addShoppingItem() {
+        setState({
+          shoppingItems: [...state.shoppingItems, createEmptyShoppingItem()],
+        });
+      },
+      removeShoppingItem(itemId) {
+        const nextItems = state.shoppingItems.filter(item => item.id !== itemId);
+        setState({
+          shoppingItems: nextItems.length ? nextItems : [createEmptyShoppingItem()],
+        });
+      },
+      updateShoppingItem(itemId, field, value) {
+        const numericValue = Number(value || 0);
+        setState({
+          shoppingItems: state.shoppingItems.map(item => item.id === itemId
+            ? field === "priceUsd"
+              ? {
+                  ...item,
+                  priceUsd: numericValue,
+                  priceTtd: numericValue * CUSTOMER_RATE,
+                }
+              : field === "priceTtd"
+                ? {
+                    ...item,
+                    priceTtd: numericValue,
+                    priceUsd: numericValue / CUSTOMER_RATE,
+                  }
+                : {
+                    ...item,
+                    [field]: value,
+                  }
+            : item),
+        });
+      },
+      setShoppingDestination(value) {
+        setState({ shoppingDestination: value });
+      },
+      setShoppingCustomsKey(value) {
+        setState({ shoppingCustomsKey: value });
+      },
+      setDeliveryFee(value) {
+        setState({ deliveryFeeTTD: Number(value || 0) });
+      },
+      addToCart(title, subtitle, price) {
+        setState({
+          cart: [...state.cart, { id: makeId(), title, subtitle, price, quantity: 1 }],
+          cartOpen: true,
+        });
+      },
+      addGiftCardToCart() {
+        const selectedDenom = giftCardDenominations.find(x => x.id === state.giftDenominationId) || giftCardDenominations[0];
+        const displayBrand = state.giftBrand === "Other" ? (state.giftCustomName.trim() || "Other Gift Card") : state.giftBrand;
+        this.addToCart(`${displayBrand} Gift Card`, `${selectedDenom.label} - ${state.giftRegion}`, selectedDenom.price);
+      },
+      removeFromCart(id) {
+        setState({
+          cart: state.cart.filter(item => item.id !== id),
+        });
+      },
+      openCart() {
+        setState({ cartOpen: true });
+      },
+      closeCart() {
+        setState({ cartOpen: false });
+      },
+      goToCheckout() {
+        if (state.cart.length === 0) return;
+        window.location.href = "checkout.html";
+      },
+    };
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCart();
+      if (new URLSearchParams(window.location.search).get('cart') === 'open') {
+        state.cartOpen = true;
+      }
+      render();
+    });
+  </script>
+</head>
+<body class="min-h-screen bg-[#070707] text-white">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+    <div class="absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
+    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
+  </div>
+  <div id="app"></div>
+</body>
+</html>
+
+
+
+
