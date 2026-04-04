@@ -8,6 +8,8 @@
   <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    const ORDER_HISTORY_KEY = "cardCraftersOrders";
+
     const PAYMENT_METHODS = [
       {
         key: "bank-transfer",
@@ -62,6 +64,19 @@
       } catch (error) {
         return [];
       }
+    }
+
+    function loadOrderHistory() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)) || [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveOrderHistory(orders) {
+      localStorage.setItem(ORDER_HISTORY_KEY, JSON.stringify(orders));
     }
 
     function getOrderNumber() {
@@ -318,6 +333,24 @@
       return lines.join("\n");
     }
 
+    function recordOrderHistory(formData, cart, orderNumber, total) {
+      const existingOrders = loadOrderHistory();
+      if (existingOrders.some((order) => order.orderNumber === orderNumber)) return;
+
+      const nextOrder = {
+        orderNumber,
+        status: "Processing",
+        createdAt: new Date().toLocaleString(),
+        paymentMethod: formData.paymentMethod,
+        total: formatCurrency(total),
+        summary: cart.map((item) => `${item.title} x${item.quantity}`).join(", "),
+      };
+
+      saveOrderHistory([nextOrder, ...existingOrders]);
+      localStorage.removeItem("cardCraftersCart");
+      localStorage.removeItem("cardCraftersCheckoutOrderNumber");
+    }
+
     function validateCheckoutForm(selectedMethod) {
       const firstName = document.getElementById("customer-first-name");
       const email = document.getElementById("customer-email");
@@ -533,8 +566,12 @@
       whatsappButton.addEventListener("click", function() {
         if (!validateCheckoutForm(selectedMethod)) return;
         const formData = getFormData();
+        recordOrderHistory(formData, cart, orderNumber, total);
         const message = encodeURIComponent(buildOrderMessage(formData, cart, orderNumber, total));
         window.open(`https://wa.me/18684651282?text=${message}`, "_blank");
+        setTimeout(() => {
+          window.location.href = "profile.html#orders";
+        }, 150);
       });
     }
 
