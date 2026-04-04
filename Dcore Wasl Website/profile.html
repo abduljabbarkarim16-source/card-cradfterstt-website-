@@ -19,8 +19,6 @@
     const PROFILE_KEY = "cardCraftersProfile";
     const ORDERS_KEY = "cardCraftersOrders";
     const SECURITY_KEY = "cardCraftersSecurity";
-    const QUICK_PAY_URL = "https://cardcrafterstt.com/quick-pay";
-
     function readJson(key, fallback) {
       try {
         const value = JSON.parse(localStorage.getItem(key));
@@ -40,13 +38,15 @@
         email: "",
         phone: "",
         address: "",
-        contacts: ["WhatsApp"],
-        payments: ["Bank Transfer"],
-        skyboxProvider: "",
-        skyboxSuite: "",
-        skyboxAddress: "",
+        contactMethod: "WhatsApp",
+        paymentMethod: "Bank Transfer",
+        skyboxAddress1: "",
+        skyboxAddress2: "",
+        skyboxCity: "",
+        skyboxState: "",
+        skyboxCountry: "",
+        skyboxPostalCode: "",
         skyboxMedia: "",
-        skyboxNotes: "",
         verificationStatus: "Pending",
       };
     }
@@ -74,10 +74,6 @@
       return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
     }
 
-    function checkedValues(name) {
-      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map((el) => el.value);
-    }
-
     function setText(id, value, fallback = "Not added yet") {
       const node = document.getElementById(id);
       if (node) node.textContent = value || fallback;
@@ -95,14 +91,17 @@
       form.email.value = profile.email;
       form.phone.value = profile.phone;
       form.address.value = profile.address;
-      form.skyboxProvider.value = profile.skyboxProvider;
-      form.skyboxSuite.value = profile.skyboxSuite;
-      form.skyboxAddress.value = profile.skyboxAddress;
+      form.contactMethod.value = profile.contactMethod;
+      form.paymentMethod.value = profile.paymentMethod;
+      form.skyboxAddress1.value = profile.skyboxAddress1;
+      form.skyboxAddress2.value = profile.skyboxAddress2;
+      form.skyboxCity.value = profile.skyboxCity;
+      form.skyboxState.value = profile.skyboxState;
+      form.skyboxCountry.value = profile.skyboxCountry;
+      form.skyboxPostalCode.value = profile.skyboxPostalCode;
       form.skyboxMedia.value = profile.skyboxMedia;
-      form.skyboxNotes.value = profile.skyboxNotes;
-      form.verificationStatus.value = profile.verificationStatus;
-      document.querySelectorAll('input[name="contacts"]').forEach((el) => { el.checked = profile.contacts.includes(el.value); });
-      document.querySelectorAll('input[name="payments"]').forEach((el) => { el.checked = profile.payments.includes(el.value); });
+      const verificationSelect = document.getElementById("verificationStatus");
+      if (verificationSelect) verificationSelect.value = profile.verificationStatus;
     }
 
     function saveProfile(event) {
@@ -113,14 +112,16 @@
         email: form.email.value.trim(),
         phone: form.phone.value.trim(),
         address: form.address.value.trim(),
-        contacts: checkedValues("contacts"),
-        payments: checkedValues("payments"),
-        skyboxProvider: form.skyboxProvider.value.trim(),
-        skyboxSuite: form.skyboxSuite.value.trim(),
-        skyboxAddress: form.skyboxAddress.value.trim(),
+        contactMethod: form.contactMethod.value,
+        paymentMethod: form.paymentMethod.value,
+        skyboxAddress1: form.skyboxAddress1.value.trim(),
+        skyboxAddress2: form.skyboxAddress2.value.trim(),
+        skyboxCity: form.skyboxCity.value.trim(),
+        skyboxState: form.skyboxState.value.trim(),
+        skyboxCountry: form.skyboxCountry.value.trim(),
+        skyboxPostalCode: form.skyboxPostalCode.value.trim(),
         skyboxMedia: form.skyboxMedia.value.trim(),
-        skyboxNotes: form.skyboxNotes.value.trim(),
-        verificationStatus: form.verificationStatus.value,
+        verificationStatus: document.getElementById("verificationStatus")?.value || "Pending",
       };
       writeJson(PROFILE_KEY, profile);
       renderPage();
@@ -257,6 +258,27 @@
       helper.textContent = enabled ? "Your issue will be prefilled into both support options." : "Enter your issue first to unlock WhatsApp and email support.";
     }
 
+    function beginKycFlow() {
+      const issueType = document.getElementById("support-issue-type");
+      const summary = document.getElementById("support-summary");
+      const profile = loadProfile();
+      if (issueType) issueType.value = "Account Access";
+      if (summary && !summary.value.trim()) {
+        summary.value = profile.verificationStatus === "Pending"
+          ? "I would like to start my KYC process for my account."
+          : "I would like to continue my KYC process for my account.";
+      }
+      updateSupportLinks();
+      document.getElementById("support")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function saveVerificationStatus(value) {
+      const profile = loadProfile();
+      profile.verificationStatus = value || "Pending";
+      writeJson(PROFILE_KEY, profile);
+      renderPage();
+    }
+
     function renderPage() {
       const profile = loadProfile();
       const security = loadSecurity();
@@ -268,15 +290,20 @@
       setText("detail-email", profile.email);
       setText("detail-phone", profile.phone);
       setText("detail-address", profile.address);
-      setText("detail-contact-methods", profile.contacts.length ? profile.contacts.join(", ") : "No preferred methods selected");
-      setText("detail-payment-methods", profile.payments.length ? profile.payments.join(", ") : "No preferred methods selected");
-      setText("payment-methods-card", profile.payments.length ? profile.payments.join(", ") : "No preferred methods selected");
-      setText("skybox-provider-preview", profile.skyboxProvider, "No provider added");
-      setText("skybox-suite-preview", profile.skyboxSuite, "No suite number added");
-      setText("skybox-address-preview", profile.skyboxAddress, "No skybox address saved yet.");
+      setText("overview-contact-method", profile.contactMethod, "Not selected");
+      setText("overview-payment-method", profile.paymentMethod, "Not selected");
+      setText("detail-contact-method", profile.contactMethod, "Not selected");
+      setText("detail-payment-method", profile.paymentMethod, "Not selected");
+      setText("payment-methods-card", profile.paymentMethod, "Not selected");
+      setText("skybox-status", profile.skyboxAddress1 ? "Skybox address saved" : "No skybox address saved yet.");
       setText("skybox-media-preview", profile.skyboxMedia, "No media or reference attached yet.");
+      setText("overview-kyc-status", profile.verificationStatus, "Pending");
       setText("verification-status-line", `${profile.verificationStatus} verification status`, "Pending verification status");
       setText("verification-status-badge", profile.verificationStatus, "Pending");
+      const kycAction = document.getElementById("kyc-action");
+      if (kycAction) {
+        kycAction.textContent = profile.verificationStatus === "Pending" ? "Start KYC Process" : "Continue KYC Process";
+      }
       setText("password-status", security.passwordLabel, "Password not updated yet");
       setText("reset-status", security.resetRequestedAt || "No password reset requested", "No password reset requested");
       document.getElementById("overview-status").textContent = profile.fullName && profile.address
@@ -363,7 +390,7 @@
           </div>
           <div class="grid gap-3 sm:grid-cols-3">
             <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Orders</p><p id="overview-orders" class="mt-2 text-2xl font-semibold text-white">0</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">KYC Status</p><p id="verification-status-line" class="mt-2 text-sm font-semibold text-yellow-200">Pending verification status</p></div>
+            <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">KYC Status</p><p id="overview-kyc-status" class="mt-2 text-sm font-semibold text-yellow-200">Pending</p></div>
             <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Support</p><p class="mt-2 text-sm font-semibold text-white">WhatsApp & Email</p></div>
           </div>
         </div>
@@ -379,9 +406,10 @@
             <a href="#orders" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Orders <span class="text-xs text-zinc-500">02</span></a>
             <a href="#details" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Profile Details <span class="text-xs text-zinc-500">03</span></a>
             <a href="#payments" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Payment Methods <span class="text-xs text-zinc-500">04</span></a>
-            <a href="#security" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Security <span class="text-xs text-zinc-500">05</span></a>
-            <a href="#verification" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Verification <span class="text-xs text-zinc-500">06</span></a>
-            <a href="#support" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Support <span class="text-xs text-zinc-500">07</span></a>
+            <a href="#password" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Password <span class="text-xs text-zinc-500">05</span></a>
+            <a href="#sessions" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Active Sessions <span class="text-xs text-zinc-500">06</span></a>
+            <a href="#verification" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Verification <span class="text-xs text-zinc-500">07</span></a>
+            <a href="#support" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Support <span class="text-xs text-zinc-500">08</span></a>
           </nav>
         </div>
       </aside>
@@ -396,8 +424,8 @@
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Full Name</p><p id="detail-name" class="mt-3 text-sm font-medium text-white">Not added yet</p></div>
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Email Address</p><p id="detail-email" class="mt-3 text-sm font-medium text-white">Not added yet</p></div>
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Phone Number</p><p id="detail-phone" class="mt-3 text-sm font-medium text-white">Not added yet</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Contact Methods</p><p id="detail-contact-methods" class="mt-3 text-sm font-medium text-white">No preferred methods selected</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Payment Methods</p><p id="detail-payment-methods" class="mt-3 text-sm font-medium text-white">No preferred methods selected</p></div>
+            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Contact Methods</p><p id="overview-contact-method" class="mt-3 text-sm font-medium text-white">No preferred methods selected</p></div>
+            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Payment Methods</p><p id="overview-payment-method" class="mt-3 text-sm font-medium text-white">No preferred methods selected</p></div>
           </div>
         </section>
 
@@ -422,49 +450,58 @@
               <div class="md:col-span-2"><label for="address" class="mb-2 block text-sm font-medium text-zinc-300">Address</label><textarea id="address" name="address" rows="3" class="w-full rounded-2xl border border-white/10 bg-[#0b0b0b] px-4 py-3 text-white placeholder-zinc-500" placeholder="Your primary billing or delivery address"></textarea></div>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid gap-5 md:grid-cols-2">
               <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-                <p class="text-sm font-semibold text-white">Preferred Contact Methods</p>
-                <div class="mt-4 space-y-3 text-sm text-zinc-300">
-                  <label class="flex items-center gap-3"><input type="checkbox" name="contacts" value="WhatsApp" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> WhatsApp</label>
-                  <label class="flex items-center gap-3"><input type="checkbox" name="contacts" value="Email" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> Email</label>
-                  <label class="flex items-center gap-3"><input type="checkbox" name="contacts" value="Phone Call" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> Phone Call</label>
-                </div>
+                <label for="contactMethod" class="mb-2 block text-sm font-medium text-zinc-300">Preferred Contact Method</label>
+                <select id="contactMethod" name="contactMethod" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white">
+                  <option>WhatsApp</option>
+                  <option>Email</option>
+                  <option>Phone Call</option>
+                  <option>SMS</option>
+                </select>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">Choose the main way you want us to reach you for orders, payment updates, and support follow-up.</p>
               </div>
               <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-                <p class="text-sm font-semibold text-white">Preferred Payment Methods</p>
-                <div class="mt-4 space-y-3 text-sm text-zinc-300">
-                  <label class="flex items-center gap-3"><input type="checkbox" name="payments" value="Bank Transfer" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> Bank Transfer</label>
-                  <label class="flex items-center gap-3"><input type="checkbox" name="payments" value="EndCash" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> EndCash</label>
-                  <label class="flex items-center gap-3"><input type="checkbox" name="payments" value="Quick Pay" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> Quick Pay</label>
-                  <label class="flex items-center gap-3"><input type="checkbox" name="payments" value="Card Payment" class="h-4 w-4 rounded border-white/20 bg-black/40 text-yellow-400" /> Card Payment</label>
-                </div>
+                <label for="paymentMethod" class="mb-2 block text-sm font-medium text-zinc-300">Preferred Payment Method</label>
+                <select id="paymentMethod" name="paymentMethod" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white">
+                  <option>Bank Transfer</option>
+                  <option>Quick Pay</option>
+                  <option>EndCash</option>
+                  <option>Card Payment</option>
+                  <option>Crypto</option>
+                </select>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">Keep this compact and practical. You can still jump straight into the hosted payment flow from the payment section below.</p>
               </div>
             </div>
 
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-6">
               <div class="border-b border-white/10 pb-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.22em] text-yellow-300">Skybox Address</p>
-                <h3 class="mt-3 text-xl font-semibold text-white">Skybox information</h3>
+                <h3 class="mt-3 text-xl font-semibold text-white">Standardized delivery address</h3>
+                <p class="mt-2 text-sm leading-6 text-zinc-400">Save your Skybox location using a clean address form so delivery details stay organized and easy to update.</p>
               </div>
               <div class="mt-5 grid gap-5 md:grid-cols-2">
-                <div><label for="skyboxProvider" class="mb-2 block text-sm font-medium text-zinc-300">Skybox Provider</label><input id="skyboxProvider" name="skyboxProvider" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Skybox company name" /></div>
-                <div><label for="skyboxSuite" class="mb-2 block text-sm font-medium text-zinc-300">Suite / Box Number</label><input id="skyboxSuite" name="skyboxSuite" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Suite or customer ID" /></div>
-                <div class="md:col-span-2"><label for="skyboxAddress" class="mb-2 block text-sm font-medium text-zinc-300">Skybox Address</label><textarea id="skyboxAddress" name="skyboxAddress" rows="3" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Full skybox address"></textarea></div>
-                <div><label for="skyboxMedia" class="mb-2 block text-sm font-medium text-zinc-300">Media / Reference Link</label><input id="skyboxMedia" name="skyboxMedia" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Photo link, document link, or tracking reference" /></div>
-                <div><label for="verificationStatus" class="mb-2 block text-sm font-medium text-zinc-300">KYC Status</label><select id="verificationStatus" name="verificationStatus" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white"><option>Pending</option><option>Processing</option><option>Verified</option><option>Completed</option></select></div>
-                <div class="md:col-span-2"><label for="skyboxNotes" class="mb-2 block text-sm font-medium text-zinc-300">Skybox Notes</label><textarea id="skyboxNotes" name="skyboxNotes" rows="3" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Any handling instructions or additional notes"></textarea></div>
+                <div class="md:col-span-2"><label for="skyboxAddress1" class="mb-2 block text-sm font-medium text-zinc-300">Address Line 1</label><input id="skyboxAddress1" name="skyboxAddress1" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Street address, building, or delivery line" /></div>
+                <div class="md:col-span-2"><label for="skyboxAddress2" class="mb-2 block text-sm font-medium text-zinc-300">Address Line 2</label><input id="skyboxAddress2" name="skyboxAddress2" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Apartment, unit, company, or optional second line" /></div>
+                <div><label for="skyboxCity" class="mb-2 block text-sm font-medium text-zinc-300">City</label><input id="skyboxCity" name="skyboxCity" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="City" /></div>
+                <div><label for="skyboxState" class="mb-2 block text-sm font-medium text-zinc-300">State / Province</label><input id="skyboxState" name="skyboxState" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="State or province" /></div>
+                <div><label for="skyboxCountry" class="mb-2 block text-sm font-medium text-zinc-300">Country</label><input id="skyboxCountry" name="skyboxCountry" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Country" /></div>
+                <div><label for="skyboxPostalCode" class="mb-2 block text-sm font-medium text-zinc-300">Postal / ZIP Code</label><input id="skyboxPostalCode" name="skyboxPostalCode" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Postal or ZIP code" /></div>
+                <div class="md:col-span-2"><label for="skyboxMedia" class="mb-2 block text-sm font-medium text-zinc-300">Media / Reference Link</label><input id="skyboxMedia" name="skyboxMedia" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Optional photo link, document link, or reference" /></div>
+              </div>
+              <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p id="skybox-status" class="text-sm text-zinc-400">No skybox address saved yet.</p>
+                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)] transition hover:brightness-105">Save / Update Profile</button>
               </div>
             </div>
 
             <div class="grid gap-4 md:grid-cols-4">
               <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Address</p><p id="detail-address" class="mt-3 text-sm font-medium text-white">Not added yet</p></div>
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Skybox Provider</p><p id="skybox-provider-preview" class="mt-3 text-sm font-medium text-white">No provider added</p></div>
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Suite Number</p><p id="skybox-suite-preview" class="mt-3 text-sm font-medium text-white">No suite number added</p></div>
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Media / Reference</p><p id="skybox-media-preview" class="mt-3 text-sm font-medium text-white">No media or reference attached yet.</p></div>
+              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Contact Method</p><p id="detail-contact-method" class="mt-3 text-sm font-medium text-white">Not selected</p></div>
+              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Payment Method</p><p id="detail-payment-method" class="mt-3 text-sm font-medium text-white">Not selected</p></div>
+              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Skybox Media</p><p id="skybox-media-preview" class="mt-3 text-sm font-medium text-white">No media or reference attached yet.</p></div>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Skybox Address Preview</p><p id="skybox-address-preview" class="mt-3 text-sm font-medium leading-6 text-white">No skybox address saved yet.</p></div>
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p id="profile-save-notice" class="hidden text-sm text-emerald-300"></p><button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)] transition hover:brightness-105">Save Profile Details</button></div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p id="profile-save-notice" class="hidden text-sm text-emerald-300"></p><span class="text-sm text-zinc-500">Update profile details, address information, and account preferences from one place.</span></div>
           </form>
         </section>
 
@@ -472,52 +509,64 @@
           <div class="flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Payment Methods</p>
-              <h2 class="mt-3 text-2xl font-semibold text-white">Preferred payment options</h2>
+              <h2 class="mt-3 text-2xl font-semibold text-white">Compact payment options</h2>
             </div>
             <a href="https://cardcrafterstt.com/quick-pay" target="_blank" rel="noopener noreferrer" class="inline-flex w-fit items-center gap-2 rounded-2xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/15">Go to Quick Pay <span>&rarr;</span></a>
           </div>
-          <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Preferred Methods</p><p id="payment-methods-card" class="mt-3 text-sm font-medium text-white">No preferred methods selected</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Quick Pay</p><p class="mt-3 text-sm font-medium leading-6 text-white">Use the hosted payment page when you want the fastest digital handoff for active orders.</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Other Accepted Methods</p><p class="mt-3 text-sm font-medium text-white">Bank Transfer, EndCash, Quick Pay, Card Payment</p></div>
+          <div class="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Selected Method</p>
+              <p id="payment-methods-card" class="mt-3 text-lg font-semibold text-white">Not selected</p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-300">
+                <span class="rounded-full border border-white/10 px-3 py-2">Bank Transfer</span>
+                <span class="rounded-full border border-white/10 px-3 py-2">Quick Pay</span>
+                <span class="rounded-full border border-white/10 px-3 py-2">EndCash</span>
+                <span class="rounded-full border border-white/10 px-3 py-2">Card Payment</span>
+                <span class="rounded-full border border-white/10 px-3 py-2">Crypto</span>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Quick Pay Access</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-300">Use the hosted payment page when you want a faster payment handoff without opening a larger preference block here.</p>
+              <a href="https://cardcrafterstt.com/quick-pay" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-3 text-sm font-semibold text-black transition hover:brightness-105">Open Quick Pay <span>&rarr;</span></a>
+            </div>
           </div>
         </section>
 
-        <section id="security" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
+        <section id="password" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
           <div class="border-b border-white/10 pb-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Security</p>
-            <h2 class="mt-3 text-2xl font-semibold text-white">Password management and active sessions</h2>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Password Management</p>
+            <h2 class="mt-3 text-2xl font-semibold text-white">Password controls</h2>
           </div>
-          <div class="mt-6 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-            <div class="space-y-6">
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div><p class="text-sm font-semibold text-white">Password Status</p><p id="password-status" class="mt-2 text-sm text-zinc-400">Password not updated yet</p></div>
-                  <div><p class="text-sm font-semibold text-white">Reset Request</p><p id="reset-status" class="mt-2 text-sm text-zinc-400">No password reset requested</p></div>
-                </div>
-              </div>
-              <form id="password-form" class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5" onsubmit="changePassword(event)">
-                <p class="text-sm font-semibold text-white">Password Controls</p>
-                <div class="mt-4 grid gap-4 md:grid-cols-2">
-                  <div><label for="current-password" class="mb-2 block text-sm font-medium text-zinc-300">Current Password</label><input id="current-password" type="password" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white" placeholder="Current password" /></div>
-                  <div><label for="new-password" class="mb-2 block text-sm font-medium text-zinc-300">New Password</label><input id="new-password" type="password" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white" placeholder="New password" /></div>
-                </div>
-                <div class="mt-5 flex flex-wrap gap-3">
-                  <button type="submit" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105">Change Password</button>
-                  <button type="button" onclick="requestReset()" class="rounded-2xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-200 transition hover:border-yellow-500/30 hover:text-white">Reset Password</button>
-                  <button type="button" onclick="deleteCredentials()" class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-5 py-3 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/15">Delete Credentials</button>
-                </div>
-                <p id="security-notice" class="mt-4 text-sm text-zinc-400">Use the controls above to update, reset, or remove saved credentials.</p>
-              </form>
-            </div>
+          <div class="mt-6 space-y-6">
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-              <div class="border-b border-white/10 pb-4">
-                <p class="text-sm font-semibold text-white">Active Sessions</p>
-                <p class="mt-2 text-sm text-zinc-400">Current and recent account sessions.</p>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div><p class="text-sm font-semibold text-white">Password Status</p><p id="password-status" class="mt-2 text-sm text-zinc-400">Password not updated yet</p></div>
+                <div><p class="text-sm font-semibold text-white">Reset Request</p><p id="reset-status" class="mt-2 text-sm text-zinc-400">No password reset requested</p></div>
               </div>
-              <div id="active-sessions" class="mt-5 space-y-4"></div>
             </div>
+            <form id="password-form" class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5" onsubmit="changePassword(event)">
+              <p class="text-sm font-semibold text-white">Update credentials</p>
+              <div class="mt-4 grid gap-4 md:grid-cols-2">
+                <div><label for="current-password" class="mb-2 block text-sm font-medium text-zinc-300">Current Password</label><input id="current-password" type="password" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white" placeholder="Current password" /></div>
+                <div><label for="new-password" class="mb-2 block text-sm font-medium text-zinc-300">New Password</label><input id="new-password" type="password" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white" placeholder="New password" /></div>
+              </div>
+              <div class="mt-5 flex flex-wrap gap-3">
+                <button type="submit" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105">Change Password</button>
+                <button type="button" onclick="requestReset()" class="rounded-2xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-200 transition hover:border-yellow-500/30 hover:text-white">Reset Password</button>
+                <button type="button" onclick="deleteCredentials()" class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-5 py-3 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/15">Delete Credentials</button>
+              </div>
+              <p id="security-notice" class="mt-4 text-sm text-zinc-400">Use the controls above to update, reset, or remove saved credentials.</p>
+            </form>
           </div>
+        </section>
+
+        <section id="sessions" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
+          <div class="border-b border-white/10 pb-6">
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Active Sessions</p>
+            <h2 class="mt-3 text-2xl font-semibold text-white">Current and recent logins</h2>
+          </div>
+          <div id="active-sessions" class="mt-6 space-y-4"></div>
         </section>
 
         <section id="verification" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
@@ -528,10 +577,25 @@
             </div>
             <span id="verification-status-badge" class="inline-flex w-fit items-center rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-yellow-200">Pending</span>
           </div>
-          <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Status Meaning</p><p class="mt-3 text-sm leading-6 text-white">Track whether your account is pending, processing, verified, or completed for KYC review.</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Skybox Association</p><p class="mt-3 text-sm leading-6 text-white">Keep your Skybox provider, suite number, and media reference tied to your account for delivery verification.</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Review Readiness</p><p class="mt-3 text-sm leading-6 text-white">Complete and current account details reduce follow-up steps during verification reviews.</p></div>
+          <div class="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Verification Progress</p>
+              <p id="verification-status-line" class="mt-3 text-lg font-semibold text-white">Pending verification status</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">This area is only for identity verification progress. It stays separate from your Skybox address and other delivery information.</p>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Action</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-300">Start or continue your KYC process from here. If you need help, the support form below will already know what you are trying to do.</p>
+              <div class="mt-5 flex flex-wrap gap-3">
+                <button id="kyc-action" type="button" onclick="beginKycFlow()" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105">Start KYC Process</button>
+                <select id="verificationStatus" name="verificationStatus" onchange="saveVerificationStatus(this.value)" class="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white">
+                  <option>Pending</option>
+                  <option>Processing</option>
+                  <option>Verified</option>
+                  <option>Completed</option>
+                </select>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -543,22 +607,39 @@
             </div>
             <span class="inline-flex w-fit items-center rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-300">Prefilled support flow</span>
           </div>
-          <div class="mt-6 grid gap-8 lg:grid-cols-[1fr_0.92fr]">
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-              <div class="grid gap-4">
-                <div><label for="support-issue-type" class="mb-2 block text-sm font-medium text-zinc-300">Issue Type</label><select id="support-issue-type" onchange="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white"><option>General Support</option><option>Order Update</option><option>Payment Issue</option><option>Delivery / Skybox</option><option>Account Access</option></select></div>
-                <div><label for="support-summary" class="mb-2 block text-sm font-medium text-zinc-300">Brief Description of the Issue</label><textarea id="support-summary" rows="4" oninput="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Describe the issue once here. This will feed directly into support messages."></textarea></div>
-                <div><label for="support-notes" class="mb-2 block text-sm font-medium text-zinc-300">Additional Notes</label><textarea id="support-notes" rows="4" oninput="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Optional extra context"></textarea></div>
+          <div class="mt-6 grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
+            <div class="rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(0,0,0,0.22))] p-5">
+              <div class="grid gap-4 md:grid-cols-2">
+                <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
+                  <p class="text-[11px] uppercase tracking-[0.18em] text-yellow-300">Step 1</p>
+                  <p class="mt-2 text-sm font-semibold text-white">Choose issue type</p>
+                  <label for="support-issue-type" class="sr-only">Issue Type</label>
+                  <select id="support-issue-type" onchange="updateSupportLinks()" class="mt-4 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white"><option>General Support</option><option>Order Update</option><option>Payment Issue</option><option>Delivery / Skybox</option><option>Account Access</option></select>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
+                  <p class="text-[11px] uppercase tracking-[0.18em] text-yellow-300">Step 2</p>
+                  <p class="mt-2 text-sm font-semibold text-white">Write the issue once</p>
+                  <p class="mt-4 text-sm leading-6 text-zinc-400">Your message feeds directly into both support options, so there is no need to type it again later.</p>
+                </div>
+              </div>
+              <div class="mt-4 rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
+                <label for="support-summary" class="mb-2 block text-sm font-medium text-zinc-300">Brief Description of the Issue</label>
+                <textarea id="support-summary" rows="4" oninput="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Describe the issue once here. This will feed directly into support messages."></textarea>
+              </div>
+              <div class="mt-4 rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
+                <label for="support-notes" class="mb-2 block text-sm font-medium text-zinc-300">Additional Notes</label>
+                <textarea id="support-notes" rows="4" oninput="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Optional extra context"></textarea>
               </div>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-sm font-semibold text-white">Support Options</p>
-              <p id="support-helper" class="mt-3 text-sm leading-7 text-zinc-400">Enter your issue first to unlock WhatsApp and email support.</p>
-              <div class="mt-6 space-y-3">
+            <div class="rounded-[1.75rem] border border-yellow-500/20 bg-[linear-gradient(180deg,rgba(234,179,8,0.08),rgba(11,11,11,0.96))] p-5">
+              <p class="text-[11px] uppercase tracking-[0.18em] text-yellow-300">Step 3</p>
+              <h3 class="mt-2 text-xl font-semibold text-white">Choose your support channel</h3>
+              <p id="support-helper" class="mt-3 text-sm leading-7 text-zinc-300">Enter your issue first to unlock WhatsApp and email support.</p>
+              <div class="mt-6 space-y-4">
                 <a id="support-whatsapp" href="#" target="_blank" rel="noopener noreferrer" class="pointer-events-none flex items-center justify-between rounded-2xl border border-[#25D366]/30 bg-[#25D366]/10 px-5 py-4 text-sm font-semibold text-[#25D366] opacity-50 transition hover:bg-[#25D366]/15"><span>WhatsApp Support</span><span>&rarr;</span></a>
                 <a id="support-email" href="#" class="pointer-events-none flex items-center justify-between rounded-2xl border border-sky-400/30 bg-sky-400/10 px-5 py-4 text-sm font-semibold text-sky-200 opacity-50 transition hover:bg-sky-400/15"><span>Email Support</span><span>&rarr;</span></a>
               </div>
-              <div class="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm leading-7 text-zinc-400">Your selected issue type, summary, and notes will be reused automatically so you do not have to retype the same problem.</div>
+              <div class="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm leading-7 text-zinc-400">Once your description is entered, both options are prefilled automatically to keep the support flow quick and consistent.</div>
             </div>
           </div>
         </section>
