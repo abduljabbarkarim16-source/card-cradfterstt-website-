@@ -31,8 +31,30 @@
       window.location.href = 'services.html?cart=open';
     }
 
+    function initPagePolish() {
+      const revealTargets = document.querySelectorAll('main > div, main section, main article, footer .mx-auto > div');
+      if (!('IntersectionObserver' in window)) {
+        revealTargets.forEach((node) => node.classList.add('is-visible'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+      revealTargets.forEach((node, index) => {
+        node.style.setProperty('--reveal-delay', `${Math.min(index * 60, 320)}ms`);
+        node.classList.add('reveal-block');
+        observer.observe(node);
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       updateCartCount();
+      initPagePolish();
     });
 
     window.addEventListener('storage', function(event) {
@@ -41,12 +63,61 @@
       }
     });
   </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .motion-orb-a { animation: orbFloatA 14s ease-in-out infinite; }
+    .motion-orb-b { animation: orbFloatB 16s ease-in-out infinite; }
+    .motion-orb-c { animation: orbFloatC 18s ease-in-out infinite; }
+    .reveal-block {
+      opacity: 0;
+      transform: translateY(24px) scale(0.985);
+      transition: opacity 680ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms), transform 680ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+    }
+    .reveal-block.is-visible { opacity: 1; transform: none; }
+    main article,
+    main .rounded-2xl,
+    main [class*="rounded-[2"] {
+      transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+      transform-style: preserve-3d;
+    }
+    main article:hover,
+    main .rounded-2xl:hover,
+    main [class*="rounded-[2"]:hover {
+      transform: translateY(-5px) rotateX(2deg);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.22);
+      border-color: rgba(234, 179, 8, 0.22);
+    }
+    .cta-sheen {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .cta-sheen::after {
+      content: "";
+      position: absolute;
+      inset: -30% auto -30% -35%;
+      width: 38%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: sheenSweep 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes orbFloatA { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(18px,24px,0) scale(1.08);} }
+    @keyframes orbFloatB { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(-20px,16px,0) scale(0.96);} }
+    @keyframes orbFloatC { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(12px,-18px,0) scale(1.05);} }
+    @keyframes sheenSweep { 0%,70%,100% { transform: translateX(-140%) skewX(-18deg);} 26% { transform: translateX(360%) skewX(-18deg);} }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .reveal-block { opacity: 1; transform: none; }
+    }
+  </style>
 </head>
 <body class="min-h-screen bg-[#070707] text-white">
   <div class="absolute inset-0 overflow-hidden">
-    <div class="absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
-    <div class="absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
-    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
+    <div class="motion-orb-a absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+    <div class="motion-orb-b absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
+    <div class="motion-orb-c absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
   </div>
 
   <header class="sticky top-0 z-50 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl">
@@ -57,7 +128,7 @@
         </div>
         <div>
           <p class="text-sm font-semibold uppercase tracking-[0.34em] text-yellow-300">Card Crafters</p>
-          <p class="mt-1 text-xs text-zinc-400">Digital access with local payment convenience</p>
+          <p class="mt-1 text-xs text-zinc-400">Answers to common questions</p>
         </div>
       </a>
 
@@ -80,20 +151,20 @@
             <circle cx="12" cy="8" r="4" />
           </svg>
         </a>
-        <button onclick="toggleCart()" class="relative inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
+        <button onclick="toggleCart()" class="cta-sheen relative inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
           <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="9" cy="20" r="1.5" />
             <circle cx="18" cy="20" r="1.5" />
             <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H7" />
           </svg>
           Cart
-          <span id="cart-count" class="absolute -top-2 -right-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-xs font-bold text-white" style="display: none;">0</span>
+          <span id="cart-count" class="inline-flex min-w-[24px] items-center justify-center rounded-full bg-black/10 px-2 py-1 text-xs" style="display: none;">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <div class="mx-auto max-w-7xl p-8">
+  <main class="relative z-10 mx-auto max-w-7xl p-8">
 
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-yellow-200">Frequently Asked Questions</h1>
@@ -113,7 +184,7 @@
 
       <article class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
         <h2 class="text-xl font-semibold text-white">Do you support other streaming platforms?</h2>
-        <p class="mt-2 text-zinc-300">Yes. We currently support Netflix, Disney+, Prime Video, and HBO Max; additional platforms can be added on request.</p>
+        <p class="mt-2 text-zinc-300">Yes. We currently offer Netflix, Disney+, Prime Video, and HBO Max, and we can also help with other platforms on request.</p>
       </article>
 
       <article class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
@@ -123,10 +194,10 @@
 
       <article class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
         <h2 class="text-xl font-semibold text-white">Where can I get support?</h2>
-        <p class="mt-2 text-zinc-300">Use the Contact or support section heading on the main page. For immediate service questions, message the portal number provided in the footer.</p>
+        <p class="mt-2 text-zinc-300">Use the Contact page or reach out using the number in the footer if you need help with an order or service.</p>
       </article>
     </section>
-  </div>
+  </main>
 
     <footer class="relative z-10 border-t border-white/10 bg-[#080808]">
     <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:px-8">
@@ -141,7 +212,7 @@
           </div>
         </div>
         <p class="mt-4 max-w-sm text-sm leading-7 text-zinc-400">
-          Premium digital services, gift cards, bill payments, and sourcing with a clean local checkout flow.
+          Streaming, gift cards, bill payments, and shopping help with easy local checkout.
         </p>
       </div>
       <div>

@@ -7,6 +7,58 @@
   <meta name="description" content="Review your Card Crafters order and continue to checkout." />
   <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .motion-orb-a { animation: orbFloatA 14s ease-in-out infinite; }
+    .motion-orb-b { animation: orbFloatB 16s ease-in-out infinite; }
+    .motion-orb-c { animation: orbFloatC 18s ease-in-out infinite; }
+    .reveal-block {
+      opacity: 0;
+      transform: translateY(24px) scale(0.985);
+      transition: opacity 680ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms), transform 680ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+    }
+    .reveal-block.is-visible { opacity: 1; transform: none; }
+    #checkout-root [class*="rounded-[1.8rem]"],
+    #checkout-root [class*="rounded-[2rem]"],
+    #checkout-root .rounded-2xl,
+    #checkout-root .rounded-3xl {
+      transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease, background-color 240ms ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    #checkout-root [class*="rounded-[1.8rem]"]:hover,
+    #checkout-root [class*="rounded-[2rem]"]:hover,
+    #checkout-root .rounded-2xl:hover,
+    #checkout-root .rounded-3xl:hover {
+      transform: translateY(-5px) rotateX(2deg);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.22);
+      border-color: rgba(234, 179, 8, 0.22);
+    }
+    .cta-sheen {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .cta-sheen::after {
+      content: "";
+      position: absolute;
+      inset: -30% auto -30% -35%;
+      width: 38%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: sheenSweep 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes orbFloatA { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(18px,24px,0) scale(1.08);} }
+    @keyframes orbFloatB { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(-20px,16px,0) scale(0.96);} }
+    @keyframes orbFloatC { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(12px,-18px,0) scale(1.05);} }
+    @keyframes sheenSweep { 0%,70%,100% { transform: translateX(-140%) skewX(-18deg);} 26% { transform: translateX(360%) skewX(-18deg);} }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .reveal-block { opacity: 1; transform: none; }
+    }
+  </style>
   <script>
     const ORDER_HISTORY_KEY = "cardCraftersOrders";
 
@@ -36,7 +88,7 @@
       {
         key: "quick-pay",
         title: "Quick Pay",
-        subtitle: "Current hosted payment page",
+        subtitle: "Secure online payment link",
         type: "link",
         href: "https://cardcrafterstt.com/quick-pay",
         accent: "#60A5FA",
@@ -184,6 +236,27 @@
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    function initCheckoutPolish() {
+      const revealTargets = document.querySelectorAll('#checkout-root header, #checkout-root main > .grid > section, #checkout-root main > .grid > aside > section');
+      if (!('IntersectionObserver' in window)) {
+        revealTargets.forEach((node) => node.classList.add('is-visible'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      revealTargets.forEach((node, index) => {
+        node.style.setProperty('--reveal-delay', `${Math.min(index * 70, 320)}ms`);
+        node.classList.add('reveal-block');
+        observer.observe(node);
+      });
+    }
+
     function renderPaymentInstructions(selectedMethod, orderNumber, total, formState) {
       if (selectedMethod.key === "bank-transfer") {
         return `
@@ -203,7 +276,7 @@
             </div>
 
             <div class="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm leading-7 text-zinc-200">
-              Please enter the transfer date and transaction ID, and upload a screenshot or photo of your transfer confirmation. This helps us verify and process your order faster.
+              Enter your transfer date and reference number, then upload your proof of payment so we can confirm your order quickly.
             </div>
 
             <div class="mt-6 grid gap-4 md:grid-cols-2">
@@ -272,7 +345,7 @@
           <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div class="text-[11px] uppercase tracking-[0.24em] text-yellow-300">Quick Pay Instructions</div>
-              <h3 class="mt-3 text-xl font-semibold text-white">Continue with the hosted payment page</h3>
+              <h3 class="mt-3 text-xl font-semibold text-white">Continue to the Quick Pay page</h3>
             </div>
             <a href="${selectedMethod.href}" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/15">Continue to Quick Pay</a>
           </div>
@@ -298,7 +371,7 @@
           </div>
 
           <div class="mt-4 text-sm leading-7 text-zinc-400">
-            Quick Pay may later become more automated, so this payment flow is structured to be easy to upgrade.
+            Follow the steps above and complete payment with the exact order details shown here.
           </div>
         </div>
       `;
@@ -404,7 +477,7 @@
                 <a href="services.html" class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-5 py-2.5 text-sm text-yellow-300 transition">Services</a>
               </nav>
             </div>
-            <a href="services.html" class="rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">Back to Services</a>
+            <a href="services.html" class="cta-sheen rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">Back to Services</a>
           </div>
         </header>
 
@@ -423,7 +496,7 @@
                     <div class="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6 text-zinc-300">
                       Your cart is empty. Add items from the services page to continue.
                     </div>
-                    <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">Browse Services</a>
+                    <a href="services.html" class="cta-sheen mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">Browse Services</a>
                   `
                   : `
                     <div class="mt-8 grid gap-4 sm:grid-cols-2">
@@ -533,12 +606,14 @@
               </section>
 
               <section class="grid gap-3">
-                <button type="button" id="whatsapp-checkout" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60" ${cart.length === 0 ? "disabled" : ""}>Checkout on WhatsApp</button>
+                <button type="button" id="whatsapp-checkout" class="cta-sheen rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60" ${cart.length === 0 ? "disabled" : ""}>Checkout on WhatsApp</button>
               </section>
             </aside>
           </div>
         </main>
       `;
+
+      initCheckoutPolish();
 
       if (window.__scrollToPaymentInstructions) {
         window.__scrollToPaymentInstructions = false;
@@ -580,9 +655,9 @@
 </head>
 <body class="min-h-screen bg-[#070707] text-white">
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
-    <div class="absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
-    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
+    <div class="motion-orb-a absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+    <div class="motion-orb-b absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
+    <div class="motion-orb-c absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
   </div>
   <div id="checkout-root"></div>
 </body>

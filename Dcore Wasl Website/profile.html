@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile - Card Crafters</title>
-  <meta name="description" content="Manage your Card Crafters account details, orders, payment preferences, security, verification, and support." />
+  <meta name="description" content="Manage your Card Crafters details, past orders, payment preferences, and account settings." />
   <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -14,11 +14,86 @@
       box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.35);
       border-color: rgba(234, 179, 8, 0.45);
     }
+    .motion-orb-a { animation: orbFloatA 14s ease-in-out infinite; }
+    .motion-orb-b { animation: orbFloatB 16s ease-in-out infinite; }
+    .motion-orb-c { animation: orbFloatC 18s ease-in-out infinite; }
+    .reveal-block {
+      opacity: 0;
+      transform: translateY(26px) scale(0.985);
+      transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms), transform 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+    }
+    .reveal-block.is-visible { opacity: 1; transform: none; }
+    main .rounded-2xl,
+    main [class*="rounded-[2"] {
+      transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease, background-color 260ms ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    main .rounded-2xl:hover,
+    main [class*="rounded-[2"]:hover {
+      transform: translateY(-6px) rotateX(2deg);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.24);
+      border-color: rgba(234, 179, 8, 0.22);
+    }
+    .cta-sheen {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .cta-sheen::after {
+      content: "";
+      position: absolute;
+      inset: -30% auto -30% -35%;
+      width: 38%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: sheenSweep 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .profile-section-link {
+      transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+    }
+    .profile-section-link.is-active {
+      border-color: rgba(234, 179, 8, 0.3);
+      background: rgba(234, 179, 8, 0.1);
+      color: rgb(253 224 71);
+      box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.06);
+    }
+    .profile-section-link.is-active .profile-section-index {
+      color: rgb(253 224 71);
+    }
+    @keyframes orbFloatA { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(18px,24px,0) scale(1.08);} }
+    @keyframes orbFloatB { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(-20px,16px,0) scale(0.96);} }
+    @keyframes orbFloatC { 0%,100% { transform: translate3d(0,0,0) scale(1);} 50% { transform: translate3d(12px,-18px,0) scale(1.05);} }
+    @keyframes sheenSweep { 0%,70%,100% { transform: translateX(-140%) skewX(-18deg);} 26% { transform: translateX(360%) skewX(-18deg);} }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .reveal-block { opacity: 1; transform: none; }
+    }
   </style>
   <script>
     const PROFILE_KEY = "cardCraftersProfile";
     const ORDERS_KEY = "cardCraftersOrders";
     const SECURITY_KEY = "cardCraftersSecurity";
+    function loadCartCount() {
+      try {
+        const items = JSON.parse(localStorage.getItem('cardCraftersCart')) || [];
+        return Array.isArray(items)
+          ? items.reduce((total, item) => total + Math.max(1, Number(item?.quantity || 1)), 0)
+          : 0;
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function updateCartCount() {
+      const badge = document.getElementById('cart-count');
+      if (!badge) return;
+      const count = loadCartCount();
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
     function readJson(key, fallback) {
       try {
         const value = JSON.parse(localStorage.getItem(key));
@@ -83,6 +158,71 @@
       window.location.href = "services.html?cart=open";
     }
 
+    function initPagePolish() {
+      const revealTargets = document.querySelectorAll('main > section, main section, main aside > div, footer .mx-auto > div');
+      if (!('IntersectionObserver' in window)) {
+        revealTargets.forEach((node) => node.classList.add('is-visible'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+      revealTargets.forEach((node, index) => {
+        node.style.setProperty('--reveal-delay', `${Math.min(index * 60, 360)}ms`);
+        node.classList.add('reveal-block');
+        observer.observe(node);
+      });
+    }
+
+    function setActiveProfileSection(sectionId) {
+      const links = document.querySelectorAll('[data-profile-nav]');
+      links.forEach((link) => {
+        const isActive = link.getAttribute('href') === `#${sectionId}`;
+        link.classList.toggle('is-active', isActive);
+        if (isActive) {
+          link.setAttribute('aria-current', 'true');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    function initProfileSectionSpy() {
+      const sections = Array.from(document.querySelectorAll('main section[id]'));
+      if (!sections.length) return;
+
+      const updateActiveSection = () => {
+        const scrollAnchor = window.scrollY + 180;
+        let activeSection = sections[0].id;
+
+        sections.forEach((section) => {
+          if (section.offsetTop <= scrollAnchor) {
+            activeSection = section.id;
+          }
+        });
+
+        setActiveProfileSection(activeSection);
+      };
+
+      updateActiveSection();
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateActiveSection();
+          ticking = false;
+        });
+      }, { passive: true });
+      window.addEventListener('resize', updateActiveSection);
+      window.addEventListener('hashchange', updateActiveSection);
+    }
+
     function fillForm() {
       const profile = loadProfile();
       const form = document.getElementById("profile-form");
@@ -132,20 +272,6 @@
       }
     }
 
-    function changePassword(event) {
-      event.preventDefault();
-      const current = document.getElementById("current-password").value.trim();
-      const next = document.getElementById("new-password").value.trim();
-      if (!current || !next) return setSecurityNotice("Enter both current and new password.", "text-amber-300");
-      const security = loadSecurity();
-      security.passwordLabel = `Updated ${new Date().toLocaleDateString()}`;
-      security.credentialsDeleted = false;
-      writeJson(SECURITY_KEY, security);
-      document.getElementById("password-form").reset();
-      renderPage();
-      setSecurityNotice("Password updated for this account view.", "text-emerald-300");
-    }
-
     function requestReset() {
       const security = loadSecurity();
       security.resetRequestedAt = new Date().toLocaleString();
@@ -157,22 +283,6 @@
       window.location.href = `mailto:support@cardcrafterstt.com?subject=${subject}&body=${body}`;
     }
 
-    function deleteCredentials() {
-      const security = loadSecurity();
-      security.credentialsDeleted = true;
-      security.passwordLabel = "Credentials removed locally";
-      writeJson(SECURITY_KEY, security);
-      renderPage();
-      setSecurityNotice("Saved credentials cleared from this device.", "text-rose-300");
-    }
-
-    function setSecurityNotice(message, tone) {
-      const node = document.getElementById("security-notice");
-      if (!node) return;
-      node.className = `mt-4 text-sm ${tone}`;
-      node.textContent = message;
-    }
-
     function renderOrders() {
       const orders = loadOrders();
       const container = document.getElementById("recent-orders");
@@ -180,7 +290,7 @@
       if (count) count.textContent = String(orders.length);
       if (!container) return;
       if (!orders.length) {
-        container.innerHTML = `<div class="rounded-2xl border border-white/10 bg-[#0b0b0b] px-5 py-5 text-sm text-zinc-400">No past orders yet. Orders will appear here after checkout and move through Processing, Fulfilled, or Completed.</div>`;
+        container.innerHTML = `<div class="rounded-2xl border border-white/10 bg-[#0b0b0b] px-5 py-5 text-sm text-zinc-400">You have not placed an order yet. When you do, your recent orders will show up here for easy tracking.</div>`;
         return;
       }
       const styles = {
@@ -208,75 +318,13 @@
       `).join("");
     }
 
-    function renderSessions() {
-      const container = document.getElementById("active-sessions");
-      if (!container) return;
-      const sessions = loadSecurity().sessions || [];
-      container.innerHTML = sessions.map((session) => `
-        <div class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[#0b0b0b] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm font-semibold text-white">${session.device}</p>
-            <p class="mt-1 text-sm text-zinc-400">${session.location}</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="rounded-full border ${session.status === "Current" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300" : "border-white/10 text-zinc-300"} px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]">${session.status}</span>
-            <span class="text-xs text-zinc-500">${session.lastSeen}</span>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function updateSupportLinks() {
-      const type = document.getElementById("support-issue-type").value;
-      const summary = document.getElementById("support-summary").value.trim();
-      const notes = document.getElementById("support-notes").value.trim();
-      const profile = loadProfile();
-      const enabled = Boolean(summary);
-      const message = [
-        "Hello Card Crafters support,",
-        "",
-        `Issue Type: ${type || "General Support"}`,
-        `Customer: ${profile.fullName || "Website Customer"}`,
-        `Email: ${profile.email || "Not provided"}`,
-        `Phone: ${profile.phone || "Not provided"}`,
-        "",
-        `Issue Summary: ${summary || "Not provided"}`,
-        notes ? "" : null,
-        notes ? `Additional Notes: ${notes}` : null,
-      ].filter(Boolean).join("\n");
-      const encoded = encodeURIComponent(message);
-      const subject = encodeURIComponent(`Card Crafters Support - ${type || "General Support"}`);
-      const whatsapp = document.getElementById("support-whatsapp");
-      const email = document.getElementById("support-email");
-      const helper = document.getElementById("support-helper");
-      whatsapp.href = enabled ? `https://wa.me/18684651282?text=${encoded}` : "#";
-      email.href = enabled ? `mailto:support@cardcrafterstt.com?subject=${subject}&body=${encoded}` : "#";
-      [whatsapp, email].forEach((node) => {
-        node.classList.toggle("pointer-events-none", !enabled);
-        node.classList.toggle("opacity-50", !enabled);
-      });
-      helper.textContent = enabled ? "Your issue will be prefilled into both support options." : "Enter your issue first to unlock WhatsApp and email support.";
-    }
-
     function beginKycFlow() {
-      const issueType = document.getElementById("support-issue-type");
-      const summary = document.getElementById("support-summary");
       const profile = loadProfile();
-      if (issueType) issueType.value = "Account Access";
-      if (summary && !summary.value.trim()) {
-        summary.value = profile.verificationStatus === "Pending"
-          ? "I would like to start my KYC process for my account."
-          : "I would like to continue my KYC process for my account.";
-      }
-      updateSupportLinks();
-      document.getElementById("support")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function saveVerificationStatus(value) {
-      const profile = loadProfile();
-      profile.verificationStatus = value || "Pending";
-      writeJson(PROFILE_KEY, profile);
-      renderPage();
+      const subject = encodeURIComponent("Card Crafters KYC request");
+      const body = encodeURIComponent(
+        `Hello Card Crafters,\n\nI would like to start my KYC process for ${profile.email || "my account"}.\n\nFull Name: ${profile.fullName || "Not provided"}\nPhone: ${profile.phone || "Not provided"}`
+      );
+      window.location.href = `mailto:support@cardcrafterstt.com?subject=${subject}&body=${body}`;
     }
 
     function renderPage() {
@@ -294,11 +342,9 @@
       setText("overview-payment-method", profile.paymentMethod, "Not selected");
       setText("detail-contact-method", profile.contactMethod, "Not selected");
       setText("detail-payment-method", profile.paymentMethod, "Not selected");
-      setText("payment-methods-card", profile.paymentMethod, "Not selected");
-      setText("skybox-status", profile.skyboxAddress1 ? "Skybox address saved" : "No skybox address saved yet.");
+      setText("skybox-status", profile.skyboxAddress1 ? "Your Skybox address is saved and ready to use." : "Add your Skybox address here so it is ready whenever you shop.");
       setText("skybox-media-preview", profile.skyboxMedia, "No media or reference attached yet.");
       setText("overview-kyc-status", profile.verificationStatus, "Pending");
-      setText("verification-status-line", `${profile.verificationStatus} verification status`, "Pending verification status");
       setText("verification-status-badge", profile.verificationStatus, "Pending");
       const kycAction = document.getElementById("kyc-action");
       if (kycAction) {
@@ -307,19 +353,21 @@
       setText("password-status", security.passwordLabel, "Password not updated yet");
       setText("reset-status", security.resetRequestedAt || "No password reset requested", "No password reset requested");
       document.getElementById("overview-status").textContent = profile.fullName && profile.address
-        ? "Account profile is complete and ready for repeat orders."
-        : "Finish your account details to make reorders and delivery updates faster.";
+        ? "Your account is ready whenever you want to place your next order."
+        : "Add your details once and make future orders faster and easier.";
       renderOrders();
-      renderSessions();
-      updateSupportLinks();
     }
 
     document.addEventListener("DOMContentLoaded", function() {
       fillForm();
       renderPage();
+      updateCartCount();
+      initPagePolish();
+      initProfileSectionSpy();
     });
 
     window.addEventListener("storage", function(event) {
+      if (event.key === 'cardCraftersCart') updateCartCount();
       if ([PROFILE_KEY, ORDERS_KEY, SECURITY_KEY].includes(event.key)) {
         fillForm();
         renderPage();
@@ -329,9 +377,9 @@
 </head>
 <body class="min-h-screen bg-[#070707] text-white">
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute left-[-9rem] top-[-6rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
-    <div class="absolute right-[-7rem] top-28 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
-    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
+    <div class="motion-orb-a absolute left-[-9rem] top-[-6rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+    <div class="motion-orb-b absolute right-[-7rem] top-28 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
+    <div class="motion-orb-c absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
   </div>
 
   <header class="sticky top-0 z-50 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl">
@@ -342,7 +390,7 @@
         </div>
         <div>
           <p class="text-sm font-semibold uppercase tracking-[0.34em] text-yellow-300">Card Crafters</p>
-          <p class="mt-1 text-xs text-zinc-400">Digital access with local payment convenience</p>
+          <p class="mt-1 text-xs text-zinc-400">Your account, orders, and payment details</p>
         </div>
       </a>
 
@@ -362,13 +410,14 @@
             <circle cx="12" cy="8" r="4" />
           </svg>
         </a>
-        <button onclick="openSharedCart()" class="relative inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
+        <button onclick="openSharedCart()" class="cta-sheen relative inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
           <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="9" cy="20" r="1.5" />
             <circle cx="18" cy="20" r="1.5" />
             <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H7" />
           </svg>
           Cart
+          <span id="cart-count" class="inline-flex min-w-[24px] items-center justify-center rounded-full bg-black/10 px-2 py-1 text-xs" style="display:none;">0</span>
         </button>
       </div>
     </div>
@@ -385,13 +434,13 @@
               <h1 id="overview-name" class="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Card Crafters Customer</h1>
               <p id="overview-email" class="mt-2 text-sm text-zinc-300">Add your email address</p>
               <p id="overview-address" class="mt-2 text-sm text-zinc-400">Add your primary address</p>
-              <p id="overview-status" class="mt-4 max-w-2xl text-sm leading-7 text-zinc-400">Finish your account details to make reorders and delivery updates faster.</p>
+              <p id="overview-status" class="mt-4 max-w-2xl text-sm leading-7 text-zinc-400">Add your details once and make future orders faster and easier.</p>
             </div>
           </div>
           <div class="grid gap-3 sm:grid-cols-3">
             <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Orders</p><p id="overview-orders" class="mt-2 text-2xl font-semibold text-white">0</p></div>
             <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">KYC Status</p><p id="overview-kyc-status" class="mt-2 text-sm font-semibold text-yellow-200">Pending</p></div>
-            <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Support</p><p class="mt-2 text-sm font-semibold text-white">WhatsApp & Email</p></div>
+            <div class="rounded-2xl border border-white/10 bg-[#0d0d0d]/90 px-5 py-4"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Password</p><p class="mt-2 text-sm font-semibold text-white">Manage access</p></div>
           </div>
         </div>
       </div>
@@ -402,14 +451,12 @@
         <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-[0_18px_44px_rgba(0,0,0,0.28)]">
           <p class="px-3 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Account</p>
           <nav class="mt-4 space-y-2">
-            <a href="#overview" class="flex items-center justify-between rounded-2xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-sm font-medium text-yellow-200">Overview <span class="text-xs text-yellow-300">01</span></a>
-            <a href="#orders" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Orders <span class="text-xs text-zinc-500">02</span></a>
-            <a href="#details" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Profile Details <span class="text-xs text-zinc-500">03</span></a>
-            <a href="#payments" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Payment Methods <span class="text-xs text-zinc-500">04</span></a>
-            <a href="#password" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Password <span class="text-xs text-zinc-500">05</span></a>
-            <a href="#sessions" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Active Sessions <span class="text-xs text-zinc-500">06</span></a>
-            <a href="#verification" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Verification <span class="text-xs text-zinc-500">07</span></a>
-            <a href="#support" class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Support <span class="text-xs text-zinc-500">08</span></a>
+            <a href="#overview" data-profile-nav class="profile-section-link is-active flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Overview <span class="profile-section-index text-xs text-zinc-500">01</span></a>
+            <a href="#orders" data-profile-nav class="profile-section-link flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Orders <span class="profile-section-index text-xs text-zinc-500">02</span></a>
+            <a href="#details" data-profile-nav class="profile-section-link flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Profile Details <span class="profile-section-index text-xs text-zinc-500">03</span></a>
+            <a href="#payments" data-profile-nav class="profile-section-link flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Payment Methods <span class="profile-section-index text-xs text-zinc-500">04</span></a>
+            <a href="#password" data-profile-nav class="profile-section-link flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Password <span class="profile-section-index text-xs text-zinc-500">05</span></a>
+            <a href="#verification" data-profile-nav class="profile-section-link flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">Verification <span class="profile-section-index text-xs text-zinc-500">06</span></a>
           </nav>
         </div>
       </aside>
@@ -440,7 +487,7 @@
         <section id="details" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
           <div class="border-b border-white/10 pb-6">
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Profile Details</p>
-            <h2 class="mt-3 text-2xl font-semibold text-white">Editable customer information</h2>
+            <h2 class="mt-3 text-2xl font-semibold text-white">Your profile details</h2>
           </div>
           <form id="profile-form" class="mt-6 space-y-8" onsubmit="saveProfile(event)">
             <div class="grid gap-5 md:grid-cols-2">
@@ -459,7 +506,7 @@
                   <option>Phone Call</option>
                   <option>SMS</option>
                 </select>
-                <p class="mt-3 text-sm leading-6 text-zinc-400">Choose the main way you want us to reach you for orders, payment updates, and support follow-up.</p>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">Tell us how you would like us to contact you about orders, payments, and updates.</p>
               </div>
               <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
                 <label for="paymentMethod" class="mb-2 block text-sm font-medium text-zinc-300">Preferred Payment Method</label>
@@ -470,15 +517,15 @@
                   <option>Card Payment</option>
                   <option>Crypto</option>
                 </select>
-                <p class="mt-3 text-sm leading-6 text-zinc-400">Keep this compact and practical. You can still jump straight into the hosted payment flow from the payment section below.</p>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">Save your preferred payment details here so future orders are easier to manage.</p>
               </div>
             </div>
 
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-6">
               <div class="border-b border-white/10 pb-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.22em] text-yellow-300">Skybox Address</p>
-                <h3 class="mt-3 text-xl font-semibold text-white">Standardized delivery address</h3>
-                <p class="mt-2 text-sm leading-6 text-zinc-400">Save your Skybox location using a clean address form so delivery details stay organized and easy to update.</p>
+                <h3 class="mt-3 text-xl font-semibold text-white">Your saved Skybox address</h3>
+                <p class="mt-2 text-sm leading-6 text-zinc-400">Keep your delivery details here so shopping requests are quicker to place.</p>
               </div>
               <div class="mt-5 grid gap-5 md:grid-cols-2">
                 <div class="md:col-span-2"><label for="skyboxAddress1" class="mb-2 block text-sm font-medium text-zinc-300">Address Line 1</label><input id="skyboxAddress1" name="skyboxAddress1" type="text" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Street address, building, or delivery line" /></div>
@@ -491,17 +538,11 @@
               </div>
               <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p id="skybox-status" class="text-sm text-zinc-400">No skybox address saved yet.</p>
-                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)] transition hover:brightness-105">Save / Update Profile</button>
+                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)] transition hover:brightness-105">Save Profile</button>
               </div>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-4">
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Address</p><p id="detail-address" class="mt-3 text-sm font-medium text-white">Not added yet</p></div>
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Contact Method</p><p id="detail-contact-method" class="mt-3 text-sm font-medium text-white">Not selected</p></div>
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Payment Method</p><p id="detail-payment-method" class="mt-3 text-sm font-medium text-white">Not selected</p></div>
-              <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5"><p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Skybox Media</p><p id="skybox-media-preview" class="mt-3 text-sm font-medium text-white">No media or reference attached yet.</p></div>
-            </div>
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p id="profile-save-notice" class="hidden text-sm text-emerald-300"></p><span class="text-sm text-zinc-500">Update profile details, address information, and account preferences from one place.</span></div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p id="profile-save-notice" class="hidden text-sm text-emerald-300"></p><span class="text-sm text-zinc-500">Keep your details up to date so ordering stays simple.</span></div>
           </form>
         </section>
 
@@ -509,27 +550,10 @@
           <div class="flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Payment Methods</p>
-              <h2 class="mt-3 text-2xl font-semibold text-white">Compact payment options</h2>
+              <h2 class="mt-3 text-2xl font-semibold text-white">Easy payment options</h2>
+              <p class="mt-3 max-w-2xl text-sm leading-7 text-zinc-400">Need to pay for an active order? Open Quick Pay and complete it in a few simple steps.</p>
             </div>
-            <a href="https://cardcrafterstt.com/quick-pay" target="_blank" rel="noopener noreferrer" class="inline-flex w-fit items-center gap-2 rounded-2xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/15">Go to Quick Pay <span>&rarr;</span></a>
-          </div>
-          <div class="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Selected Method</p>
-              <p id="payment-methods-card" class="mt-3 text-lg font-semibold text-white">Not selected</p>
-              <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-300">
-                <span class="rounded-full border border-white/10 px-3 py-2">Bank Transfer</span>
-                <span class="rounded-full border border-white/10 px-3 py-2">Quick Pay</span>
-                <span class="rounded-full border border-white/10 px-3 py-2">EndCash</span>
-                <span class="rounded-full border border-white/10 px-3 py-2">Card Payment</span>
-                <span class="rounded-full border border-white/10 px-3 py-2">Crypto</span>
-              </div>
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Quick Pay Access</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-300">Use the hosted payment page when you want a faster payment handoff without opening a larger preference block here.</p>
-              <a href="https://cardcrafterstt.com/quick-pay" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-3 text-sm font-semibold text-black transition hover:brightness-105">Open Quick Pay <span>&rarr;</span></a>
-            </div>
+            <a href="https://cardcrafterstt.com/quick-pay" target="_blank" rel="noopener noreferrer" class="inline-flex w-fit items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-2.5 text-sm font-semibold text-yellow-200 transition hover:bg-yellow-500/20 hover:text-white">Open Quick Pay <span>&rarr;</span></a>
           </div>
         </section>
 
@@ -538,35 +562,17 @@
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Password Management</p>
             <h2 class="mt-3 text-2xl font-semibold text-white">Password controls</h2>
           </div>
-          <div class="mt-6 space-y-6">
+          <div class="mt-6">
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div><p class="text-sm font-semibold text-white">Password Status</p><p id="password-status" class="mt-2 text-sm text-zinc-400">Password not updated yet</p></div>
                 <div><p class="text-sm font-semibold text-white">Reset Request</p><p id="reset-status" class="mt-2 text-sm text-zinc-400">No password reset requested</p></div>
               </div>
+              <div class="mt-5">
+                <button type="button" onclick="requestReset()" class="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-2.5 text-sm font-semibold text-yellow-200 transition hover:bg-yellow-500/20 hover:text-white">Change Password <span>&rarr;</span></button>
+              </div>
             </div>
-            <form id="password-form" class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5" onsubmit="changePassword(event)">
-              <p class="text-sm font-semibold text-white">Update credentials</p>
-              <div class="mt-4 grid gap-4 md:grid-cols-2">
-                <div><label for="current-password" class="mb-2 block text-sm font-medium text-zinc-300">Current Password</label><input id="current-password" type="password" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white" placeholder="Current password" /></div>
-                <div><label for="new-password" class="mb-2 block text-sm font-medium text-zinc-300">New Password</label><input id="new-password" type="password" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white" placeholder="New password" /></div>
-              </div>
-              <div class="mt-5 flex flex-wrap gap-3">
-                <button type="submit" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105">Change Password</button>
-                <button type="button" onclick="requestReset()" class="rounded-2xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-200 transition hover:border-yellow-500/30 hover:text-white">Reset Password</button>
-                <button type="button" onclick="deleteCredentials()" class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-5 py-3 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/15">Delete Credentials</button>
-              </div>
-              <p id="security-notice" class="mt-4 text-sm text-zinc-400">Use the controls above to update, reset, or remove saved credentials.</p>
-            </form>
           </div>
-        </section>
-
-        <section id="sessions" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
-          <div class="border-b border-white/10 pb-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Active Sessions</p>
-            <h2 class="mt-3 text-2xl font-semibold text-white">Current and recent logins</h2>
-          </div>
-          <div id="active-sessions" class="mt-6 space-y-4"></div>
         </section>
 
         <section id="verification" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
@@ -577,69 +583,13 @@
             </div>
             <span id="verification-status-badge" class="inline-flex w-fit items-center rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-yellow-200">Pending</span>
           </div>
-          <div class="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-            <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Verification Progress</p>
-              <p id="verification-status-line" class="mt-3 text-lg font-semibold text-white">Pending verification status</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">This area is only for identity verification progress. It stays separate from your Skybox address and other delivery information.</p>
-            </div>
+          <div class="mt-6">
             <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-5">
               <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Action</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-300">Start or continue your KYC process from here. If you need help, the support form below will already know what you are trying to do.</p>
-              <div class="mt-5 flex flex-wrap gap-3">
+              <p class="mt-3 text-sm leading-7 text-zinc-300">Start your KYC process from here.</p>
+              <div class="mt-5">
                 <button id="kyc-action" type="button" onclick="beginKycFlow()" class="rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-105">Start KYC Process</button>
-                <select id="verificationStatus" name="verificationStatus" onchange="saveVerificationStatus(this.value)" class="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white">
-                  <option>Pending</option>
-                  <option>Processing</option>
-                  <option>Verified</option>
-                  <option>Completed</option>
-                </select>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="support" class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.28)] sm:p-8">
-          <div class="flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Support</p>
-              <h2 class="mt-3 text-2xl font-semibold text-white">Enter your issue once</h2>
-            </div>
-            <span class="inline-flex w-fit items-center rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-300">Prefilled support flow</span>
-          </div>
-          <div class="mt-6 grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-            <div class="rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(0,0,0,0.22))] p-5">
-              <div class="grid gap-4 md:grid-cols-2">
-                <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
-                  <p class="text-[11px] uppercase tracking-[0.18em] text-yellow-300">Step 1</p>
-                  <p class="mt-2 text-sm font-semibold text-white">Choose issue type</p>
-                  <label for="support-issue-type" class="sr-only">Issue Type</label>
-                  <select id="support-issue-type" onchange="updateSupportLinks()" class="mt-4 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white"><option>General Support</option><option>Order Update</option><option>Payment Issue</option><option>Delivery / Skybox</option><option>Account Access</option></select>
-                </div>
-                <div class="rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
-                  <p class="text-[11px] uppercase tracking-[0.18em] text-yellow-300">Step 2</p>
-                  <p class="mt-2 text-sm font-semibold text-white">Write the issue once</p>
-                  <p class="mt-4 text-sm leading-6 text-zinc-400">Your message feeds directly into both support options, so there is no need to type it again later.</p>
-                </div>
-              </div>
-              <div class="mt-4 rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
-                <label for="support-summary" class="mb-2 block text-sm font-medium text-zinc-300">Brief Description of the Issue</label>
-                <textarea id="support-summary" rows="4" oninput="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Describe the issue once here. This will feed directly into support messages."></textarea>
-              </div>
-              <div class="mt-4 rounded-2xl border border-white/10 bg-[#0b0b0b] p-4">
-                <label for="support-notes" class="mb-2 block text-sm font-medium text-zinc-300">Additional Notes</label>
-                <textarea id="support-notes" rows="4" oninput="updateSupportLinks()" class="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-zinc-500" placeholder="Optional extra context"></textarea>
-              </div>
-            </div>
-            <div class="rounded-[1.75rem] border border-yellow-500/20 bg-[linear-gradient(180deg,rgba(234,179,8,0.08),rgba(11,11,11,0.96))] p-5">
-              <p class="text-[11px] uppercase tracking-[0.18em] text-yellow-300">Step 3</p>
-              <h3 class="mt-2 text-xl font-semibold text-white">Choose your support channel</h3>
-              <p id="support-helper" class="mt-3 text-sm leading-7 text-zinc-300">Enter your issue first to unlock WhatsApp and email support.</p>
-              <div class="mt-6 space-y-4">
-                <a id="support-whatsapp" href="#" target="_blank" rel="noopener noreferrer" class="pointer-events-none flex items-center justify-between rounded-2xl border border-[#25D366]/30 bg-[#25D366]/10 px-5 py-4 text-sm font-semibold text-[#25D366] opacity-50 transition hover:bg-[#25D366]/15"><span>WhatsApp Support</span><span>&rarr;</span></a>
-                <a id="support-email" href="#" class="pointer-events-none flex items-center justify-between rounded-2xl border border-sky-400/30 bg-sky-400/10 px-5 py-4 text-sm font-semibold text-sky-200 opacity-50 transition hover:bg-sky-400/15"><span>Email Support</span><span>&rarr;</span></a>
-              </div>
-              <div class="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm leading-7 text-zinc-400">Once your description is entered, both options are prefilled automatically to keep the support flow quick and consistent.</div>
             </div>
           </div>
         </section>
@@ -654,7 +604,7 @@
           <div class="rounded-[1.2rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] to-[#090909] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.36)]"><img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" class="h-12 w-12 rounded-xl object-cover" onerror="this.style.display='none'" /></div>
           <div><p class="text-sm font-semibold uppercase tracking-[0.26em] text-yellow-300">Card Crafters</p><p class="mt-1 text-xs text-zinc-400">Premium digital service access</p></div>
         </div>
-        <p class="mt-4 max-w-sm text-sm leading-7 text-zinc-400">Premium digital services, gift cards, bill payments, and sourcing with a clean local checkout flow.</p>
+        <p class="mt-4 max-w-sm text-sm leading-7 text-zinc-400">Streaming, gift cards, bill payments, and shopping help with easy local checkout.</p>
       </div>
       <div>
         <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Navigation</p>

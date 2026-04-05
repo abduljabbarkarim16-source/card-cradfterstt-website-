@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    html { scroll-behavior: smooth; }
     * {
       transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), opacity 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -40,6 +41,48 @@
       background: #111111;
       color: #f8fafc;
     }
+    .cta-sheen {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .cta-sheen::after {
+      content: "";
+      position: absolute;
+      inset: -30% auto -30% -35%;
+      width: 38%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: sheenSweep 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    [class*="rounded-[1.6rem]"],
+    [class*="rounded-[1.75rem]"],
+    [class*="rounded-[1.8rem]"],
+    [class*="rounded-[2rem]"],
+    .rounded-2xl {
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    [class*="rounded-[1.6rem]"]:hover,
+    [class*="rounded-[1.75rem]"]:hover,
+    [class*="rounded-[1.8rem]"]:hover,
+    [class*="rounded-[2rem]"]:hover,
+    .rounded-2xl:hover {
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.22);
+    }
+    @keyframes sheenSweep {
+      0%, 70%, 100% { transform: translateX(-140%) skewX(-18deg); }
+      26% { transform: translateX(360%) skewX(-18deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
   <script>
     // ============================================================================
@@ -55,25 +98,25 @@
       {
         id: "streaming",
         title: "Streaming",
-        description: "Open a streaming platform, then choose the exact account option.",
+        description: "Choose your platform, then pick the account option you want.",
         cta: "Get Started",
       },
       {
         id: "gift-cards",
         title: "Gift Cards",
-        description: "Use a guided builder with category, brand, denomination, and region.",
+        description: "Choose your brand, value, and region to build the card you need.",
         cta: "Browse Cards",
       },
       {
         id: "bill-payments",
         title: "Bill Payments",
-        description: "Pick the provider and fill in a short payment form.",
+        description: "Choose your provider and submit your payment details in a few steps.",
         cta: "Pay Bills",
       },
       {
         id: "shopping",
         title: "Shopping & Sourcing",
-        description: "Choose a store, submit the request, and preview the estimate.",
+        description: "Send your shopping request and review the estimate before you order.",
         cta: "Request Quote",
       },
     ];
@@ -82,7 +125,7 @@
       {
         id: "netflix",
         title: "Netflix",
-        description: "Netflix combines controlled accounts and gift card account options in one selector.",
+        description: "Choose the Netflix option that works best for you.",
         options: [
           { id: "basic-controlled", label: "Basic - Controlled", price: 85, kind: "controlled" },
           { id: "standard-controlled", label: "Standard - Controlled", price: 135, kind: "controlled" },
@@ -95,19 +138,19 @@
       {
         id: "disney-plus",
         title: "Disney+",
-        description: "Disney+ is offered as a controlled account option.",
+        description: "Get Disney+ access with our available account option.",
         options: [{ id: "controlled", label: "Controlled Account", price: 145, kind: "controlled" }],
       },
       {
         id: "prime-video",
         title: "Prime Video",
-        description: "Prime Video is offered as a controlled account option.",
+        description: "Get Prime Video access with our available account option.",
         options: [{ id: "controlled", label: "Controlled Account", price: 70, kind: "controlled" }],
       },
       {
         id: "hbo-max",
-        title: "HBO Max",
-        description: "Choose the controlled HBO option that fits the customer.",
+        title: "Max",
+        description: "Choose the Max option that fits what you want to watch.",
         options: [
           { id: "basic-controlled", label: "Basic with Ads - Controlled", price: 70, kind: "controlled" },
           { id: "standard-controlled", label: "Standard - Controlled", price: 90, kind: "controlled" },
@@ -117,47 +160,47 @@
       {
         id: "other-streaming",
         title: "Other",
-        description: "Need a platform that is not listed? Use the premium custom request option.",
+        description: "Do not see your platform? Send us a custom request.",
         options: [{ id: "custom-request", label: "Custom Request", price: 0, kind: "custom-request" }],
       },
     ];
 
     const billItems = [
-      { id: "wasa", title: "WASA", description: "Water bill payment with account number and amount entry." },
-      { id: "ttec", title: "T&TEC", description: "Electricity bill payment with TT$5 fee handling." },
-      { id: "flow", title: "Flow", description: "Internet and cable payment flow." },
-      { id: "digicel", title: "Digicel", description: "Telecom payment flow." },
-      { id: "bmobile", title: "Bmobile", description: "Local provider payment flow." },
+      { id: "wasa", title: "WASA", description: "Pay your WASA bill by entering your account details and amount." },
+      { id: "ttec", title: "T&TEC", description: "Pay your T&TEC bill quickly with the details from your statement." },
+      { id: "flow", title: "Flow", description: "Submit your Flow bill details and we will handle the payment." },
+      { id: "digicel", title: "Digicel", description: "Send your Digicel payment request in a few simple steps." },
+      { id: "bmobile", title: "Bmobile", description: "Pay your bmobile bill with a quick local payment request." },
     ];
 
     const shoppingStores = [
-      { id: "amazon", title: "Amazon", description: "Sourcing request for Amazon items." },
-      { id: "shein", title: "Shein", description: "Sourcing request for Shein items." },
-      { id: "temu", title: "Temu", description: "Sourcing request for Temu items." },
-      { id: "ebay", title: "eBay", description: "Sourcing request for eBay items." },
-      { id: "other", title: "Other", description: "Use this when the website is not listed." },
+      { id: "amazon", title: "Amazon", description: "Send us the Amazon item and we will help you price and order it." },
+      { id: "shein", title: "Shein", description: "Send your Shein items for a quote and delivery estimate." },
+      { id: "temu", title: "temu", description: "Get help pricing and ordering your temu items." },
+      { id: "ebay", title: "eBay", description: "Send your eBay links and we will help you work out the cost." },
+      { id: "other", title: "Other", description: "Request help with any store that is not listed above." },
     ];
 
     const giftCardCategories = [
       {
         id: "gaming",
         label: "Gaming & Entertainment",
-        brands: ["PlayStation Network", "Xbox", "Nintendo eShop", "Steam", "Blizzard", "Roblox", "Other"],
+        brands: ["PlayStation Store", "Xbox", "Nintendo eShop", "Steam", "Roblox", "Fortnite / Epic Games", "Riot Games / VALORANT", "Battle.net / Blizzard", "Razer Gold", "Other"],
       },
       {
         id: "streaming",
         label: "Streaming & Entertainment Credits",
-        brands: ["Netflix", "Spotify", "Apple / iTunes", "Google Play", "Other"],
+        brands: ["Netflix", "Disney+", "Prime Video", "Max", "Hulu", "Apple TV+", "Paramount+", "Peacock", "YouTube Premium", "Crunchyroll", "Spotify", "Apple Music", "YouTube Music", "Other"],
       },
       {
         id: "shopping",
         label: "Retail & Shopping",
-        brands: ["Amazon", "Other"],
+        brands: ["Shein", "temu", "Other"],
       },
       {
         id: "topup",
         label: "Credits & Top-Ups",
-        brands: ["Visa Rewardable", "Swipe Visa Gift Card", "Razer Gold", "Google Play", "Other"],
+        brands: ["Razer Gold", "Other"],
       },
     ];
 
@@ -196,20 +239,26 @@
       disneyplus: { key: "disneyplus", title: "Disney+", accent: "#113CCF", glow: "rgba(17, 60, 207, 0.45)", sublabel: "Streaming", category: "Entertainment" },
       crunchyroll: { key: "crunchyroll", title: "Crunchyroll", accent: "#F47521", glow: "rgba(244, 117, 33, 0.45)", sublabel: "Anime", category: "Entertainment" },
       primevideo: { key: "primevideo", title: "Prime Video", accent: "#00A8E1", glow: "rgba(0, 168, 225, 0.35)", sublabel: "Streaming", category: "Entertainment" },
-      hbomax: { key: "hbomax", title: "HBO Max", accent: "#8B5CF6", glow: "rgba(139, 92, 246, 0.35)", sublabel: "Streaming", category: "Entertainment" },
-      playstation: { key: "playstation", title: "PlayStation", accent: "#003791", glow: "rgba(0, 55, 145, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
-      playstationnetwork: { key: "playstationnetwork", title: "PlayStation Network", accent: "#003791", glow: "rgba(0, 55, 145, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
+      hbomax: { key: "hbomax", title: "Max", accent: "#8B5CF6", glow: "rgba(139, 92, 246, 0.35)", sublabel: "Streaming", category: "Entertainment" },
+      playstation: { key: "playstation", title: "PlayStation Store", accent: "#003791", glow: "rgba(0, 55, 145, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
+      playstationnetwork: { key: "playstationnetwork", title: "PlayStation Store", accent: "#003791", glow: "rgba(0, 55, 145, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
       xbox: { key: "xbox", title: "Xbox", accent: "#107C10", glow: "rgba(16, 124, 16, 0.45)", sublabel: "Gaming", category: "Gift Cards" },
       nintendoeshop: { key: "nintendoeshop", title: "Nintendo eShop", accent: "#E60012", glow: "rgba(230, 0, 18, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
       steam: { key: "steam", title: "Steam", accent: "#66C0F4", glow: "rgba(102, 192, 244, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
-      blizzard: { key: "blizzard", title: "Blizzard", accent: "#3B82F6", glow: "rgba(59, 130, 246, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
+      blizzard: { key: "blizzard", title: "Battle.net / Blizzard", accent: "#3B82F6", glow: "rgba(59, 130, 246, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
       roblox: { key: "roblox", title: "Roblox", accent: "#E5E7EB", glow: "rgba(229, 231, 235, 0.22)", sublabel: "Gaming", category: "Gift Cards" },
       amazon: { key: "amazon", title: "Amazon", accent: "#FF9900", glow: "rgba(255, 153, 0, 0.45)", sublabel: "Shopping", category: "Gift Cards" },
       spotify: { key: "spotify", title: "Spotify", accent: "#1ED760", glow: "rgba(30, 215, 96, 0.35)", sublabel: "Music", category: "Gift Cards" },
-      appleitunes: { key: "appleitunes", title: "Apple / iTunes", accent: "#CBD5E1", glow: "rgba(203, 213, 225, 0.25)", sublabel: "Digital", category: "Gift Cards" },
-      googleplay: { key: "googleplay", title: "Google Play", accent: "#34A853", glow: "rgba(52, 168, 83, 0.35)", sublabel: "Digital", category: "Gift Cards" },
-      visarewardable: { key: "visarewardable", title: "Visa Rewardable", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Top-Up", category: "Gift Cards" },
-      swipevisagiftcard: { key: "swipevisagiftcard", title: "Swipe Visa Gift Card", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Top-Up", category: "Gift Cards" },
+      hulu: { key: "hulu", title: "Hulu", accent: "#1CE783", glow: "rgba(28, 231, 131, 0.35)", sublabel: "Streaming", category: "Entertainment" },
+      appletvplus: { key: "appletvplus", title: "Apple TV+", accent: "#CBD5E1", glow: "rgba(203, 213, 225, 0.25)", sublabel: "Streaming", category: "Entertainment" },
+      paramountplus: { key: "paramountplus", title: "Paramount+", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Streaming", category: "Entertainment" },
+      peacock: { key: "peacock", title: "Peacock", accent: "#F97316", glow: "rgba(249, 115, 22, 0.35)", sublabel: "Streaming", category: "Entertainment" },
+      appleitunes: { key: "appleitunes", title: "Apple TV+", accent: "#CBD5E1", glow: "rgba(203, 213, 225, 0.25)", sublabel: "Streaming", category: "Gift Cards" },
+      googleplay: { key: "googleplay", title: "YouTube Premium", accent: "#34A853", glow: "rgba(52, 168, 83, 0.35)", sublabel: "Streaming", category: "Gift Cards" },
+      visarewardable: { key: "visarewardable", title: "Apple Music", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Music", category: "Gift Cards" },
+      swipevisagiftcard: { key: "swipevisagiftcard", title: "YouTube Music", accent: "#2563EB", glow: "rgba(37, 99, 235, 0.35)", sublabel: "Music", category: "Gift Cards" },
+      fortniteepicgames: { key: "fortniteepicgames", title: "Fortnite / Epic Games", accent: "#60A5FA", glow: "rgba(96, 165, 250, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
+      riotgamesvalorant: { key: "riotgamesvalorant", title: "Riot Games / VALORANT", accent: "#EF4444", glow: "rgba(239, 68, 68, 0.35)", sublabel: "Gaming", category: "Gift Cards" },
       razergold: { key: "razergold", title: "Razer Gold", accent: "#84CC16", glow: "rgba(132, 204, 22, 0.35)", sublabel: "Top-Up", category: "Gift Cards" },
       wasa: { key: "wasa", title: "WASA", accent: "#38BDF8", glow: "rgba(56, 189, 248, 0.35)", sublabel: "Bills", category: "Payments" },
       ttec: { key: "ttec", title: "T&TEC", accent: "#60A5FA", glow: "rgba(96, 165, 250, 0.35)", sublabel: "Bills", category: "Payments" },
@@ -217,7 +266,7 @@
       digicel: { key: "digicel", title: "Digicel", accent: "#DC2626", glow: "rgba(220, 38, 38, 0.35)", sublabel: "Bills", category: "Payments" },
       bmobile: { key: "bmobile", title: "Bmobile", accent: "#06B6D4", glow: "rgba(6, 182, 212, 0.35)", sublabel: "Bills", category: "Payments" },
       shein: { key: "shein", title: "Shein", accent: "#B8A17A", glow: "rgba(184, 161, 122, 0.35)", sublabel: "Fashion", category: "Shopping & Sourcing" },
-      temu: { key: "temu", title: "Temu", accent: "#F15A24", glow: "rgba(241, 90, 36, 0.4)", sublabel: "Shopping", category: "Shopping & Sourcing" },
+      temu: { key: "temu", title: "temu", accent: "#F15A24", glow: "rgba(241, 90, 36, 0.4)", sublabel: "Shopping", category: "Shopping & Sourcing" },
       ebay: { key: "ebay", title: "eBay", accent: "#C9A227", glow: "rgba(201, 162, 39, 0.35)", sublabel: "Shopping", category: "Shopping & Sourcing" },
       other: { key: "other", title: "Other", accent: "#D4AF37", glow: "rgba(212, 175, 55, 0.35)", sublabel: "Custom Request", category: "Card Crafters" },
       giftcardbuilder: { key: "giftcardbuilder", title: "Gift Card Builder", accent: "#D4AF37", glow: "rgba(212, 175, 55, 0.35)", sublabel: "Gift Cards", category: "Card Crafters" },
@@ -232,7 +281,16 @@
       'disney-plus': 'disneyplus',
       'prime-video': 'primevideo',
       'hbo-max': 'hbomax',
+      'max': 'hbomax',
+      'hulu': 'hulu',
+      'apple tv+': 'appletvplus',
+      'paramount+': 'paramountplus',
+      'peacock': 'peacock',
+      'youtube premium': 'googleplay',
+      'apple music': 'visarewardable',
+      'youtube music': 'swipevisagiftcard',
       'other-streaming': 'other',
+      'playstation store': 'playstationnetwork',
       'playstation network': 'playstationnetwork',
       'playstation': 'playstation',
       'apple / itunes': 'appleitunes',
@@ -240,6 +298,12 @@
       'google play': 'googleplay',
       'visa rewardable': 'visarewardable',
       'swipe visa gift card': 'swipevisagiftcard',
+      'fortnite epic games': 'fortniteepicgames',
+      'fortnite / epic games': 'fortniteepicgames',
+      'riot games valorant': 'riotgamesvalorant',
+      'riot games / valorant': 'riotgamesvalorant',
+      'battle net blizzard': 'blizzard',
+      'battle.net / blizzard': 'blizzard',
       'razer gold': 'razergold',
       'gift card': 'giftcardbuilder',
       'gift cards': 'giftcards',
@@ -364,7 +428,7 @@
       const words = String(theme.title || title || 'CC').replace(/[^A-Za-z0-9+ ]/g, '').split(/\s+/).filter(Boolean);
       if (theme.title === 'Disney+') return 'D+';
       if (theme.title === 'Prime Video') return 'PV';
-      if (theme.title === 'HBO Max') return 'HM';
+      if (theme.title === 'Max') return 'MX';
       if (theme.title === 'Other') return 'OT';
       if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
       return `${words[0][0] || ''}${words[1][0] || ''}`.toUpperCase();
@@ -438,19 +502,24 @@
         'Netflix',
         'Disney+',
         'Prime Video',
-        'HBO Max',
-        'PlayStation Network',
+        'Max',
+        'Hulu',
+        'Apple TV+',
+        'Paramount+',
+        'Peacock',
+        'YouTube Premium',
+        'PlayStation Store',
         'Xbox',
         'Nintendo eShop',
         'Steam',
-        'Blizzard',
+        'Fortnite / Epic Games',
+        'Riot Games / VALORANT',
+        'Battle.net / Blizzard',
         'Roblox',
         'Amazon',
         'Spotify',
-        'Apple / iTunes',
-        'Google Play',
-        'Visa Rewardable',
-        'Swipe Visa Gift Card',
+        'Apple Music',
+        'YouTube Music',
         'Razer Gold',
         'WASA',
         'T&TEC',
@@ -458,7 +527,7 @@
         'Digicel',
         'Bmobile',
         'Shein',
-        'Temu',
+        'temu',
         'eBay',
         'Other',
       ].find((name) => cleanTitle.toLowerCase().includes(name.toLowerCase())) || cleanTitle;
@@ -678,7 +747,7 @@
                 accentTitle: selectedOption.label,
                 categoryLabel: "Streaming Services",
                 badgeTitle: item.title,
-                meta: "Choose the plan below and add it straight to your shared cart.",
+                meta: "Choose the plan you want, then add it to your cart when you are ready.",
               })}
               <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
                 <div class="space-y-6">
@@ -739,7 +808,7 @@
             </button>
             <div>
               <h2 class="text-3xl font-semibold text-white">Gift Card Builder</h2>
-              <p class="mt-1 text-sm text-zinc-400">Build your gift card by selecting category, brand, amount, and region</p>
+              <p class="mt-1 text-sm text-zinc-400">Pick the card you want and choose the amount that fits.</p>
             </div>
           </div>
           ${renderPanel(`
@@ -747,7 +816,7 @@
               <div class="mb-8">
                 ${renderDetailHero({
                   title: "Gift Card Builder",
-                  subtitle: "Build a premium card request by choosing category, brand, denomination, and region.",
+                  subtitle: "Choose your brand, amount, and region, and we will get your card ready.",
                   accentTitle: giftBrandLabel,
                   categoryLabel: selectedCategory.label,
                   badgeTitle: giftBrandLabel,
@@ -837,7 +906,7 @@
             </button>
             <div>
               <h2 class="text-3xl font-semibold text-white">${item.title} Payment</h2>
-              <p class="mt-1 text-sm text-zinc-400">Fill in your bill details to proceed</p>
+              <p class="mt-1 text-sm text-zinc-400">Enter your details below and send us your payment request.</p>
             </div>
           </div>
           ${renderPanel(`
@@ -848,7 +917,7 @@
                 accentTitle: item.title,
                 categoryLabel: "Bill Payments",
                 badgeTitle: item.title,
-                meta: "Enter the account details below and add the request to your shared cart.",
+                meta: "Add your account details below, then send the payment request to your cart.",
               })}
               <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
                 <div class="grid gap-4">
@@ -915,7 +984,7 @@
             </button>
             <div>
               <h2 class="text-3xl font-semibold text-white">${shoppingTitle} Shopping Quote</h2>
-              <p class="mt-1 text-sm text-zinc-400">Add product links and get an instant estimate</p>
+              <p class="mt-1 text-sm text-zinc-400">Send the items you want and get a quick estimate.</p>
             </div>
           </div>
           ${renderPanel(`
@@ -926,7 +995,7 @@
                 accentTitle: shoppingTitle,
                 categoryLabel: "Shopping & Sourcing",
                 badgeTitle: shoppingTitle,
-                meta: "Submit links, notes, and destination details for a clean estimate.",
+                meta: "Share your links, notes, and delivery details and we will price it for you.",
               })}
 
               <div class="mt-8 space-y-6">
@@ -1070,11 +1139,11 @@
 
     function renderCartDrawer() {
       const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const backdropClass = state.cartOpen ? "fixed inset-0 z-40 bg-black/60" : "hidden";
+      const backdropClass = state.cartOpen ? "fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" : "hidden";
 
       return `
         <div class="${backdropClass}" onclick="app.closeCart()"></div>
-        <aside class="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#0b0b0b] transition-transform duration-300 ${state.cartOpen ? "translate-x-0" : "translate-x-full"}">
+        <aside class="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#0b0b0b]/96 shadow-[-24px_0_60px_rgba(0,0,0,0.36)] backdrop-blur-xl transition-transform duration-300 ${state.cartOpen ? "translate-x-0" : "translate-x-full"}">
           <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
             <div>
               <p class="text-xs uppercase tracking-[0.18em] text-yellow-300">Cart</p>
@@ -1109,7 +1178,7 @@
                 <span>Total</span>
                 <span class="text-lg font-semibold text-yellow-100">${formatCurrency(total)}</span>
               </div>
-              <button onclick="app.goToCheckout()" class="mt-4 w-full rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-3 text-sm font-semibold text-black transition hover:brightness-105 ${state.cart.length === 0 ? "opacity-60 cursor-not-allowed" : ""}" ${state.cart.length === 0 ? "disabled" : ""}>Checkout</button>
+              <button onclick="app.goToCheckout()" class="cta-sheen mt-4 w-full rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-3 text-sm font-semibold text-black transition hover:brightness-105 ${state.cart.length === 0 ? "opacity-60 cursor-not-allowed" : ""}" ${state.cart.length === 0 ? "disabled" : ""}>Checkout</button>
             </div>
           </div>
         </aside>
@@ -1131,7 +1200,7 @@
                 </div>
               </div>
               <p class="mt-4 max-w-sm text-sm leading-7 text-zinc-400">
-                Premium digital services, gift cards, bill payments, and sourcing with a clean local checkout flow.
+                Streaming, gift cards, bill payments, and shopping help with easy local checkout.
               </p>
             </div>
 
@@ -1212,7 +1281,7 @@
               </div>
               <div>
                 <p class="text-sm font-semibold uppercase tracking-[0.34em] text-yellow-300">Card Crafters</p>
-                <p class="mt-1 text-xs text-zinc-400">Digital access with local payment convenience</p>
+                <p class="mt-1 text-xs text-zinc-400">Order your digital services with local payment options</p>
               </div>
             </a>
 
@@ -1236,14 +1305,14 @@
                 </svg>
               </a>
 
-              <button onclick="app.openCart()" class="inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
+              <button onclick="app.openCart()" class="cta-sheen inline-flex items-center gap-3 rounded-[1.35rem] border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black shadow-[0_14px_34px_rgba(234,179,8,0.24)]">
                 <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
                   <circle cx="9" cy="20" r="1.5" />
                   <circle cx="18" cy="20" r="1.5" />
                   <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H7" />
                 </svg>
                 Cart
-                ${cartCount > 0 ? `<span class="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-xs font-bold">${cartCount}</span>` : ""}
+                ${cartCount > 0 ? `<span class="inline-flex min-w-[24px] items-center justify-center rounded-full bg-black/10 px-2 py-1 text-xs">${cartCount}</span>` : ""}
               </button>
             </div>
           </div>
