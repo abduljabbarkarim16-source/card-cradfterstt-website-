@@ -11,100 +11,446 @@
   <link rel="icon" type="image/png" href="images/card-crafters-monogram-glow.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .hero-collage-shell {
-      position: relative;
-      min-height: 34rem;
-      overflow: hidden;
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(250, 204, 21, 0.12), transparent 24%),
+        radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.05), transparent 18%),
+        radial-gradient(circle at 50% 78%, rgba(212, 175, 55, 0.08), transparent 26%),
+        linear-gradient(180deg, #090909 0%, #050505 52%, #020202 100%);
+      background-color: #070707;
     }
 
-    .hero-collage-shell::before {
+    .page-background {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-background::before,
+    .page-background::after {
       content: "";
       position: absolute;
-      inset: 6% 4% 0 18%;
-      border-radius: 2.5rem;
-      background:
-        radial-gradient(circle at top right, rgba(255, 215, 64, 0.18), transparent 34%),
-        radial-gradient(circle at 22% 22%, rgba(255, 255, 255, 0.08), transparent 26%),
-        linear-gradient(135deg, rgba(18, 18, 18, 0.9), rgba(6, 6, 6, 0.3));
-      border: 1px solid rgba(212, 175, 55, 0.12);
-      box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.05), 0 30px 90px rgba(0, 0, 0, 0.45);
-      transform: rotate(-11deg);
-      filter: blur(0.2px);
+      border-radius: 9999px;
+      filter: blur(90px);
+      opacity: 0.75;
     }
 
-    .hero-collage-grid {
+    .page-background::before {
+      width: 28rem;
+      height: 28rem;
+      top: -8rem;
+      left: -10rem;
+      background: rgba(250, 204, 21, 0.13);
+    }
+
+    .page-background::after {
+      width: 32rem;
+      height: 32rem;
+      right: -12rem;
+      top: 10rem;
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .page-grid {
       position: absolute;
-      inset: 1.25rem -3.5rem -2rem 2.75rem;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 96px 96px;
+      mask-image: radial-gradient(circle at center, black 28%, transparent 82%);
+      opacity: 0.3;
+    }
+
+    .page-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, transparent 38%, rgba(0, 0, 0, 0.32) 72%, rgba(0, 0, 0, 0.68) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.5));
+    }
+
+    .hero-logo-stage {
+      position: relative;
+      min-height: 44rem;
+      overflow: hidden;
+      border-radius: 2.6rem;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(212, 175, 55, 0.16), transparent 24%),
+        radial-gradient(circle at 90% 68%, rgba(212, 175, 55, 0.12), transparent 20%),
+        linear-gradient(180deg, rgba(6, 6, 6, 0.96) 0%, rgba(9, 9, 9, 0.98) 46%, rgba(4, 4, 4, 1) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.04), 0 32px 90px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-logo-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.58) 18%, rgba(0, 0, 0, 0.26) 38%, rgba(0, 0, 0, 0.06) 58%, transparent 82%),
+        radial-gradient(circle at 34% 40%, rgba(212, 175, 55, 0.14), transparent 44%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hero-logo-stage::after {
+      content: "";
+      position: absolute;
+      right: -10%;
+      top: 12%;
+      width: 32rem;
+      height: 32rem;
+      border-radius: 9999px;
+      background: rgba(250, 204, 21, 0.1);
+      filter: blur(70px);
+      animation: heroPulse 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-dust,
+    .hero-dust::before,
+    .hero-dust::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-dust {
+      background:
+        radial-gradient(circle at 74% 16%, rgba(250, 204, 21, 0.7) 0 2px, transparent 3px),
+        radial-gradient(circle at 82% 26%, rgba(250, 204, 21, 0.48) 0 2px, transparent 3px),
+        radial-gradient(circle at 88% 38%, rgba(250, 204, 21, 0.38) 0 2px, transparent 3px),
+        radial-gradient(circle at 71% 54%, rgba(250, 204, 21, 0.35) 0 2px, transparent 3px),
+        radial-gradient(circle at 94% 64%, rgba(250, 204, 21, 0.46) 0 2px, transparent 3px),
+        radial-gradient(circle at 78% 82%, rgba(250, 204, 21, 0.34) 0 2px, transparent 3px);
+      animation: dustFloat 10s ease-in-out infinite;
+    }
+
+    .hero-dust::before {
+      background:
+        radial-gradient(circle at 68% 22%, rgba(255, 241, 179, 0.5) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 92% 28%, rgba(255, 241, 179, 0.45) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 84% 58%, rgba(255, 241, 179, 0.4) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 76% 74%, rgba(255, 241, 179, 0.42) 0 1.5px, transparent 3px);
+      animation: dustFloat 13s ease-in-out infinite reverse;
+    }
+
+    .hero-dust::after {
+      background:
+        radial-gradient(circle at 72% 32%, rgba(250, 204, 21, 0.26) 0 5px, transparent 7px),
+        radial-gradient(circle at 86% 72%, rgba(250, 204, 21, 0.18) 0 7px, transparent 10px);
+      filter: blur(14px);
+      opacity: 0.65;
+    }
+
+    .hero-logo-cloud {
+      position: absolute;
+      inset: 0 2% 0 auto;
+      width: min(46rem, 52%);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 2rem 1rem 2rem 0;
+      z-index: 1;
+      animation: cloudFloat 8s ease-in-out infinite;
+    }
+
+    .hero-logo-grid {
       display: grid;
+      width: 100%;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1rem;
-      transform: rotate(-12deg) translate3d(0, 0, 0);
-      transform-origin: top right;
+      align-content: center;
     }
 
-    .hero-collage-fade {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, #070707 0%, rgba(7, 7, 7, 0.94) 20%, rgba(7, 7, 7, 0.38) 52%, rgba(7, 7, 7, 0.08) 74%, rgba(7, 7, 7, 0.58) 100%),
-        linear-gradient(180deg, rgba(7, 7, 7, 0.88) 0%, rgba(7, 7, 7, 0.06) 28%, rgba(7, 7, 7, 0.18) 72%, rgba(7, 7, 7, 0.86) 100%);
-      pointer-events: none;
-    }
-
-    .hero-media-card {
+    .hero-copy {
       position: relative;
-      min-height: 9.75rem;
+      z-index: 3;
+      display: flex;
+      min-height: 44rem;
+      align-items: center;
+      padding: 3.5rem 1.5rem;
+    }
+
+    .hero-copy-shell {
+      max-width: 46rem;
+      animation: heroCopyIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .hero-copy-shell > * {
+      opacity: 0;
+      animation: riseIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .hero-copy-shell > *:nth-child(1) { animation-delay: 0.12s; }
+    .hero-copy-shell > *:nth-child(2) { animation-delay: 0.2s; }
+    .hero-copy-shell > *:nth-child(3) { animation-delay: 0.28s; }
+    .hero-copy-shell > *:nth-child(4) { animation-delay: 0.36s; }
+    .hero-copy-shell > *:nth-child(5) { animation-delay: 0.44s; }
+
+    .hero-brand-tile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
-      border-radius: 1.65rem;
+      border-radius: 1.8rem;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 38%),
-        linear-gradient(145deg, rgba(10, 10, 10, 0.98), rgba(4, 4, 4, 0.94));
+      background: rgba(10, 10, 10, 0.95);
+      min-width: 8rem;
+      min-height: 6.25rem;
       box-shadow:
         inset 0 0 0 1px rgba(255, 215, 0, 0.08),
-        0 22px 52px rgba(0, 0, 0, 0.34);
+        0 24px 50px rgba(0, 0, 0, 0.35);
+      transform-origin: center;
+      transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+      opacity: 0;
+      animation: tileRise 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    .hero-media-card::before {
+    .hero-brand-tile.tile-wide {
+      grid-column: span 2;
+    }
+
+    .hero-brand-tile.tile-tall {
+      min-height: 9.75rem;
+    }
+
+    .hero-logo-grid .hero-brand-tile:nth-child(1) { animation-delay: 0.08s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(2) { animation-delay: 0.14s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(3) { animation-delay: 0.2s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(4) { animation-delay: 0.26s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(5) { animation-delay: 0.32s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(6) { animation-delay: 0.38s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(7) { animation-delay: 0.44s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(8) { animation-delay: 0.5s; }
+    .hero-logo-grid .hero-brand-tile:nth-child(9) { animation-delay: 0.56s; }
+
+    .hero-brand-tile:hover {
+      transform: translateY(-6px) scale(1.04) rotate(var(--rotate));
+      border-color: rgba(234, 179, 8, 0.3);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 215, 0, 0.14),
+        0 24px 50px rgba(0, 0, 0, 0.35),
+        0 0 40px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .hero-brand-tile::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 46%);
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 45%);
       pointer-events: none;
     }
 
-    .hero-media-card::after {
+    .hero-brand-tile::after {
       content: "";
       position: absolute;
-      inset: auto 18% 0.75rem 18%;
+      inset: auto 50% 0 50%;
+      width: 3.5rem;
       height: 2px;
+      transform: translateX(-50%);
       background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.9), transparent);
-      opacity: 0.7;
+      opacity: 0.75;
+    }
+
+    .hero-brand-top {
+      position: absolute;
+      inset: 0 auto auto 0;
+      height: 4rem;
+      width: 100%;
+      opacity: 0.72;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 100%);
+    }
+
+    .hero-brand-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .hero-brand-meta {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.26em;
+      color: #facc15;
+      text-align: left;
+    }
+
+    .hero-brand-mark {
+      font-size: clamp(1rem, 1.8vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-shadow: 0 0 20px color-mix(in srgb, var(--accent) 52%, transparent);
+    }
+
+    .hero-brand-name {
+      font-size: clamp(1rem, 1.65vw, 1.55rem);
+      font-weight: 600;
+      line-height: 1.05;
+      color: white;
+    }
+
+    .hero-brand-subtitle {
+      margin-top: 0.4rem;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgb(212 212 216);
+    }
+
+    .hero-brand-name.invert-brand,
+    .hero-brand-mark.invert-brand {
+      color: #ffffff;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.18);
+    }
+
+    .floating-chip {
+      transition: transform 200ms ease, border-color 200ms ease, background-color 200ms ease;
+      animation: chipDrift 6s ease-in-out infinite;
+    }
+
+    .floating-chip:hover {
+      transform: translateY(-4px);
+      border-color: rgba(234, 179, 8, 0.3);
+      background-color: rgba(250, 204, 21, 0.08);
+    }
+
+    .feature-card,
+    .content-panel,
+    .process-card {
+      transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease, background-color 240ms ease;
+    }
+
+    .feature-card:hover,
+    .content-panel:hover,
+    .process-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(234, 179, 8, 0.24);
+      box-shadow: 0 24px 65px rgba(0, 0, 0, 0.28);
+    }
+
+    .pulse-cta {
+      animation: ctaGlow 3.8s ease-in-out infinite;
+    }
+
+    @keyframes cloudFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes dustFloat {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(-18px); opacity: 0.85; }
+    }
+
+    @keyframes heroPulse {
+      0%, 100% { transform: scale(1); opacity: 0.22; }
+      50% { transform: scale(1.08); opacity: 0.3; }
+    }
+
+    @keyframes heroCopyIn {
+      0% { opacity: 0; transform: translateY(18px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes riseIn {
+      0% { opacity: 0; transform: translateY(18px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes tileRise {
+      0% { opacity: 0; transform: translateY(22px) scale(0.96) rotate(var(--rotate)); }
+      100% { opacity: 1; transform: translateY(0) scale(1) rotate(var(--rotate)); }
+    }
+
+    @keyframes chipDrift {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes ctaGlow {
+      0%, 100% { box-shadow: 0 18px 40px rgba(234,179,8,0.16); }
+      50% { box-shadow: 0 22px 52px rgba(234,179,8,0.28); }
     }
 
     @media (max-width: 1023px) {
-      .hero-collage-shell {
-        min-height: 24rem;
+      .hero-logo-stage {
+        min-height: 36rem;
       }
 
-      .hero-collage-grid {
-        inset: 1rem -1rem -1rem 0.75rem;
+      .hero-logo-cloud {
+        inset: auto 2% 1.5rem 2%;
+        width: auto;
+        padding: 0;
+      }
+
+      .hero-logo-grid {
         gap: 0.8rem;
+      }
+
+      .hero-copy {
+        min-height: 36rem;
       }
     }
 
     @media (max-width: 767px) {
-      .hero-collage-shell {
-        min-height: 17rem;
+      .hero-logo-stage {
+        min-height: 25rem;
       }
 
-      .hero-collage-grid {
+      .hero-logo-stage::before {
+        background:
+          linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.82) 52%, rgba(0, 0, 0, 0.96) 100%),
+          radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.14), transparent 44%);
+      }
+
+      .hero-logo-cloud {
+        inset: auto 1rem 1rem 1rem;
+        width: auto;
+        padding: 0;
+      }
+
+      .hero-logo-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        inset: 0.75rem -0.5rem -0.5rem 0.25rem;
+        gap: 0.7rem;
       }
 
-      .hero-media-card:nth-child(n + 5) {
+      .hero-copy {
+        min-height: 25rem;
+        align-items: flex-end;
+        padding: 1.5rem 1rem;
+      }
+
+      .hero-brand-tile {
+        min-width: 5.75rem;
+        min-height: 4.75rem;
+      }
+
+      .hero-brand-tile:nth-child(n + 6) {
         display: none;
+      }
+
+      .hero-brand-inner {
+        padding: 0.8rem;
+      }
+
+      .hero-brand-meta,
+      .hero-brand-subtitle {
+        letter-spacing: 0.16em;
       }
     }
   </style>
@@ -139,7 +485,12 @@
     });
   </script>
 </head>
-<body class="min-h-screen bg-[#070707] text-white">
+<body class="min-h-screen text-white">
+  <div class="page-background">
+    <div class="page-grid"></div>
+    <div class="page-vignette"></div>
+  </div>
+
   <div class="pointer-events-none absolute inset-0 overflow-hidden">
     <div class="absolute left-[-8rem] top-[-5rem] h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
     <div class="absolute right-[-6rem] top-40 h-80 w-80 rounded-full bg-yellow-300/10 blur-3xl"></div>
@@ -186,188 +537,188 @@
   </header>
 
   <main class="relative z-10">
-    <section class="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 lg:px-8 lg:pb-14 lg:pt-20">
-      <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
-          <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-yellow-300">
-            Trusted Digital Services
-          </div>
+    <section class="px-4 pb-10 pt-14 sm:px-6 lg:px-8 lg:pb-14 lg:pt-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="hero-logo-stage">
+            <div class="hero-dust"></div>
+            <div class="hero-logo-cloud">
+              <div class="hero-logo-grid">
+                <div class="hero-brand-tile tile-wide tile-tall" style="--accent:#e50914; --rotate:-3deg; transform:rotate(-3deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Streaming</div>
+                      <div class="hero-brand-mark">NF</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name" style="color:#e50914;">Netflix</div>
+                      <div class="hero-brand-subtitle">Entertainment Access</div>
+                    </div>
+                  </div>
+                </div>
 
-          <h1 class="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Streaming, gift cards, bill payments, and online shopping support — all in one place.
-          </h1>
+                <div class="hero-brand-tile" style="--accent:#3b82f6; --rotate:2deg; transform:rotate(2deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Streaming</div>
+                      <div class="hero-brand-mark">D+</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Disney+</div>
+                      <div class="hero-brand-subtitle">Family Streaming</div>
+                    </div>
+                  </div>
+                </div>
 
-          <p class="mt-5 max-w-2xl text-base leading-8 text-zinc-300">
-            Card Crafters makes it easy to access the services you use most, with clear options, fast support, and a premium experience built around convenience.
-          </p>
+                <div class="hero-brand-tile" style="--accent:#60a5fa; --rotate:-2deg; transform:rotate(-2deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Streaming</div>
+                      <div class="hero-brand-mark">PV</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Prime Video</div>
+                      <div class="hero-brand-subtitle">Video Membership</div>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href="services.html" class="rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">
-              Explore Services
-            </a>
-            <a href="contact.html" class="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-white transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-200">
-              Contact Us
-            </a>
-          </div>
+                <div class="hero-brand-tile" style="--accent:#f97316; --rotate:1deg; transform:rotate(1deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Anime</div>
+                      <div class="hero-brand-mark">CR</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Crunchyroll</div>
+                      <div class="hero-brand-subtitle">Premium Access</div>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="mt-8 flex flex-wrap gap-2">
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Netflix</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Disney+</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Crunchyroll</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">PlayStation</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Xbox</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Amazon</div>
+                <div class="hero-brand-tile" style="--accent:#f47c00; --rotate:-2deg; transform:rotate(-2deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Gaming</div>
+                      <div class="hero-brand-mark">NS</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Nintendo</div>
+                      <div class="hero-brand-subtitle">eShop Value</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hero-brand-tile" style="--accent:#84cc16; --rotate:2deg; transform:rotate(2deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Gaming</div>
+                      <div class="hero-brand-mark">XB</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Xbox</div>
+                      <div class="hero-brand-subtitle">Digital Value</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hero-brand-tile tile-wide" style="--accent:#facc15; --rotate:-1deg; transform:rotate(-1deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Mobile</div>
+                      <div class="hero-brand-mark invert-brand">PM</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name invert-brand">PUBG Mobile</div>
+                      <div class="hero-brand-subtitle">Game Top-Up</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hero-brand-tile" style="--accent:#cbd5e1; --rotate:2deg; transform:rotate(2deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Gaming</div>
+                      <div class="hero-brand-mark">ST</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Steam</div>
+                      <div class="hero-brand-subtitle">Wallet Codes</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hero-brand-tile tile-wide" style="--accent:#f59e0b; --rotate:1deg; transform:rotate(1deg);">
+                  <div class="hero-brand-top"></div>
+                  <div class="hero-brand-inner">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="hero-brand-meta">Retail</div>
+                      <div class="hero-brand-mark">AM</div>
+                    </div>
+                    <div>
+                      <div class="hero-brand-name">Amazon</div>
+                      <div class="hero-brand-subtitle">Gift Cards &amp; Checkout</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-copy">
+              <div class="hero-copy-shell">
+                <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-yellow-300">
+                  Trusted Digital Services
+                </div>
+
+                <h1 class="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl">
+                  Streaming, gift cards, bill payments, and shopping support.
+                </h1>
+
+                <p class="mt-5 max-w-2xl text-base leading-8 text-zinc-300 sm:text-lg">
+                  Card Crafters makes it easy to access the services you use most, with clear options, fast support, and a premium experience built around convenience.
+                </p>
+
+                <div class="mt-8 flex flex-wrap gap-3">
+                  <a href="services.html" class="pulse-cta rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">
+                    Explore Services
+                  </a>
+                  <a href="contact.html" class="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-white transition hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-200">
+                    Contact Us
+                  </a>
+                </div>
+
+                <div class="mt-8 flex flex-wrap gap-2">
+                  <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Netflix</div>
+                  <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Disney+</div>
+                  <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Crunchyroll</div>
+                  <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">PlayStation</div>
+                  <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Xbox</div>
+                  <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Amazon</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="space-y-5">
-          <div class="hero-collage-shell">
-            <div class="hero-collage-grid">
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(229,9,20,0.34) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div>
-                      <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Streaming</div>
-                      <div class="mt-2 text-[11px] uppercase tracking-[0.22em] text-zinc-400">Featured</div>
-                    </div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#E50914; text-shadow:0 0 20px rgba(229,9,20,0.6);">NF</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#E50914; text-shadow:0 0 24px rgba(229,9,20,0.32);">Netflix</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Entertainment Access</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(17,60,207,0.34) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Streaming</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#8CC8FF; text-shadow:0 0 20px rgba(140,200,255,0.52);">D+</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#DCE9FF; text-shadow:0 0 22px rgba(17,60,207,0.34);">Disney+</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Family Streaming</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(244,117,33,0.36) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Anime</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#F47521; text-shadow:0 0 20px rgba(244,117,33,0.52);">CR</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#F9A25A; text-shadow:0 0 22px rgba(244,117,33,0.34);">Crunchyroll</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Premium Access</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(0,55,145,0.34) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Gift Cards</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#7FB2FF; text-shadow:0 0 20px rgba(0,55,145,0.55);">PS</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#DCE8FF; text-shadow:0 0 22px rgba(0,55,145,0.34);">PlayStation</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Wallet &amp; Top-Up</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(16,124,16,0.36) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Gaming</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#8AE98A; text-shadow:0 0 20px rgba(16,124,16,0.55);">XB</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#CCF7CC; text-shadow:0 0 22px rgba(16,124,16,0.34);">Xbox</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Digital Value</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(255,153,0,0.36) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Retail</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#FFB649; text-shadow:0 0 20px rgba(255,153,0,0.55);">AM</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#FFE0A8; text-shadow:0 0 22px rgba(255,153,0,0.34);">Amazon</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Gift Cards</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(30,215,96,0.34) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Music</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#56F19A; text-shadow:0 0 20px rgba(30,215,96,0.55);">SP</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#D8FFE9; text-shadow:0 0 22px rgba(30,215,96,0.34);">Spotify</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Gift Cards</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(102,192,244,0.34) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Gaming</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#9BDAFF; text-shadow:0 0 20px rgba(102,192,244,0.55);">ST</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#E0F5FF; text-shadow:0 0 22px rgba(102,192,244,0.34);">Steam</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Wallet Codes</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="hero-media-card p-4">
-                <div class="absolute inset-x-0 top-0 h-16 opacity-80" style="background:linear-gradient(180deg,rgba(37,99,235,0.34) 0%,transparent 100%);"></div>
-                <div class="relative flex h-full flex-col justify-between">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="text-[10px] uppercase tracking-[0.26em] text-yellow-300">Digital</div>
-                    <div class="text-sm font-bold tracking-[0.28em]" style="color:#80AFFF; text-shadow:0 0 20px rgba(37,99,235,0.55);">VC</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-semibold tracking-tight" style="color:#DDE9FF; text-shadow:0 0 22px rgba(37,99,235,0.34);">Visa</div>
-                    <div class="mt-2 text-xs uppercase tracking-[0.22em] text-zinc-300">Digital Gift Cards</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="hero-collage-fade"></div>
-          </div>
-
-          <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Fast service</div>
-              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Secure ordering</div>
-              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Wide service variety</div>
-              <div class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Convenient local support</div>
-            </div>
+        <div class="content-panel mt-5 rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Fast service</div>
+            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Secure ordering</div>
+            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Wide service variety</div>
+            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Convenient local support</div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <section id="categories" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <div class="max-w-3xl">
         <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
           Service Categories
@@ -381,7 +732,7 @@
       </div>
 
       <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <div class="flex items-start gap-4">
             <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
               <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
@@ -406,7 +757,7 @@
           <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Go to Services<span>&rarr;</span></a>
         </div>
 
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <div class="flex items-start gap-4">
             <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
               <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
@@ -431,7 +782,7 @@
           <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Browse Cards<span>&rarr;</span></a>
         </div>
 
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <div class="flex items-start gap-4">
             <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
               <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
@@ -456,7 +807,7 @@
           <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">View Payments<span>&rarr;</span></a>
         </div>
 
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <div class="flex items-start gap-4">
             <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
               <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
@@ -479,6 +830,131 @@
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Temu</div>
           </div>
           <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Start Request<span>&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <div class="content-panel rounded-[2.2rem] border border-white/10 bg-white/[0.03] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+            Why Card Crafters
+          </div>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            A smoother way to buy, request, and manage digital services.
+          </h2>
+          <p class="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
+            The homepage now leads into a clearer experience, but the real value is in how quickly customers can move from browsing to checkout, support, or a custom request without confusion.
+          </p>
+
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Clear Paths</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">Streaming, top-ups, bill payments, and shopping support all have distinct routes so users know where to go immediately.</p>
+            </div>
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Fast Support</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">The site keeps key contact options close, making it easier to assist customers before and after they place an order.</p>
+            </div>
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Premium Feel</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">A stronger homepage presentation helps position the brand as reliable, organized, and worth trusting with repeat purchases.</p>
+            </div>
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Flexible Requests</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">Not every customer needs the same thing, so the site supports both direct purchases and guided sourcing requests.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-panel rounded-[2.2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="feature-card rounded-[1.6rem] border border-yellow-500/20 bg-[#0a0a0a] p-5">
+              <p class="text-3xl font-semibold text-white">4</p>
+              <p class="mt-2 text-sm uppercase tracking-[0.18em] text-yellow-300">Core Categories</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">Streaming, gift cards, payments, and sourcing all anchored from one homepage.</p>
+            </div>
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0a0a0a] p-5">
+              <p class="text-3xl font-semibold text-white">1</p>
+              <p class="mt-2 text-sm uppercase tracking-[0.18em] text-yellow-300">Shared Experience</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">A single design language now connects discovery, ordering, and support across the site.</p>
+            </div>
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0a0a0a] p-5 sm:col-span-2">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Built For Repeat Customers</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">
+                Returning buyers should be able to recognize services quickly, move faster through decisions, and feel more confident about where to click next. The homepage now supports that with stronger content hierarchy and better signposting.
+              </p>
+            </div>
+            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0a0a0a] p-5 sm:col-span-2">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Support Ready</p>
+              <p class="mt-3 text-sm leading-7 text-zinc-400">
+                The homepage is also working as a decision page, helping visitors understand what is available before they jump into service details, checkout, or direct contact.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="content-panel rounded-[2.3rem] border border-white/10 bg-white/[0.03] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div class="max-w-3xl">
+          <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+            How It Works
+          </div>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            A simple flow from interest to delivery.
+          </h2>
+          <p class="mt-4 text-base leading-8 text-zinc-300">
+            New visitors often need reassurance that the process is straightforward. This section makes the steps obvious before they reach the service pages.
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-5 md:grid-cols-3">
+          <div class="process-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-sm font-semibold text-yellow-300">01</div>
+            <h3 class="mt-5 text-xl font-semibold text-white">Choose A Service</h3>
+            <p class="mt-3 text-sm leading-7 text-zinc-400">Start with the homepage categories or jump straight into the service page that matches what you want.</p>
+          </div>
+          <div class="process-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-sm font-semibold text-yellow-300">02</div>
+            <h3 class="mt-5 text-xl font-semibold text-white">Review The Options</h3>
+            <p class="mt-3 text-sm leading-7 text-zinc-400">Compare plans, value, or request details with less friction and a cleaner visual flow than before.</p>
+          </div>
+          <div class="process-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-sm font-semibold text-yellow-300">03</div>
+            <h3 class="mt-5 text-xl font-semibold text-white">Checkout Or Contact</h3>
+            <p class="mt-3 text-sm leading-7 text-zinc-400">Move into checkout for direct services or reach out when you need sourcing help, guidance, or confirmation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="content-panel rounded-[2.4rem] border border-yellow-500/20 bg-[radial-gradient(circle_at_top_right,rgba(250,204,21,0.12),transparent_28%),linear-gradient(180deg,#0c0c0c_0%,#090909_100%)] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+        <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+              Ready To Start
+            </div>
+            <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              Explore services now or contact Card Crafters for a custom request.
+            </h2>
+            <p class="mt-4 text-base leading-8 text-zinc-300">
+              The homepage now does more of the heavy lifting, but the next step is still simple: browse what you need or talk to us directly.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <a href="services.html" class="pulse-cta rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">
+              Explore Services
+            </a>
+            <a href="contact.html" class="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:border-yellow-500/30 hover:bg-yellow-500/10">
+              Contact Us
+            </a>
+            <a href="faq.html" class="rounded-2xl border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-zinc-200 transition hover:border-yellow-500/30 hover:bg-white/[0.04] hover:text-white">
+              View FAQ
+            </a>
+          </div>
         </div>
       </div>
     </section>
