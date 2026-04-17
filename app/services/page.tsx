@@ -6,7 +6,6 @@ import ServiceCard from '@/components/ServiceCard';
 import { SERVICES, getCategories, Service } from '@/lib/services';
 import Link from 'next/link';
 import Button from '@/components/Button';
-import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Services',

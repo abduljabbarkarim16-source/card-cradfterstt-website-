@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import Section from '@/components/Section';
 import ServiceCard from '@/components/ServiceCard';
 import Button from '@/components/Button';
-import { SERVICES, getServiceBySlug, Service } from '@/lib/services';
+import { SERVICES, getServiceBySlug } from '@/lib/services';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 

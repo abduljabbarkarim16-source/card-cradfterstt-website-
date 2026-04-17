@@ -1,5 +1,3 @@
-import Card from './Card';
-
 interface FeatureProps {
   icon: string;
   title: string;

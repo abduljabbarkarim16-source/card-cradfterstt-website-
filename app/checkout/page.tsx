@@ -24,7 +24,7 @@ export default function Checkout() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'quantity' ? Number(value) : value,
     }));
   };
 
@@ -129,8 +129,8 @@ export default function Checkout() {
                         type="number"
                         id="quantity"
                         name="quantity"
-                        min="1"
-                        max="10"
+                        min={1}
+                        max={10}
                         value={formData.quantity}
                         onChange={handleChange}
                         className="w-full"
@@ -232,7 +232,7 @@ export default function Checkout() {
                         value={formData.cardNumber}
                         onChange={handleChange}
                         required
-                        maxLength="19"
+                        maxLength={19}
                         className="w-full"
                       />
                     </div>
@@ -250,7 +250,7 @@ export default function Checkout() {
                           value={formData.expiry}
                           onChange={handleChange}
                           required
-                          maxLength="5"
+                          maxLength={5}
                           className="w-full"
                         />
                       </div>
@@ -266,7 +266,7 @@ export default function Checkout() {
                           value={formData.cvc}
                           onChange={handleChange}
                           required
-                          maxLength="4"
+                          maxLength={4}
                           className="w-full"
                         />
                       </div>

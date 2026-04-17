@@ -243,7 +243,7 @@ function LogoBadge({ title, size = "md" }: { title: string; size?: "sm" | "md" |
   const sizeClass = size === "sm" ? "h-10 w-10" : size === "lg" ? "h-16 w-16" : "h-12 w-12";
   const fontSize = size === "sm" ? "text-xs" : size === "lg" ? "text-base" : "text-sm";
 
-  const logoSrc = "images/card-crafters-monogram-glow.png";
+  const logoSrc = "/brand/monogram-glow.png";
 
   return (
     <div className={`relative flex items-center justify-center rounded-2xl border border-yellow-400/20 bg-gradient-to-br from-[#17110b] to-[#090909] p-1 shadow-[0_14px_34px_rgba(0,0,0,0.36)] ${sizeClass}`}>
@@ -621,12 +621,12 @@ export default function CardCraftersServicesPreview() {
             <div className="mt-4 space-y-2 text-sm text-zinc-200">
               <p>Category: {selectedGiftCategory.label}</p>
               <p>Brand: {giftBrand}</p>
-              <p>Denomination: {giftCardDenominations.find((item) => item.id === giftDenominationId)?.label}</p>
+              <p>Denomination: {selectedGiftDenomination.label}</p>
               <p>Region: {giftRegion}</p>
             </div>
-            <div className="mt-5 text-3xl font-semibold text-yellow-100">{formatCurrency(giftCardDenominations.find((item) => item.id === giftDenominationId)?.price || 0)}</div>
+            <div className="mt-5 text-3xl font-semibold text-yellow-100">{formatCurrency(selectedGiftDenomination.price)}</div>
             <div className="mt-5">
-              <PrimaryButton label="Add to Cart" onClick={() => addCartItem({ title: giftBrand, subtitle: `${giftCardDenominations.find((item) => item.id === giftDenominationId)?.label} • ${giftRegion}`, price: giftCardDenominations.find((item) => item.id === giftDenominationId)?.price || 0 })} />
+              <PrimaryButton label="Add to Cart" onClick={() => addCartItem({ title: giftBrand, subtitle: `${selectedGiftDenomination.label} • ${giftRegion}`, price: selectedGiftDenomination.price })} />
             </div>
           </div>
         </div>

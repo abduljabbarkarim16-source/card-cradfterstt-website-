@@ -787,7 +787,7 @@ const ServicesPage: React.FC = () => {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <div className="shrink-0 rounded-[1.35rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] to-[#090909] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.36)]">
-              <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" className="h-11 w-11 rounded-xl object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <img src="/brand/monogram-glow.png" alt="Card Crafters monogram" className="h-11 w-11 rounded-xl object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
             </div>
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.26em] text-yellow-300">
@@ -839,7 +839,7 @@ const ServicesPage: React.FC = () => {
           <div className="rounded-3xl border border-yellow-500/20 bg-[#121212] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" className="h-12 w-12 rounded-xl border border-yellow-500/30 object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <img src="/brand/monogram-glow.png" alt="Card Crafters monogram" className="h-12 w-12 rounded-xl border border-yellow-500/30 object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
                 <div>
                   <h1 className="text-xl font-bold uppercase tracking-wider text-yellow-300">Card Crafters</h1>
                   <p className="text-xs text-zinc-300">Premium black & gold digital services experience</p>
@@ -943,7 +943,7 @@ const ServicesPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-3">
               <div className="shrink-0 rounded-[1.35rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] to-[#090909] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.36)]">
-                <img src="images/card-crafters-monogram-glow.png" alt="Card Crafters monogram" className="h-11 w-11 rounded-xl object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <img src="/brand/monogram-glow.png" alt="Card Crafters monogram" className="h-11 w-11 rounded-xl object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
               </div>
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.26em] text-yellow-300">

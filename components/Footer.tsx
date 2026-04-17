@@ -33,9 +33,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-dark-900 border-t border-gray-700 border-opacity-20 mt-20 md:mt-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
-          {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-accent-gold rounded-lg flex items-center justify-center font-bold text-dark-950">
@@ -47,11 +45,10 @@ export default function Footer() {
               Premium digital services and sourcing solutions. Fast, secure, and reliable.
             </p>
             <p className="text-xs text-gray-500 mt-4">
-              © {currentYear} Card Crafters. All rights reserved.
+              Copyright {currentYear} Card Crafters. All rights reserved.
             </p>
           </div>
 
-          {/* Links Sections */}
           {sections.map((section) => (
             <div key={section.title}>
               <h4 className="text-sm font-bold text-gray-100 mb-4 uppercase tracking-wide">
@@ -73,15 +70,13 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Divider */}
         <div className="border-t border-gray-700 border-opacity-20 pt-8">
-          {/* Bottom Info */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
             <p>Trusted by thousands of customers worldwide</p>
             <div className="flex gap-6">
-              <span>🔒 Secure & Encrypted</span>
-              <span>✓ Verified Payments</span>
-              <span>📞 24/7 Support</span>
+              <span>Secure & Encrypted</span>
+              <span>Verified Payments</span>
+              <span>24/7 Support</span>
             </div>
           </div>
         </div>

@@ -5,7 +5,6 @@ import Section from '@/components/Section';
 import Button from '@/components/Button';
 import ServiceCard from '@/components/ServiceCard';
 import Feature from '@/components/Feature';
-import Testimonial from '@/components/Testimonial';
 import FAQItem from '@/components/FAQItem';
 import { SERVICES, getCategories } from '@/lib/services';
 import Link from 'next/link';
@@ -47,30 +46,6 @@ export default function Home() {
       question: 'What if I have an issue with my service?',
       answer:
         'Our support team is available 24/7 to assist you. Contact us via email, phone, or our contact form, and we typically respond within 2-4 hours.',
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: 'Michael Johnson',
-      role: 'Regular Customer',
-      content:
-        'Card Crafters made it incredibly easy to set up my Netflix subscription. The process was seamless and support was fantastic.',
-      rating: 5,
-    },
-    {
-      name: 'Sarah Williams',
-      role: 'Business Owner',
-      content:
-        'The shopping sourcing service saved me hours. They found the exact products I needed at the best prices. Highly recommended!',
-      rating: 5,
-    },
-    {
-      name: 'David Chen',
-      role: 'Customer',
-      content:
-        'Fast, reliable, and trustworthy. I use Card Crafters for all my digital needs. Great customer service!',
-      rating: 5,
     },
   ];
 

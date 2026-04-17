@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'Card Crafters',
     images: [
       {
-        url: '/images/card-crafters-monogram-glow.png',
+        url: '/brand/monogram-glow.png',
         width: 1200,
         height: 630,
         alt: 'Card Crafters',
@@ -54,11 +54,11 @@ export const metadata: Metadata = {
     title: 'Card Crafters | Premium Digital Services & Sourcing',
     description:
       'Premium digital services including streaming subscriptions, gift cards, bill payments, and shopping assistance.',
-    images: ['/images/card-crafters-monogram-glow.png'],
+    images: ['/brand/monogram-glow.png'],
   },
   icons: {
-    icon: '/images/card-crafters-monogram-glow.png',
-    shortcut: '/images/card-crafters-monogram.png',
+    icon: '/brand/monogram-glow.png',
+    shortcut: '/brand/monogram-glow.png',
   },
   robots: {
     index: true,
@@ -82,13 +82,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${sora.variable}`} data-scroll-behavior="smooth">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="relative bg-dark-950 overflow-x-hidden">
+      <body className="relative bg-dark-950 overflow-x-hidden" suppressHydrationWarning>
         <div className="fixed inset-0 -z-10 pointer-events-none" />
         {children}
       </body>
