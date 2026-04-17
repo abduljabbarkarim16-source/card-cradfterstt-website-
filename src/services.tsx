@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './services.css'; // Assuming we have CSS for additional styles
+import '../styles/services.css'; // Assuming we have CSS for additional styles
 
 interface CartItem {
   id: string;
@@ -1008,3 +1008,4 @@ const ServicesPage: React.FC = () => {
 };
 
 export default ServicesPage;
+
