@@ -6,6 +6,7 @@ interface SectionProps {
   title?: string;
   subtitle?: string;
   dark?: boolean;
+  tone?: 'default' | 'band' | 'quiet' | 'dark';
 }
 
 export default function Section({
@@ -14,18 +15,26 @@ export default function Section({
   title,
   subtitle,
   dark = false,
+  tone,
 }: SectionProps) {
+  const resolvedTone = tone || (dark ? 'dark' : 'default');
+  const toneClass = {
+    default: 'bg-transparent',
+    band: 'section-band',
+    quiet: 'section-quiet',
+    dark: 'bg-dark-900/50',
+  }[resolvedTone];
+
   return (
     <section
-      className={`section-padding relative ${
-        dark ? 'bg-dark-900 bg-opacity-50' : 'bg-transparent'
-      } ${className}`}
+      className={`section-padding relative ${toneClass} ${className}`}
     >
       <div className="section-container">
         {(title || subtitle) && (
           <div className="text-center mb-12 md:mb-16">
+            <div className="mx-auto mb-5 gold-divider" />
             {title && (
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-100 mb-4">
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-100 mb-4">
                 {title}
               </h2>
             )}

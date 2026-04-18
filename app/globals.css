@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  @apply transition-colors duration-300;
-}
-
 ::selection {
   @apply bg-accent-gold bg-opacity-20 text-accent-gold;
 }
@@ -17,26 +13,24 @@ html {
 body {
   @apply bg-dark-950 text-gray-100;
   font-family: 'Manrope', sans-serif;
-  background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.08), transparent 24%),
-    radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.03), transparent 18%),
-    radial-gradient(circle at 50% 78%, rgba(212, 175, 55, 0.05), transparent 26%),
-    linear-gradient(180deg, #090909 0%, #050505 52%, #020202 100%);
-  background-color: #070707;
-  background-attachment: fixed;
+  background:
+    radial-gradient(circle at 14% 6%, rgba(217, 167, 47, 0.13), transparent 24%),
+    radial-gradient(circle at 82% 10%, rgba(242, 199, 102, 0.035), transparent 20%),
+    linear-gradient(180deg, #0d0d0f 0%, #09090a 48%, #050506 100%);
+  background-color: #050506;
   position: relative;
 }
 
-/* Animated background elements */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 96px 96px;
-  mask-image: radial-gradient(circle at center, black 28%, transparent 82%);
-  opacity: 0.15;
+    linear-gradient(rgba(217, 167, 47, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 112px 112px;
+  mask-image: radial-gradient(circle at center, black 18%, transparent 78%);
+  opacity: 0.18;
   pointer-events: none;
   z-index: 0;
 }
@@ -45,10 +39,23 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 38%, rgba(0, 0, 0, 0.32) 72%, rgba(0, 0, 0, 0.68) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.5));
+  background:
+    radial-gradient(circle at center, transparent 42%, rgba(5, 5, 6, 0.28) 76%, rgba(2, 2, 3, 0.62) 100%),
+    linear-gradient(180deg, rgba(5, 5, 6, 0.08), rgba(2, 2, 3, 0.38));
   pointer-events: none;
   z-index: 0;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  body::before,
+  body::after {
+    display: none;
+  }
 }
 
 h1,
@@ -60,24 +67,12 @@ h6 {
   @apply font-display font-bold;
 }
 
-h1 {
-  @apply text-5xl md:text-6xl leading-tight;
-}
-
-h2 {
-  @apply text-4xl md:text-5xl leading-tight;
-}
-
-h3 {
-  @apply text-2xl md:text-3xl leading-tight;
-}
-
 a {
-  @apply text-accent-gold hover:text-accent-gold_light transition-colors;
+  @apply text-accent-gold hover:text-accent-gold_light;
 }
 
 button {
-  @apply transition-all duration-300;
+  @apply transition-colors duration-200;
 }
 
 /* Premium text effect */
@@ -91,23 +86,103 @@ button {
 
 /* Card styles */
 .card-premium {
-  @apply relative rounded-2xl bg-dark-800 bg-opacity-50 border border-gray-700 border-opacity-30 backdrop-blur-md overflow-hidden;
-  background: linear-gradient(135deg, rgba(26, 31, 46, 0.5) 0%, rgba(26, 31, 46, 0.2) 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.03), 0 8px 32px rgba(0, 0, 0, 0.3);
+  @apply relative rounded-lg border border-white/10 bg-dark-800/70 overflow-hidden;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
+    linear-gradient(180deg, rgba(24, 23, 25, 0.96), rgba(13, 13, 15, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055), 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.visual-panel {
+  @apply relative overflow-hidden rounded-lg border border-white/10 bg-dark-800/75 shadow-premium;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.018)),
+    linear-gradient(180deg, rgba(217, 167, 47, 0.04), transparent 44%);
+}
+
+.visual-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 0 1px rgba(217, 167, 47, 0.055);
+}
+
+.visual-panel-muted {
+  @apply border-white/10 bg-dark-900/70;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    linear-gradient(180deg, rgba(18, 18, 20, 0.95), rgba(5, 5, 6, 0.98));
+}
+
+.visual-panel-premium {
+  @apply border-accent-gold/25;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(217, 167, 47, 0.18), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015)),
+    linear-gradient(180deg, rgba(20, 19, 21, 0.98), rgba(5, 5, 6, 0.99));
+}
+
+.visual-panel-highlight {
+  @apply border-accent-gold/35;
+  background:
+    linear-gradient(135deg, rgba(217, 167, 47, 0.98), rgba(242, 199, 102, 0.94)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent);
+  color: #08090b;
+}
+
+.visual-panel-plain {
+  @apply border-white/10 bg-transparent shadow-none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
+}
+
+.product-frame {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(217, 167, 47, 0.16), transparent 38%),
+    radial-gradient(circle at 85% 85%, rgba(242, 199, 102, 0.04), transparent 36%),
+    linear-gradient(145deg, rgba(20, 19, 21, 0.94), rgba(5, 5, 6, 0.98));
+}
+
+.section-rule {
+  @apply border-y border-white/10 bg-dark-900/55;
+}
+
+.section-band {
+  @apply border-y border-white/10;
+  background:
+    linear-gradient(180deg, rgba(18, 18, 20, 0.62), rgba(8, 8, 9, 0.52)),
+    radial-gradient(circle at 10% 0%, rgba(217, 167, 47, 0.075), transparent 28%);
+}
+
+.section-quiet {
+  background: linear-gradient(180deg, rgba(5, 5, 6, 0), rgba(20, 19, 21, 0.2), rgba(5, 5, 6, 0));
+}
+
+.chip {
+  @apply inline-flex items-center rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-gray-200;
+}
+
+.premium-badge {
+  @apply inline-flex items-center rounded-lg border border-accent-gold/30 bg-accent-gold/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-accent-gold;
+}
+
+.gold-divider {
+  @apply h-px w-24 bg-gradient-to-r from-transparent via-accent-gold_light to-transparent;
 }
 
 .card-premium:hover {
-  @apply border-gray-600 border-opacity-50;
-  box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.05), 0 12px 48px rgba(0, 0, 0, 0.4);
+  @apply border-accent-gold/30;
+  box-shadow: inset 0 0 0 1px rgba(217, 167, 47, 0.075), 0 24px 64px rgba(0, 0, 0, 0.42);
 }
 
 /* Button variants */
 .btn {
-  @apply px-6 py-3 rounded-lg font-semibold text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2;
+  @apply px-6 py-3 rounded-lg font-semibold text-sm uppercase tracking-wider transition duration-200 inline-flex items-center justify-center gap-2;
 }
 
 .btn-primary {
-  @apply bg-accent-gold text-dark-950 hover:bg-accent-gold_light shadow-glow-gold hover:shadow-lg;
+  @apply border border-accent-gold/50 bg-accent-gold text-dark-950 shadow-glow-gold-sm hover:bg-accent-gold_light hover:border-accent-gold_light hover:shadow-glow-gold;
 }
 
 .btn-primary:disabled {
@@ -115,7 +190,7 @@ button {
 }
 
 .btn-secondary {
-  @apply bg-dark-800 bg-opacity-50 text-gray-100 border border-gray-700 border-opacity-50 hover:bg-dark-700 hover:border-gray-600 hover:border-opacity-70;
+  @apply bg-dark-800/70 text-gray-100 border border-white/10 hover:bg-dark-700/80 hover:border-accent-gold/40 hover:text-accent-gold;
 }
 
 .btn-secondary:hover {
@@ -123,7 +198,7 @@ button {
 }
 
 .btn-ghost {
-  @apply bg-transparent text-gray-100 border border-gray-700 border-opacity-30 hover:bg-dark-800 hover:bg-opacity-30 hover:border-gray-600 hover:border-opacity-50;
+  @apply bg-transparent text-gray-300 border border-white/10 hover:bg-white/[0.04] hover:border-accent-gold/30 hover:text-accent-gold;
 }
 
 /* Section spacing */
@@ -148,7 +223,7 @@ button {
 input,
 textarea,
 select {
-  @apply bg-dark-800 bg-opacity-50 border border-gray-700 border-opacity-50 rounded-lg px-4 py-2.5 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-accent-gold focus:border-opacity-100 focus:shadow-glow-gold transition-all duration-300;
+  @apply bg-dark-900/80 border border-white/10 rounded-lg px-4 py-2.5 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-accent-gold/80 focus:shadow-glow-gold-sm transition-colors duration-200;
 }
 
 input:disabled,

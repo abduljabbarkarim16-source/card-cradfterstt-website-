@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -7,10 +8,10 @@ export default function Footer() {
     {
       title: 'Services',
       links: [
-        { label: 'Streaming Services', href: '/services/streaming' },
-        { label: 'Gift Cards', href: '/services/gift-cards' },
-        { label: 'Bill Payments', href: '/services/bill-payments' },
-        { label: 'Shopping & Sourcing', href: '/services/shopping' },
+        { label: 'Streaming Services', href: '/services?category=streaming' },
+        { label: 'Gift Cards', href: '/services?category=gift-cards' },
+        { label: 'Bill Payments', href: '/services?category=bill-payments' },
+        { label: 'Shopping & Sourcing', href: '/services?category=shopping' },
       ],
     },
     {
@@ -31,18 +32,24 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative bg-dark-900 border-t border-gray-700 border-opacity-20 mt-20 md:mt-32">
+    <footer className="relative mt-20 border-t border-accent-gold/15 bg-dark-900/90 md:mt-32">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-gold/45 to-transparent" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-accent-gold rounded-lg flex items-center justify-center font-bold text-dark-950">
-                CC
+              <div className="relative h-11 w-44">
+                <Image
+                  src="/brand/logo-long.png"
+                  alt="Card Crafters"
+                  fill
+                  sizes="176px"
+                  className="object-contain object-left"
+                />
               </div>
-              <span className="text-lg font-bold text-gray-100">Card Crafters</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Premium digital services and sourcing solutions. Fast, secure, and reliable.
+              Premium digital services, cards, bill payments, and sourcing support with a clearer order flow.
             </p>
             <p className="text-xs text-gray-500 mt-4">
               Copyright {currentYear} Card Crafters. All rights reserved.
@@ -70,13 +77,13 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-gray-700 border-opacity-20 pt-8">
+        <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-            <p>Trusted by thousands of customers worldwide</p>
-            <div className="flex gap-6">
-              <span>Secure & Encrypted</span>
-              <span>Verified Payments</span>
-              <span>24/7 Support</span>
+            <p>Digital services, cards, bill payments, and sourcing support.</p>
+            <div className="flex flex-wrap justify-center gap-3 md:gap-6">
+              <span>Guided request flow</span>
+              <span>Review before confirmation</span>
+              <span>Responsive support</span>
             </div>
           </div>
         </div>

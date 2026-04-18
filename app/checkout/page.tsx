@@ -1,367 +1,212 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
+import { PageHeader, VisualPanel } from '@/components/Visual';
+import { formatCurrency } from '@/lib/catalog';
+import { useCart } from '@/components/cart/CartProvider';
 
 export default function Checkout() {
-  const [step, setStep] = useState(1);
+  const { items, total, updateQuantity, removeItem, clearCart } = useCart();
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     phone: '',
-    serviceId: '',
-    quantity: 1,
-    cardNumber: '',
-    expiry: '',
-    cvc: '',
+    contactPreference: 'WhatsApp',
+    notes: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'quantity' ? Number(value) : value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (step === 1) {
-      setStep(2);
-    } else if (step === 2) {
-      setStep(3);
-    } else {
-      console.log('Order submitted:', formData);
-      alert('Order placed successfully!');
-    }
-  };
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (items.length === 0) return;
+    setSubmitted(true);
+    clearCart();
+  }
 
   return (
     <>
       <Navbar />
       <main className="pt-16 md:pt-20">
-        {/* Hero Section */}
-        <Section className="pt-20 md:pt-32 pb-16">
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-center text-gray-100 mb-4">
-            Checkout
-          </h1>
-          <p className="text-center text-gray-400">
-            Secure payment processing for your order
-          </p>
+        <Section className="pt-16 pb-12 md:pt-24 md:pb-16" tone="quiet">
+          <PageHeader
+            eyebrow="Checkout"
+            title="Review your order request."
+            description="Confirm selected services and contact details before the request is prepared for follow-up."
+            accent="premium"
+          />
         </Section>
 
-        {/* Progress Indicator */}
-        <Section>
-          <div className="max-w-3xl mx-auto mb-12">
-            <div className="flex items-center justify-between mb-8">
-              {[1, 2, 3].map((s) => (
-                <div key={s} className="flex flex-col items-center flex-1">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold mb-2 ${
-                      step >= s
-                        ? 'bg-accent-gold text-dark-950'
-                        : 'bg-dark-800 text-gray-500'
-                    }`}
-                  >
-                    {s}
-                  </div>
-                  <p className="text-xs md:text-sm text-gray-400 text-center">
-                    {s === 1 ? 'Order Details' : s === 2 ? 'Delivery Info' : 'Payment'}
-                  </p>
-                  {s < 3 && (
-                    <div
-                      className={`hidden md:block absolute w-24 h-1 mt-5 ${
-                        step > s ? 'bg-accent-gold' : 'bg-dark-700'
-                      }`}
-                      style={{ marginLeft: '3rem' }}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </Section>
-
-        {/* Form */}
-        <Section dark={true}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-5xl mx-auto">
-            {/* Form */}
-            <div className="lg:col-span-2">
+        <Section tone="band">
+          {submitted ? (
+            <VisualPanel variant="premium" className="mx-auto max-w-2xl p-8 text-center">
+              <Image
+                src="/brand/monogram-glow.png"
+                alt="Card Crafters"
+                width={96}
+                height={96}
+                className="mx-auto mb-5 h-20 w-20 object-contain"
+              />
+              <h2 className="text-3xl font-bold text-gray-100">Order request confirmed</h2>
+              <p className="mt-4 text-sm leading-6 text-gray-300">
+                Your order request was created successfully in this browser. The cart has been cleared.
+              </p>
+              <div className="mt-8">
+                <Link href="/services">
+                  <Button variant="primary" size="lg">Build Another Order</Button>
+                </Link>
+              </div>
+            </VisualPanel>
+          ) : (
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 lg:grid-cols-[1fr_0.75fr]">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Step 1: Order Details */}
-                {step === 1 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-100 mb-6">
-                      Select Your Service
-                    </h2>
-
+                <VisualPanel variant="muted" className="p-6">
+                  <div className="mb-6 flex items-center justify-between gap-4">
                     <div>
-                      <label htmlFor="serviceId" className="block text-sm font-semibold text-gray-300 mb-2">
-                        Service *
-                      </label>
-                      <select
-                        id="serviceId"
-                        name="serviceId"
-                        value={formData.serviceId}
-                        onChange={handleChange}
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-gold">Step 1</p>
+                      <h2 className="mt-2 text-2xl font-bold text-gray-100">Contact Details</h2>
+                    </div>
+                    <span className="hidden rounded-lg border border-accent-gold/20 bg-accent-gold/10 px-3 py-1 text-xs font-semibold text-accent-gold sm:inline-flex">
+                      Required
+                    </span>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label htmlFor="name" className="mb-2 block text-sm font-semibold text-gray-300">Name *</label>
+                      <input
+                        id="name"
+                        value={formData.name}
+                        onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                         required
+                        className="w-full"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-gray-300">Phone *</label>
+                      <input
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
+                        required
+                        className="w-full"
+                        placeholder="Phone or WhatsApp number"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="mb-2 block text-sm font-semibold text-gray-300">Email *</label>
+                      <input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(event) => setFormData({ ...formData, email: event.target.value })}
+                        required
+                        className="w-full"
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="contactPreference" className="mb-2 block text-sm font-semibold text-gray-300">Preferred Contact</label>
+                      <select
+                        id="contactPreference"
+                        value={formData.contactPreference}
+                        onChange={(event) => setFormData({ ...formData, contactPreference: event.target.value })}
                         className="w-full"
                       >
-                        <option value="">Choose a service...</option>
-                        <option value="netflix-premium">
-                          Netflix Premium - TTD 175.00
-                        </option>
-                        <option value="disney-plus">Disney+ - TTD 145.00</option>
-                        <option value="amazon-gift-25">Amazon $25 Gift Card - TTD 250.00</option>
-                        <option value="steam-gift-50">Steam $50 Gift Card - TTD 400.00</option>
+                        <option>WhatsApp</option>
+                        <option>Email</option>
+                        <option>Phone Call</option>
                       </select>
                     </div>
-
-                    <div>
-                      <label htmlFor="quantity" className="block text-sm font-semibold text-gray-300 mb-2">
-                        Quantity
-                      </label>
-                      <input
-                        type="number"
-                        id="quantity"
-                        name="quantity"
-                        min={1}
-                        max={10}
-                        value={formData.quantity}
-                        onChange={handleChange}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <p className="text-sm text-gray-500 bg-dark-900 p-4 rounded-lg">
-                      ℹ️ Review service details on our Services page before placing your order.
-                    </p>
                   </div>
-                )}
-
-                {/* Step 2: Delivery Info */}
-                {step === 2 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-100 mb-6">
-                      Delivery Information
-                    </h2>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="firstName" className="block text-sm font-semibold text-gray-300 mb-2">
-                          First Name *
-                        </label>
-                        <input
-                          type="text"
-                          id="firstName"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleChange}
-                          required
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="lastName" className="block text-sm font-semibold text-gray-300 mb-2">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          id="lastName"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleChange}
-                          required
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-semibold text-gray-300 mb-2">
-                        Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                        className="w-full"
-                      />
-                    </div>
+                  <div className="mt-4">
+                    <label htmlFor="notes" className="mb-2 block text-sm font-semibold text-gray-300">Order Notes</label>
+                    <textarea
+                      id="notes"
+                      value={formData.notes}
+                      onChange={(event) => setFormData({ ...formData, notes: event.target.value })}
+                      rows={5}
+                      className="w-full"
+                      placeholder="Add account details, delivery notes, timing, or questions."
+                    />
                   </div>
-                )}
+                </VisualPanel>
 
-                {/* Step 3: Payment */}
-                {step === 3 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-100 mb-6">
-                      Payment Information
-                    </h2>
+                <VisualPanel variant="plain" className="p-4 text-sm leading-6 text-gray-400">
+                  Payment details are not collected here. Card Crafters can confirm next steps after reviewing the request.
+                </VisualPanel>
 
-                    <div>
-                      <label htmlFor="cardNumber" className="block text-sm font-semibold text-gray-300 mb-2">
-                        Card Number *
-                      </label>
-                      <input
-                        type="text"
-                        id="cardNumber"
-                        name="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        value={formData.cardNumber}
-                        onChange={handleChange}
-                        required
-                        maxLength={19}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="expiry" className="block text-sm font-semibold text-gray-300 mb-2">
-                          Expiry Date *
-                        </label>
-                        <input
-                          type="text"
-                          id="expiry"
-                          name="expiry"
-                          placeholder="MM/YY"
-                          value={formData.expiry}
-                          onChange={handleChange}
-                          required
-                          maxLength={5}
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="cvc" className="block text-sm font-semibold text-gray-300 mb-2">
-                          CVC *
-                        </label>
-                        <input
-                          type="text"
-                          id="cvc"
-                          name="cvc"
-                          placeholder="123"
-                          value={formData.cvc}
-                          onChange={handleChange}
-                          required
-                          maxLength={4}
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-gray-500 bg-dark-900 p-4 rounded-lg flex items-start gap-2">
-                      <span>🔒</span>
-                      <span>Your payment is secure and encrypted. We never store full card details.</span>
-                    </p>
-                  </div>
-                )}
-
-                {/* Navigation Buttons */}
-                <div className="flex gap-4 pt-6">
-                  {step > 1 && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="lg"
-                      onClick={() => setStep(step - 1)}
-                    >
-                      Back
-                    </Button>
-                  )}
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    className="flex-1"
-                  >
-                    {step === 3 ? 'Place Order' : 'Continue'}
-                  </Button>
-                </div>
+                <Button type="submit" variant="primary" size="lg" className="w-full" disabled={items.length === 0}>
+                  Confirm Order Request
+                </Button>
               </form>
-            </div>
 
-            {/* Order Summary */}
-            <div>
-              <div className="card-premium rounded-2xl p-6 sticky top-24">
-                <h3 className="text-xl font-bold text-gray-100 mb-6">Order Summary</h3>
-
-                <div className="space-y-4 mb-6 pb-6 border-b border-gray-700 border-opacity-30">
-                  {formData.serviceId && (
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-gray-300 text-sm">
-                          {formData.serviceId === 'netflix-premium'
-                            ? 'Netflix Premium'
-                            : formData.serviceId === 'disney-plus'
-                            ? 'Disney+'
-                            : formData.serviceId === 'amazon-gift-25'
-                            ? 'Amazon $25'
-                            : 'Steam $50'}
-                        </p>
-                        <p className="text-xs text-gray-500">x {formData.quantity}</p>
-                      </div>
-                      <p className="text-accent-gold font-semibold">
-                        TTD{' '}
-                        {formData.serviceId === 'netflix-premium'
-                          ? 175 * formData.quantity
-                          : formData.serviceId === 'disney-plus'
-                          ? 145 * formData.quantity
-                          : formData.serviceId === 'amazon-gift-25'
-                          ? 250 * formData.quantity
-                          : 400 * formData.quantity}
-                        .00
-                      </p>
+              <aside className="visual-panel visual-panel-premium p-6 lg:sticky lg:top-24 lg:self-start">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-gold">Step 2</p>
+                <h2 className="mb-6 mt-2 text-2xl font-bold text-gray-100">Order Summary</h2>
+                {items.length === 0 ? (
+                  <div className="text-center">
+                    <Image
+                      src="/brand/monogram-glow.png"
+                      alt="Card Crafters"
+                      width={80}
+                      height={80}
+                      className="mx-auto mb-4 h-16 w-16 object-contain"
+                    />
+                    <p className="text-sm text-gray-400">Your cart is empty.</p>
+                    <Link href="/services" className="btn btn-primary mt-6">
+                      Browse Services
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      {items.map((item) => (
+                        <div key={item.id} className="rounded-lg border border-white/10 bg-dark-950/70 p-4">
+                          <div className="flex gap-3">
+                            {item.image && (
+                              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 bg-dark-900">
+                                <Image src={item.image} alt="" fill sizes="48px" className="object-contain p-1.5" />
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-sm font-bold text-gray-100">{item.title}</h3>
+                              <p className="mt-1 text-xs leading-5 text-gray-400">{item.subtitle}</p>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex items-center justify-between gap-3">
+                            <div className="inline-flex items-center rounded-lg border border-white/10">
+                              <button type="button" onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1.5 text-gray-300">-</button>
+                              <span className="min-w-8 text-center text-sm text-gray-100">{item.quantity}</span>
+                              <button type="button" onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1.5 text-gray-300">+</button>
+                            </div>
+                            <button type="button" onClick={() => removeItem(item.id)} className="text-xs text-gray-500 hover:text-gray-200">
+                              Remove
+                            </button>
+                          </div>
+                          <p className="mt-3 text-right text-sm font-bold text-accent-gold">
+                            {formatCurrency(item.price * item.quantity)}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center mb-6">
-                  <span className="font-bold text-gray-100">Total</span>
-                  <span className="text-2xl font-bold text-accent-gold">
-                    TTD{' '}
-                    {formData.serviceId
-                      ? (formData.serviceId === 'netflix-premium'
-                          ? 175 * formData.quantity
-                          : formData.serviceId === 'disney-plus'
-                          ? 145 * formData.quantity
-                          : formData.serviceId === 'amazon-gift-25'
-                          ? 250 * formData.quantity
-                          : 400 * formData.quantity) + '.00'
-                      : '0.00'}
-                  </span>
-                </div>
-
-                <div className="space-y-2 text-xs text-gray-500">
-                  <p>✓ Secure payment processing</p>
-                  <p>✓ 24-48 hour activation</p>
-                  <p>✓ Money-back guarantee</p>
-                </div>
-              </div>
+                    <div className="mt-6 rounded-lg border border-accent-gold/20 bg-accent-gold/10 p-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-gray-100">Estimated Total</span>
+                        <span className="text-2xl font-bold text-accent-gold">{formatCurrency(total)}</span>
+                      </div>
+                      <p className="mt-2 text-xs leading-5 text-gray-400">Final details can be reviewed before any real fulfillment step.</p>
+                    </div>
+                  </>
+                )}
+              </aside>
             </div>
-          </div>
+          )}
         </Section>
       </main>
       <Footer />

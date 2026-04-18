@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Section from '@/components/Section';
+import { PageHeader, VisualPanel } from '@/components/Visual';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -13,17 +14,18 @@ export default function Privacy() {
     <>
       <Navbar />
       <main className="pt-16 md:pt-20">
-        <Section className="pt-20 md:pt-32 pb-12">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-center text-gray-100 mb-4">
-            Privacy Policy
-          </h1>
-          <p className="text-center text-gray-400 max-w-2xl mx-auto">
-            Last updated: January 2026
-          </p>
+        <Section className="pt-20 md:pt-32 pb-12" tone="quiet">
+          <PageHeader
+            eyebrow="Legal"
+            title="Privacy Policy"
+            description="Last updated: April 2026"
+            accent="premium"
+          />
         </Section>
 
-        <Section>
-          <div className="max-w-3xl mx-auto prose prose-invert">
+        <Section tone="quiet">
+          <VisualPanel variant="plain" className="mx-auto max-w-3xl p-6 md:p-8">
+          <div className="prose prose-invert max-w-none">
             <div className="space-y-8 text-gray-400">
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">1. Introduction</h2>
@@ -38,8 +40,8 @@ export default function Privacy() {
                 <p className="mb-4">We collect information from you in the following ways:</p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li>Personal identification information (name, email, phone)</li>
-                  <li>Payment information (processed securely)</li>
-                  <li>Account information and preferences</li>
+                  <li>Order request details needed to review a service</li>
+                  <li>Account or provider information only when needed for a selected service</li>
                   <li>Device information and browsing data</li>
                   <li>Communication records with our support team</li>
                 </ul>
@@ -61,9 +63,9 @@ export default function Privacy() {
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">4. Data Security</h2>
                 <p>
-                  We implement comprehensive security measures to protect your personal information.
-                  All payment data is encrypted using industry-standard SSL technology. We do not
-                  store full credit card details on our servers.
+                  We use reasonable safeguards to protect personal information submitted through
+                  the website. This version does not collect full card numbers or CVC codes through
+                  checkout or contact forms.
                 </p>
               </div>
 
@@ -116,15 +118,12 @@ export default function Privacy() {
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">10. Contact Us</h2>
                 <p>
-                  If you have questions about this Privacy Policy or our practices, please contact us at:
+                  If you have questions about this Privacy Policy or our practices, please use the contact page.
                 </p>
-                <div className="mt-4 p-4 bg-dark-800 bg-opacity-50 rounded-lg">
-                  <p>Email: privacy@cardcrafters.com</p>
-                  <p>Phone: +1 (555) 123-4567</p>
-                </div>
               </div>
             </div>
           </div>
+          </VisualPanel>
         </Section>
       </main>
       <Footer />

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Section from '@/components/Section';
+import { PageHeader, VisualPanel } from '@/components/Visual';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -13,17 +14,18 @@ export default function Terms() {
     <>
       <Navbar />
       <main className="pt-16 md:pt-20">
-        <Section className="pt-20 md:pt-32 pb-12">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-center text-gray-100 mb-4">
-            Terms of Service
-          </h1>
-          <p className="text-center text-gray-400 max-w-2xl mx-auto">
-            Last updated: January 2026
-          </p>
+        <Section className="pt-20 md:pt-32 pb-12" tone="quiet">
+          <PageHeader
+            eyebrow="Legal"
+            title="Terms of Service"
+            description="Last updated: April 2026"
+            accent="premium"
+          />
         </Section>
 
-        <Section>
-          <div className="max-w-3xl mx-auto prose prose-invert">
+        <Section tone="quiet">
+          <VisualPanel variant="plain" className="mx-auto max-w-3xl p-6 md:p-8">
+          <div className="prose prose-invert max-w-none">
             <div className="space-y-8 text-gray-400">
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">1. Agreement to Terms</h2>
@@ -65,14 +67,14 @@ export default function Terms() {
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">4. Service Activation</h2>
                 <p className="mb-4">
-                  Services offered by Card Crafters are subject to the following terms:
+                  Services offered by Card Crafters are subject to review and confirmation:
                 </p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li>
-                    Activation typically occurs within 24-48 hours of payment confirmation
+                    Delivery timing depends on the selected service and details provided
                   </li>
                   <li>
-                    Digital products (gift cards) are delivered within 15-30 minutes
+                    Digital products and service requests may require confirmation before fulfillment
                   </li>
                   <li>
                     You are responsible for providing accurate account information
@@ -86,17 +88,17 @@ export default function Terms() {
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">5. Refund Policy</h2>
                 <p className="mb-4">
-                  Refund policies vary by product type:
+                  Refund and cancellation handling varies by product type and fulfillment status:
                 </p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li>
-                    Streaming subscriptions may be refunded within 7 days if not activated
+                    Streaming subscriptions and digital products may be limited once activated or delivered
                   </li>
                   <li>
-                    Digital products (gift cards) cannot be refunded once delivered
+                    Gift cards and digital codes may not be reversible once supplied
                   </li>
                   <li>
-                    Refunds are processed within 5-7 business days
+                    Any eligible adjustment must be reviewed against the specific order details
                   </li>
                 </ul>
               </div>
@@ -164,15 +166,12 @@ export default function Terms() {
               <div>
                 <h2 className="text-3xl font-bold text-gray-100 mb-4">12. Contact Information</h2>
                 <p>
-                  If you have any questions about these Terms of Service, please contact us at:
+                  If you have any questions about these Terms of Service, please use the contact page.
                 </p>
-                <div className="mt-4 p-4 bg-dark-800 bg-opacity-50 rounded-lg">
-                  <p>Email: support@cardcrafters.com</p>
-                  <p>Phone: +1 (555) 123-4567</p>
-                </div>
               </div>
             </div>
           </div>
+          </VisualPanel>
         </Section>
       </main>
       <Footer />

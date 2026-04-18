@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Manrope, Sora } from 'next/font/google';
+import { CartProvider } from '@/components/cart/CartProvider';
 import './globals.css';
 
 const manrope = Manrope({
@@ -59,6 +60,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/brand/monogram-glow.png',
     shortcut: '/brand/monogram-glow.png',
+    apple: '/brand/monogram-glow.png',
   },
   robots: {
     index: true,
@@ -71,9 +73,6 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  verification: {
-    google: 'verification_token_here', // Add your Google verification token
-  },
 };
 
 export default function RootLayout({
@@ -81,16 +80,34 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Card Crafters',
+    url: 'https://cardcrafters.com',
+    logo: 'https://cardcrafters.com/brand/logo-long.png',
+    sameAs: [],
+  };
+
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Card Crafters',
+    url: 'https://cardcrafters.com',
+  };
+
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`} data-scroll-behavior="smooth">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
       </head>
       <body className="relative bg-dark-950 overflow-x-hidden" suppressHydrationWarning>
         <div className="fixed inset-0 -z-10 pointer-events-none" />
-        {children}
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );

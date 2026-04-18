@@ -18,7 +18,7 @@ export default function FAQItem({
       onClick={onClick}
       className="w-full text-left transition-all duration-300 hover:no-underline"
     >
-      <Card hoverable={true} className="cursor-pointer">
+      <Card hoverable={true} variant={isOpen ? 'premium' : 'muted'} className="cursor-pointer">
         <div className="flex justify-between items-start gap-4">
           <h3 className="font-bold text-gray-100 text-lg flex-1">{question}</h3>
           <span
@@ -31,7 +31,7 @@ export default function FAQItem({
         </div>
 
         {isOpen && (
-          <div className="mt-4 pt-4 border-t border-gray-700 border-opacity-30">
+          <div className="mt-4 border-t border-white/10 pt-4">
             <p className="text-gray-400 text-sm leading-relaxed">{answer}</p>
           </div>
         )}
