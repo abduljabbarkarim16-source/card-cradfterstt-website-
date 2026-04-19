@@ -14,6 +14,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      --gold: #D4AF37;
+      --gold-hi: #facc15;
+      --electric: #3b82f6;
+      --electric-hi: #60a5fa;
+    }
+
     body {
       font-family: "Manrope", sans-serif;
       background:
@@ -84,6 +91,7 @@
       background:
         radial-gradient(circle at 82% 18%, rgba(212, 175, 55, 0.22), transparent 18%),
         radial-gradient(circle at 92% 74%, rgba(250, 204, 21, 0.1), transparent 16%),
+        radial-gradient(circle at 12% 108%, rgba(59, 130, 246, 0.16), transparent 24%),
         linear-gradient(140deg, #0a0a0a 0%, #060606 52%, #030303 100%);
       border: 1px solid rgba(255, 255, 255, 0.07);
       box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.04), 0 36px 90px rgba(0, 0, 0, 0.42);
@@ -94,8 +102,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, rgba(4, 4, 4, 0.96) 0%, rgba(4, 4, 4, 0.88) 20%, rgba(4, 4, 4, 0.42) 40%, rgba(4, 4, 4, 0.08) 62%, transparent 100%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 24%, rgba(0, 0, 0, 0.16) 100%);
+        linear-gradient(90deg, rgba(4, 4, 4, 0.78) 0%, rgba(4, 4, 4, 0.55) 22%, rgba(4, 4, 4, 0.15) 48%, rgba(4, 4, 4, 0.02) 72%, transparent 100%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 24%, rgba(0, 0, 0, 0.16) 100%);
       pointer-events: none;
       z-index: 1;
     }
@@ -472,6 +480,198 @@
         letter-spacing: 0.16em;
       }
     }
+
+    /* ---------- Scroll-reveal harness ---------- */
+    [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+    [data-reveal].is-in{opacity:1;transform:none}
+    [data-reveal][data-reveal-delay="1"]{transition-delay:.08s}
+    [data-reveal][data-reveal-delay="2"]{transition-delay:.16s}
+    [data-reveal][data-reveal-delay="3"]{transition-delay:.24s}
+    [data-reveal][data-reveal-delay="4"]{transition-delay:.32s}
+    [data-reveal="scale"]{transform:scale(.94)}
+    [data-reveal="scale"].is-in{transform:none}
+    @media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
+
+    /* ---------- Header hairline + scroll state ---------- */
+    .site-header{position:relative}
+    .site-header::before{
+      content:"";position:absolute;inset:0 0 auto 0;height:1px;pointer-events:none;opacity:.5;
+      background:linear-gradient(90deg,transparent 0%,rgba(212,175,55,0.0) 10%,rgba(212,175,55,0.85) 28%,rgba(59,130,246,0.85) 50%,rgba(212,175,55,0.85) 72%,rgba(212,175,55,0) 90%,transparent 100%);
+    }
+    .site-header.is-scrolled{box-shadow:0 10px 30px rgba(0,0,0,.45)}
+    .site-footer::before{
+      content:"";position:absolute;inset:0 0 auto 0;height:1px;pointer-events:none;opacity:.5;
+      background:linear-gradient(90deg,transparent 0%,rgba(212,175,55,0) 10%,rgba(212,175,55,0.85) 28%,rgba(59,130,246,0.85) 50%,rgba(212,175,55,0.85) 72%,rgba(212,175,55,0) 90%,transparent 100%);
+    }
+
+    /* ---------- Hero mouse parallax ---------- */
+    @media (hover:hover){
+      .hero-backdrop-mosaic .hero-brand-tile{
+        will-change:transform;
+        transform:translate3d(calc(var(--mx,0)*8px),calc(var(--my,0)*6px),0) rotate(var(--rotate));
+      }
+    }
+    .hero-brand-inner{
+      box-shadow: inset 0 -40px 80px -40px var(--accent,rgba(255,255,255,0.05)), inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    /* ---------- Hero chip marquee ---------- */
+    .chip-marquee{
+      position:relative;overflow:hidden;
+      -webkit-mask-image:linear-gradient(90deg,transparent 0,black 8%,black 92%,transparent 100%);
+              mask-image:linear-gradient(90deg,transparent 0,black 8%,black 92%,transparent 100%);
+    }
+    .chip-marquee-track{display:flex;gap:.5rem;width:max-content;animation:chipScroll 45s linear infinite}
+    .chip-marquee:hover .chip-marquee-track{animation-play-state:paused}
+    @keyframes chipScroll{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}
+
+    /* ---------- Trust ribbon ---------- */
+    .trust-ribbon{
+      position:relative;overflow:hidden;
+      background:linear-gradient(90deg,#0a0a0a 0%,#0d0a04 50%,#0a0a0a 100%);
+      border-top:1px solid rgba(234,179,8,.18);
+      border-bottom:1px solid rgba(234,179,8,.18);
+    }
+    .trust-ribbon::after{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(90deg,transparent,rgba(212,175,55,0.18),transparent);
+      transform:translateX(-100%);animation:ribbonShimmer 7s ease-in-out infinite;
+    }
+    @keyframes ribbonShimmer{0%{transform:translateX(-100%)}55%{transform:translateX(100%)}100%{transform:translateX(100%)}}
+
+    /* ---------- Category cards ---------- */
+    .cat-card{position:relative;overflow:hidden}
+    .cat-card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.7;
+      background:radial-gradient(circle at 85% 110%, var(--cat-tint,transparent) 0%, transparent 55%);
+    }
+    .cat-glyph{
+      position:absolute;right:-.5rem;bottom:-1rem;width:10rem;height:10rem;
+      color:var(--cat-accent,rgba(250,204,21,.12));opacity:.1;pointer-events:none;
+    }
+    .cat-cluster{position:relative;height:5rem;width:6.5rem;flex-shrink:0}
+    .cat-cluster .cat-logo{
+      position:absolute;top:50%;width:3.2rem;height:3.2rem;border-radius:9999px;
+      display:flex;align-items:center;justify-content:center;
+      background:#0b0b0b;border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 10px 24px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,215,0,.08);
+      transform:translate(-50%,-50%) rotate(var(--r,0));
+      transition:transform .5s cubic-bezier(.2,.7,.2,1);
+      overflow:hidden;
+    }
+    .cat-cluster .cat-logo img{width:62%;height:62%;object-fit:contain}
+    .cat-cluster .cat-logo:nth-child(1){left:25%;--r:-10deg;z-index:1}
+    .cat-cluster .cat-logo:nth-child(2){left:50%;--r:0deg;z-index:3;box-shadow:0 12px 28px rgba(0,0,0,.55), 0 0 22px color-mix(in srgb, var(--cat-accent,#D4AF37) 30%, transparent), inset 0 0 0 1px rgba(255,215,0,.15)}
+    .cat-cluster .cat-logo:nth-child(3){left:75%;--r:10deg;z-index:2}
+    .cat-card:hover .cat-cluster .cat-logo{transform:translate(-50%,-50%) rotate(0deg)}
+    .cat-card:hover .cat-cluster .cat-logo:nth-child(1){left:18%}
+    .cat-card:hover .cat-cluster .cat-logo:nth-child(3){left:82%}
+    .cat-card{transition:transform .4s cubic-bezier(.2,.7,.2,1), border-color .4s, box-shadow .4s}
+    .cat-card:hover{transform:translateY(-6px) rotate(.4deg)}
+
+    /* ---------- Brand marquee section ---------- */
+    .brand-marquee{
+      position:relative;overflow:hidden;
+      background:linear-gradient(180deg,#060606,#040404);
+      border-top:1px solid rgba(234,179,8,.18);
+      border-bottom:1px solid rgba(234,179,8,.18);
+    }
+    .brand-marquee-track{
+      display:flex;gap:3.25rem;align-items:center;width:max-content;
+      animation:brandScroll 38s linear infinite;
+      -webkit-mask-image:linear-gradient(90deg,transparent 0,black 6%,black 94%,transparent 100%);
+              mask-image:linear-gradient(90deg,transparent 0,black 6%,black 94%,transparent 100%);
+    }
+    .brand-marquee:hover .brand-marquee-track{animation-play-state:paused}
+    @keyframes brandScroll{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}
+    .brand-marquee-track img{
+      height:2.75rem;width:auto;max-width:8rem;object-fit:contain;
+      filter:grayscale(1) brightness(1.1) opacity(.72);
+      transition:filter .3s ease, transform .3s ease;
+    }
+    .brand-marquee-track img:hover{filter:none;transform:scale(1.08)}
+
+    /* ---------- Proof stats ---------- */
+    .stat-tile{position:relative;overflow:hidden;transition:transform .4s, border-color .4s, box-shadow .4s}
+    .stat-tile:hover{transform:translateY(-4px)}
+    .stat-num{
+      font-family:"Sora",sans-serif;font-weight:800;line-height:1;letter-spacing:-.04em;
+      font-size:clamp(3rem,6vw,5.25rem);
+      background:linear-gradient(180deg,#fff7d6 0%,#D4AF37 55%, #a37c13 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      text-shadow:0 0 36px rgba(212,175,55,.12);
+    }
+    .stat-tile.is-electric{border-color:rgba(59,130,246,.45) !important;box-shadow:0 0 0 1px rgba(59,130,246,.15) inset, 0 20px 60px rgba(59,130,246,.1)}
+    .stat-tile.is-electric .stat-num{
+      background:linear-gradient(180deg,#dbeafe 0%,#60a5fa 55%,#1d4ed8 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+
+    /* ---------- Testimonials ---------- */
+    .t-card{position:relative;transition:transform .4s, border-color .4s, box-shadow .4s}
+    .t-card:hover{transform:translateY(-6px)}
+    .t-featured{border-color:rgba(59,130,246,.45) !important;box-shadow:0 24px 60px rgba(0,0,0,.3),0 0 0 1px rgba(59,130,246,.18) inset}
+    .t-featured::before{
+      content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+      background:linear-gradient(135deg,rgba(59,130,246,.35),transparent 45%, rgba(212,175,55,.25));
+      -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+      -webkit-mask-composite:xor;mask-composite:exclude;padding:1px;
+    }
+
+    /* ---------- How It Works motion ---------- */
+    .hiw-grid{position:relative}
+    .hiw-grid::before{
+      content:"";position:absolute;left:8%;right:8%;top:2.2rem;height:2px;pointer-events:none;
+      background:linear-gradient(90deg,rgba(212,175,55,0) 0%, rgba(212,175,55,.75) 15%, rgba(59,130,246,.6) 50%, rgba(212,175,55,.75) 85%, rgba(212,175,55,0) 100%);
+      transform:scaleX(0);transform-origin:left;transition:transform 1.2s cubic-bezier(.22,1,.36,1) .2s;
+      display:none;
+    }
+    @media (min-width:768px){.hiw-grid::before{display:block}}
+    .hiw-grid.is-in::before{transform:scaleX(1)}
+    .hiw-step{position:relative;transition:transform .4s, border-color .4s, box-shadow .4s;overflow:hidden}
+    .hiw-step:hover{transform:translateY(-5px)}
+    .hiw-num{
+      font-family:"Sora",sans-serif;font-weight:800;line-height:.9;letter-spacing:-.04em;
+      font-size:clamp(3.25rem,6.2vw,5.5rem);
+      -webkit-text-stroke:2px rgba(250,204,21,.85);color:transparent;
+      transition:color .4s ease, -webkit-text-stroke-color .4s ease, text-shadow .4s ease;
+    }
+    .hiw-step:hover .hiw-num{
+      color:#facc15;
+      text-shadow:0 0 28px rgba(250,204,21,.35);
+      -webkit-text-stroke-color:rgba(250,204,21,1);
+    }
+
+    /* ---------- CTA aurora ---------- */
+    .cta-aurora{position:relative;overflow:hidden;isolation:isolate;border:1px solid rgba(234,179,8,.3);border-radius:2.4rem}
+    .cta-aurora::before{
+      content:"";position:absolute;inset:-40%;z-index:-2;
+      background:conic-gradient(from 0deg, #D4AF37 0%, #3b82f6 25%, #facc15 50%, #60a5fa 75%, #D4AF37 100%);
+      filter:blur(60px);opacity:.55;animation:auroraSpin 24s linear infinite;
+    }
+    .cta-aurora::after{
+      content:"";position:absolute;inset:0;z-index:-1;
+      background:radial-gradient(circle at 80% 20%,rgba(250,204,21,.14),transparent 40%),
+                 radial-gradient(circle at 10% 90%,rgba(59,130,246,.14),transparent 42%),
+                 rgba(6,6,6,.78);
+      backdrop-filter:blur(40px);
+    }
+    @keyframes auroraSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    .cta-headline{
+      background:linear-gradient(90deg,#D4AF37 0%, #fff2c7 30%, #D4AF37 60%, #fff2c7 90%, #D4AF37 100%);
+      background-size:200% 100%;
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      animation:headlineShimmer 9s ease-in-out infinite;
+    }
+    @keyframes headlineShimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .cta-btn{position:relative;isolation:isolate}
+    .cta-btn::before{
+      content:"";position:absolute;inset:-2px;border-radius:inherit;z-index:-1;
+      background:conic-gradient(from var(--a,0deg), #facc15, #60a5fa, #D4AF37, #facc15);
+      animation:btnSpin 4s linear infinite;
+      filter:blur(6px);opacity:.8;
+    }
+    @keyframes btnSpin{0%{--a:0deg;transform:rotate(0)}100%{--a:360deg;transform:rotate(360deg)}}
+    @property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
   </style>
   <script>
     function loadCartCount() {
@@ -502,6 +702,84 @@
     window.addEventListener('storage', function(event) {
       if (event.key === 'cardCraftersCart') updateCartCount();
     });
+
+    /* ---------- Scroll reveal + count-up ---------- */
+    document.addEventListener('DOMContentLoaded', function(){
+      var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function runCountUp(el){
+        var target = parseFloat(el.getAttribute('data-count')) || 0;
+        var decimals = parseInt(el.getAttribute('data-count-decimals') || '0', 10);
+        var prefix = el.getAttribute('data-count-prefix') || '';
+        var suffix = el.getAttribute('data-count-suffix') || '';
+        if (prefersReduced){
+          el.textContent = prefix + target.toFixed(decimals) + suffix;
+          return;
+        }
+        var duration = 1400, start = performance.now();
+        function tick(now){
+          var p = Math.min(1, (now - start) / duration);
+          var eased = 1 - Math.pow(1 - p, 3);
+          var val = target * eased;
+          el.textContent = prefix + val.toLocaleString(undefined, {minimumFractionDigits:decimals, maximumFractionDigits:decimals}) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          var counters = entry.target.querySelectorAll('[data-count]');
+          counters.forEach(runCountUp);
+          io.unobserve(entry.target);
+        });
+      }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+      document.querySelectorAll('[data-reveal]').forEach(function(el){ io.observe(el); });
+
+      /* ---------- Header scroll state ---------- */
+      var header = document.querySelector('.site-header');
+      if (header){
+        var onScroll = function(){
+          if (window.scrollY > 20) header.classList.add('is-scrolled');
+          else header.classList.remove('is-scrolled');
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+
+      /* ---------- Hero mouse parallax ---------- */
+      var stage = document.querySelector('.hero-logo-stage');
+      var canHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+      if (stage && canHover && !prefersReduced){
+        var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+        stage.addEventListener('mousemove', function(e){
+          var r = stage.getBoundingClientRect();
+          tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+          ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
+          if (!raf) raf = requestAnimationFrame(function loop(){
+            cx += (tx - cx) * 0.08;
+            cy += (ty - cy) * 0.08;
+            stage.style.setProperty('--mx', cx.toFixed(3));
+            stage.style.setProperty('--my', cy.toFixed(3));
+            if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) raf = requestAnimationFrame(loop);
+            else raf = null;
+          });
+        });
+        stage.addEventListener('mouseleave', function(){
+          tx = 0; ty = 0;
+          if (!raf) raf = requestAnimationFrame(function loop(){
+            cx += (0 - cx) * 0.1; cy += (0 - cy) * 0.1;
+            stage.style.setProperty('--mx', cx.toFixed(3));
+            stage.style.setProperty('--my', cy.toFixed(3));
+            if (Math.abs(cx) > 0.002 || Math.abs(cy) > 0.002) raf = requestAnimationFrame(loop);
+            else raf = null;
+          });
+        });
+      }
+    });
   </script>
 </head>
 <body class="min-h-screen text-white">
@@ -516,7 +794,7 @@
     <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl"></div>
   </div>
 
-  <header class="sticky top-0 z-30 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl">
+  <header class="site-header sticky top-0 z-30 border-b border-white/10 bg-[#090909]/88 backdrop-blur-xl transition-shadow">
     <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
       <a href="index.html" class="flex items-center gap-4">
         <div class="shrink-0 rounded-[1.65rem] border border-yellow-400/20 bg-gradient-to-br from-[#17110b] via-[#0d0d0d] to-[#090909] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.4)]">
@@ -892,31 +1170,48 @@
                     </a>
                   </div>
 
-                  <div class="mt-7 flex flex-wrap gap-2">
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Netflix</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Disney+</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Prime Video</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Max</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Hulu</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Apple TV+</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Paramount+</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Peacock</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">YouTube Premium</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Crunchyroll</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Spotify</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Apple Music</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">YouTube Music</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">PlayStation Store</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Xbox</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Nintendo eShop</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Steam</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Roblox</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Fortnite / Epic Games</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Riot Games / VALORANT</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Battle.net / Blizzard</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Razer Gold</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">Shein</div>
-                    <div class="floating-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300">temu</div>
+                  <div class="chip-marquee mt-7 -mx-2">
+                    <div class="chip-marquee-track">
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Netflix</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Disney+</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Prime Video</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Max</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Hulu</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Apple TV+</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Paramount+</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Peacock</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">YouTube Premium</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Crunchyroll</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Spotify</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Apple Music</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">PlayStation Store</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Xbox</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Steam</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Roblox</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Razer Gold</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Shein</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap">Temu</div>
+                      <!-- duplicate for seamless loop -->
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Netflix</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Disney+</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Prime Video</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Max</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Hulu</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Apple TV+</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Paramount+</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Peacock</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">YouTube Premium</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Crunchyroll</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Spotify</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Apple Music</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">PlayStation Store</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Xbox</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Steam</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Roblox</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Razer Gold</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Shein</div>
+                      <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-300 whitespace-nowrap" aria-hidden="true">Temu</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -925,19 +1220,52 @@
           </div>
         </div>
 
-        <div class="content-panel mt-5 rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Fast service</div>
-            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Secure ordering</div>
-            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Wide service variety</div>
-            <div class="feature-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-200">Helpful local support</div>
+      </div>
+    </section>
+
+    <section class="trust-ribbon -mt-2">
+      <div class="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/5 px-4 py-5 sm:px-6 md:grid-cols-4 lg:px-8">
+        <div data-reveal data-reveal-delay="1" class="flex items-center gap-3 px-4">
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-500/25 bg-yellow-500/10 text-yellow-300">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-white">Fast Service</p>
+            <p class="text-xs text-zinc-400">Most orders handled in minutes</p>
+          </div>
+        </div>
+        <div data-reveal data-reveal-delay="2" class="flex items-center gap-3 px-4">
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-500/25 bg-yellow-500/10 text-yellow-300">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-white">Secure Ordering</p>
+            <p class="text-xs text-zinc-400">Clear pricing, trusted checkout</p>
+          </div>
+        </div>
+        <div data-reveal data-reveal-delay="3" class="flex items-center gap-3 px-4">
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-500/25 bg-yellow-500/10 text-yellow-300">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-white">Wide Variety</p>
+            <p class="text-xs text-zinc-400">Streaming, cards, bills &amp; more</p>
+          </div>
+        </div>
+        <div data-reveal data-reveal-delay="4" class="flex items-center gap-3 px-4">
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-500/25 bg-yellow-500/10 text-yellow-300">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg>
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-white">Local Support</p>
+            <p class="text-xs text-zinc-400">Real Trinidad &amp; Tobago team</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="categories" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div class="max-w-3xl">
+    <section id="categories" class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div data-reveal class="max-w-3xl">
         <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
           Service Categories
         </div>
@@ -949,175 +1277,248 @@
         </p>
       </div>
 
-      <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="flex items-start gap-4">
-            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
-              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
-              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(229,9,20,0.33) 0%,transparent 100%);"></div>
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
-              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
-                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#E50914; text-shadow:0 0 18px #E50914,0 0 30px rgba(229,9,20,0.35);">ST</div>
-                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Streaming</div>
-              </div>
-              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+      <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <!-- Streaming -->
+        <div data-reveal="scale" data-reveal-delay="1" class="cat-card feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]" style="--cat-tint:rgba(229,9,20,0.16);--cat-accent:#E50914;">
+          <svg class="cat-glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="52" height="34" rx="3"/><path d="M26 52h12M22 58h20"/><path d="M26 22l14 8-14 8z" fill="currentColor" fill-opacity=".25"/></svg>
+          <div class="relative z-10 flex items-start gap-4">
+            <div class="cat-cluster">
+              <div class="cat-logo"><img src="images/products/prime-video.png" alt="Prime Video" onerror="this.style.display='none'" /></div>
+              <div class="cat-logo"><img src="images/products/netflix-basic.png" alt="Netflix" onerror="this.style.display='none'" /></div>
+              <div class="cat-logo"><img src="images/products/disney-plus.png" alt="Disney+" onerror="this.style.display='none'" /></div>
             </div>
             <div>
               <h3 class="text-xl font-semibold text-white">Streaming Services</h3>
               <p class="mt-2 text-sm leading-7 text-zinc-400">Get access to the streaming platforms you use most without the usual hassle.</p>
             </div>
           </div>
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="relative z-10 mt-5 flex flex-wrap gap-2">
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Netflix</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Disney+</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Prime Video</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Max</div>
           </div>
-          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Go to Services<span>&rarr;</span></a>
+          <a href="services.html" class="relative z-10 mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Go to Services<span>&rarr;</span></a>
         </div>
 
-        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="flex items-start gap-4">
-            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
-              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
-              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(212,175,55,0.33) 0%,transparent 100%);"></div>
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
-              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
-                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#D4AF37; text-shadow:0 0 18px rgba(212,175,55,0.8),0 0 30px rgba(212,175,55,0.35);">GC</div>
-                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Gift Cards</div>
-              </div>
-              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+        <!-- Gift Cards -->
+        <div data-reveal="scale" data-reveal-delay="2" class="cat-card feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]" style="--cat-tint:rgba(212,175,55,0.18);--cat-accent:#D4AF37;">
+          <svg class="cat-glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="18" width="52" height="32" rx="4"/><path d="M6 28h52"/><path d="M20 40h6M30 40h10" /><circle cx="32" cy="18" r="4"/><path d="M32 14c-4-6 4-6 0-0" /></svg>
+          <div class="relative z-10 flex items-start gap-4">
+            <div class="cat-cluster">
+              <div class="cat-logo"><img src="images/products/itunes.png" alt="iTunes" onerror="this.style.display='none'" /></div>
+              <div class="cat-logo"><img src="images/products/amazon.png" alt="Amazon" onerror="this.style.display='none'" /></div>
+              <div class="cat-logo"><img src="images/products/google-play.png" alt="Google Play" onerror="this.style.display='none'" /></div>
             </div>
             <div>
               <h3 class="text-xl font-semibold text-white">Gift Cards</h3>
               <p class="mt-2 text-sm leading-7 text-zinc-400">Buy top-up and gift cards for gaming, entertainment, and shopping in minutes.</p>
             </div>
           </div>
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="relative z-10 mt-5 flex flex-wrap gap-2">
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">PlayStation Store</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Xbox</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Nintendo eShop</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Amazon</div>
           </div>
-          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Browse Cards<span>&rarr;</span></a>
+          <a href="services.html" class="relative z-10 mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Browse Cards<span>&rarr;</span></a>
         </div>
 
-        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="flex items-start gap-4">
-            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
-              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
-              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(96,165,250,0.33) 0%,transparent 100%);"></div>
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
-              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
-                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#60A5FA; text-shadow:0 0 18px rgba(96,165,250,0.8),0 0 30px rgba(96,165,250,0.35);">BP</div>
-                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Payments</div>
+        <!-- Bill Payments -->
+        <div data-reveal="scale" data-reveal-delay="3" class="cat-card feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]" style="--cat-tint:rgba(59,130,246,0.18);--cat-accent:#3b82f6;">
+          <svg class="cat-glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6h28l8 8v44H14z"/><path d="M42 6v8h8"/><path d="M20 28h24M20 36h24M20 44h16"/></svg>
+          <div class="relative z-10 flex items-start gap-4">
+            <div class="cat-cluster">
+              <div class="cat-logo" style="background:linear-gradient(135deg,#0a1a3d,#06255a);">
+                <svg viewBox="0 0 24 24" class="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v6M18 2v6M4 11h16M5 6h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg>
               </div>
-              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+              <div class="cat-logo" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);">
+                <svg viewBox="0 0 24 24" class="h-7 w-7 text-white" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg>
+              </div>
+              <div class="cat-logo" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+                <svg viewBox="0 0 24 24" class="h-6 w-6 text-yellow-300" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+              </div>
             </div>
             <div>
               <h3 class="text-xl font-semibold text-white">Bill Payments</h3>
               <p class="mt-2 text-sm leading-7 text-zinc-400">Pay selected bills quickly with a simple request and local payment options.</p>
             </div>
           </div>
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="relative z-10 mt-5 flex flex-wrap gap-2">
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Fast</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Local</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Simple</div>
           </div>
-          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">View Payments<span>&rarr;</span></a>
+          <a href="services.html" class="relative z-10 mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">View Payments<span>&rarr;</span></a>
         </div>
 
-        <div class="feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="flex items-start gap-4">
-            <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.2rem] border border-yellow-500/20 bg-[#050505]">
-              <div class="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.15)]"></div>
-              <div class="absolute inset-x-0 top-0 h-10 opacity-80" style="background:linear-gradient(180deg,rgba(245,158,11,0.33) 0%,transparent 100%);"></div>
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_45%)]"></div>
-              <div class="relative flex h-full w-full flex-col items-center justify-center px-1 text-center">
-                <div class="text-[16px] font-bold tracking-[0.25em]" style="color:#F59E0B; text-shadow:0 0 18px rgba(245,158,11,0.8),0 0 30px rgba(245,158,11,0.35);">SS</div>
-                <div class="mt-1 text-[8px] uppercase tracking-[0.2em] text-zinc-400">Sourcing</div>
-              </div>
-              <div class="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-70"></div>
+        <!-- Shopping & Sourcing -->
+        <div data-reveal="scale" data-reveal-delay="4" class="cat-card feature-card rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]" style="--cat-tint:rgba(16,185,129,0.18);--cat-accent:#10b981;">
+          <svg class="cat-glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 20h36l-4 32H18z"/><path d="M22 20a10 10 0 0 1 20 0"/></svg>
+          <div class="relative z-10 flex items-start gap-4">
+            <div class="cat-cluster">
+              <div class="cat-logo"><img src="images/products/razer.png" alt="Razer Gold" onerror="this.style.display='none'" /></div>
+              <div class="cat-logo"><img src="images/products/amazon.png" alt="Amazon" onerror="this.style.display='none'" /></div>
+              <div class="cat-logo"><img src="images/products/roblox.png" alt="Roblox" onerror="this.style.display='none'" /></div>
             </div>
             <div>
               <h3 class="text-xl font-semibold text-white">Shopping &amp; Sourcing</h3>
               <p class="mt-2 text-sm leading-7 text-zinc-400">Send your shopping request and get help with pricing, ordering, and delivery details.</p>
             </div>
           </div>
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="relative z-10 mt-5 flex flex-wrap gap-2">
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Shein</div>
-            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">temu</div>
+            <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Temu</div>
             <div class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-300">Razer Gold</div>
           </div>
-          <a href="services.html" class="mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Start Request<span>&rarr;</span></a>
+          <a href="services.html" class="relative z-10 mt-6 inline-flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-4 py-2 text-sm font-semibold text-black">Start Request<span>&rarr;</span></a>
         </div>
       </div>
     </section>
 
-    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <div class="content-panel rounded-[2.2rem] border border-white/10 bg-white/[0.03] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
-            Why Card Crafters
-          </div>
-          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Why customers choose Card Crafters.
-          </h2>
-          <p class="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
-            We keep things simple: quick ordering, clear pricing, and direct support when you need help.
-          </p>
-
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Clear Paths</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">Find the service you want fast, without digging through pages that do not apply to you.</p>
-            </div>
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Fast Support</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">Need help before or after you order? Getting in touch is quick and easy.</p>
-            </div>
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Premium Feel</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">A polished experience gives you more confidence every time you come back to order again.</p>
-            </div>
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0b0b0b] p-5">
-              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Flexible Requests</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">Buy directly when you know what you want, or send a request when you need something more custom.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="content-panel rounded-[2.2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div class="feature-card rounded-[1.6rem] border border-yellow-500/20 bg-[#0a0a0a] p-5">
-              <p class="text-3xl font-semibold text-white">4</p>
-              <p class="mt-2 text-sm uppercase tracking-[0.18em] text-yellow-300">Core Categories</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">Everything you need is easy to reach from one starting point.</p>
-            </div>
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0a0a0a] p-5">
-              <p class="text-3xl font-semibold text-white">1</p>
-              <p class="mt-2 text-sm uppercase tracking-[0.18em] text-yellow-300">Shared Experience</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">The same smooth experience follows you from browsing to checkout.</p>
-            </div>
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0a0a0a] p-5 sm:col-span-2">
-              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Built For Repeat Customers</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">
-                Returning customers can get in, find what they need, and place another order faster without second-guessing where to go next.
-              </p>
-            </div>
-            <div class="feature-card rounded-[1.6rem] border border-white/10 bg-[#0a0a0a] p-5 sm:col-span-2">
-              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">Support Ready</p>
-              <p class="mt-3 text-sm leading-7 text-zinc-400">
-                New visitors can quickly see what is available before they choose a service, ask a question, or head to checkout.
-              </p>
-            </div>
-          </div>
-        </div>
+    <!-- Brand marquee: works with -->
+    <section class="brand-marquee mt-4 py-7">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <p data-reveal class="text-center text-[11px] font-semibold uppercase tracking-[0.34em] text-yellow-300/80" style="font-family:'Sora',sans-serif;">Works With 25+ Services</p>
+      </div>
+      <div class="brand-marquee-track mt-6">
+        <img src="images/products/netflix-basic.png" alt="Netflix" onerror="this.style.display='none'" />
+        <img src="images/products/disney-plus.png" alt="Disney+" onerror="this.style.display='none'" />
+        <img src="images/products/prime-video.png" alt="Prime Video" onerror="this.style.display='none'" />
+        <img src="images/products/hbo-shared.png" alt="HBO Max" onerror="this.style.display='none'" />
+        <img src="images/products/crunchyroll-shared.png" alt="Crunchyroll" onerror="this.style.display='none'" />
+        <img src="images/products/spotify.png" alt="Spotify" onerror="this.style.display='none'" />
+        <img src="images/products/playstation.png" alt="PlayStation" onerror="this.style.display='none'" />
+        <img src="images/products/xbox.png" alt="Xbox" onerror="this.style.display='none'" />
+        <img src="images/products/steam.png" alt="Steam" onerror="this.style.display='none'" />
+        <img src="images/products/razer.png" alt="Razer Gold" onerror="this.style.display='none'" />
+        <img src="images/products/blizzard.png" alt="Blizzard" onerror="this.style.display='none'" />
+        <img src="images/products/roblox.png" alt="Roblox" onerror="this.style.display='none'" />
+        <img src="images/products/itunes.png" alt="iTunes" onerror="this.style.display='none'" />
+        <img src="images/products/google-play.png" alt="Google Play" onerror="this.style.display='none'" />
+        <img src="images/products/amazon.png" alt="Amazon" onerror="this.style.display='none'" />
+        <!-- duplicate for seamless loop -->
+        <img src="images/products/netflix-basic.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/disney-plus.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/prime-video.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/hbo-shared.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/crunchyroll-shared.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/spotify.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/playstation.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/xbox.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/steam.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/razer.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/blizzard.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/roblox.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/itunes.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/google-play.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        <img src="images/products/amazon.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
       </div>
     </section>
 
-    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <!-- Proof stats -->
+    <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div data-reveal class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+          The Numbers
+        </div>
+        <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          Trusted by a growing Trinidad &amp; Tobago community.
+        </h2>
+      </div>
+
+      <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div data-reveal data-reveal-delay="1" class="stat-tile rounded-[1.8rem] border border-yellow-500/20 bg-[#0a0a0a] p-6">
+          <span class="stat-num block" data-count="1000" data-count-suffix="+">0+</span>
+          <p class="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-yellow-300">Orders Delivered</p>
+          <p class="mt-2 text-sm leading-6 text-zinc-400">Real customer orders fulfilled and growing.</p>
+        </div>
+        <div data-reveal data-reveal-delay="2" class="stat-tile rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+          <span class="stat-num block"><span data-count="10" data-count-prefix="&lt; ">0</span> min</span>
+          <p class="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-yellow-300">Avg Fulfillment</p>
+          <p class="mt-2 text-sm leading-6 text-zinc-400">Most digital orders arrive in minutes.</p>
+        </div>
+        <div data-reveal data-reveal-delay="3" class="stat-tile rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+          <span class="stat-num block"><span data-count="4.9" data-count-decimals="1">0</span><span class="text-yellow-300">★</span></span>
+          <p class="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-yellow-300">Customer Rating</p>
+          <p class="mt-2 text-sm leading-6 text-zinc-400">Feedback from repeat customers.</p>
+        </div>
+        <div data-reveal data-reveal-delay="4" class="stat-tile is-electric rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+          <span class="stat-num block">24/7</span>
+          <p class="mt-3 text-sm font-semibold uppercase tracking-[0.18em]" style="color:#93c5fd;">Local Support</p>
+          <p class="mt-2 text-sm leading-6 text-zinc-400">Real people, same time zone, quick replies.</p>
+        </div>
+      </div>
+      <p class="mt-4 text-xs italic text-zinc-500">Indicative figures — to be finalized.</p>
+    </section>
+
+    <!-- Testimonials + Payment trust strip -->
+    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div data-reveal class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+          What Customers Say
+        </div>
+        <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          Real words from the Card Crafters community.
+        </h2>
+      </div>
+
+      <div class="mt-8 grid gap-5 md:grid-cols-3">
+        <div data-reveal data-reveal-delay="1" class="t-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full border border-yellow-500/30 bg-gradient-to-br from-yellow-500 to-yellow-300 text-sm font-bold text-black">A</div>
+            <div>
+              <p class="text-sm font-semibold text-white">Aaliyah M.</p>
+              <p class="text-xs text-zinc-500">Port of Spain, T&amp;T</p>
+            </div>
+          </div>
+          <div class="mt-4 flex gap-0.5 text-yellow-400" aria-label="5 out of 5 stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <p class="mt-3 text-sm leading-7 text-zinc-300 italic">&ldquo;[Placeholder quote — MAJ to supply.] Smooth ordering and the support team answered me right away.&rdquo;</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="2" class="t-card t-featured rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full border border-blue-400/40 bg-gradient-to-br from-blue-400 to-blue-200 text-sm font-bold text-black">K</div>
+            <div>
+              <p class="text-sm font-semibold text-white">Kareem L.</p>
+              <p class="text-xs text-zinc-500">San Fernando, T&amp;T</p>
+            </div>
+          </div>
+          <div class="mt-4 flex gap-0.5 text-yellow-400" aria-label="5 out of 5 stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <p class="mt-3 text-sm leading-7 text-zinc-200 italic">&ldquo;[Placeholder quote — MAJ to supply.] By far the easiest way I have found to pick up streaming and top-up cards here.&rdquo;</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="3" class="t-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full border border-yellow-500/30 bg-gradient-to-br from-yellow-500 to-yellow-300 text-sm font-bold text-black">R</div>
+            <div>
+              <p class="text-sm font-semibold text-white">Renee S.</p>
+              <p class="text-xs text-zinc-500">Chaguanas, T&amp;T</p>
+            </div>
+          </div>
+          <div class="mt-4 flex gap-0.5 text-yellow-400" aria-label="5 out of 5 stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <p class="mt-3 text-sm leading-7 text-zinc-300 italic">&ldquo;[Placeholder quote — MAJ to supply.] Fast, fair pricing, and they helped me sort out a custom request within the hour.&rdquo;</p>
+        </div>
+      </div>
+
+      <div data-reveal data-reveal-delay="4" class="mt-8 flex flex-wrap items-center justify-center gap-3 rounded-[1.6rem] border border-white/10 bg-white/[0.02] px-5 py-4">
+        <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">We accept</span>
+        <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-yellow-200 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">Bank Transfer</span>
+        <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">EndCash</span>
+        <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">Quick Pay</span>
+        <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">VISA</span>
+        <span class="rounded-full border border-yellow-500/20 bg-[#050505] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-300 shadow-[0_0_0_1px_rgba(255,215,0,0.08)]">MasterCard</span>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div class="content-panel rounded-[2.3rem] border border-white/10 bg-white/[0.03] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-        <div class="max-w-3xl">
+        <div data-reveal class="max-w-3xl">
           <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
             How It Works
           </div>
@@ -1129,20 +1530,20 @@
           </p>
         </div>
 
-        <div class="mt-8 grid gap-5 md:grid-cols-3">
-          <div class="process-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
-            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-sm font-semibold text-yellow-300">01</div>
-            <h3 class="mt-5 text-xl font-semibold text-white">Choose A Service</h3>
+        <div data-reveal class="hiw-grid mt-10 grid gap-5 md:grid-cols-3">
+          <div data-reveal data-reveal-delay="1" class="hiw-step rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+            <div class="hiw-num">01</div>
+            <h3 class="mt-4 text-xl font-semibold text-white">Choose A Service</h3>
             <p class="mt-3 text-sm leading-7 text-zinc-400">Choose the service you want, whether it is streaming, gift cards, bills, or shopping help.</p>
           </div>
-          <div class="process-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
-            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-sm font-semibold text-yellow-300">02</div>
-            <h3 class="mt-5 text-xl font-semibold text-white">Review The Options</h3>
+          <div data-reveal data-reveal-delay="2" class="hiw-step rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+            <div class="hiw-num">02</div>
+            <h3 class="mt-4 text-xl font-semibold text-white">Review The Options</h3>
             <p class="mt-3 text-sm leading-7 text-zinc-400">Pick the option that fits you and review the details before moving ahead.</p>
           </div>
-          <div class="process-card rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
-            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10 text-sm font-semibold text-yellow-300">03</div>
-            <h3 class="mt-5 text-xl font-semibold text-white">Checkout Or Contact</h3>
+          <div data-reveal data-reveal-delay="3" class="hiw-step rounded-[1.8rem] border border-white/10 bg-[#0a0a0a] p-6">
+            <div class="hiw-num">03</div>
+            <h3 class="mt-4 text-xl font-semibold text-white">Checkout Or Contact</h3>
             <p class="mt-3 text-sm leading-7 text-zinc-400">Checkout when you are ready, or message us if you want help before you place your order.</p>
           </div>
         </div>
@@ -1150,27 +1551,27 @@
     </section>
 
     <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div class="content-panel rounded-[2.4rem] border border-yellow-500/20 bg-[radial-gradient(circle_at_top_right,rgba(250,204,21,0.12),transparent_28%),linear-gradient(180deg,#0c0c0c_0%,#090909_100%)] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+      <div data-reveal class="cta-aurora p-8 sm:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
         <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <div class="max-w-3xl">
-            <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-yellow-300">
+            <div class="inline-flex items-center gap-2 rounded-full border border-yellow-500/25 bg-yellow-500/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-yellow-300 backdrop-blur">
               Ready To Start
             </div>
-            <h2 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            <h2 class="cta-headline mt-5 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.9rem]" style="font-family:'Sora',sans-serif;letter-spacing:-.035em;">
               Ready to order or send a custom request?
             </h2>
-            <p class="mt-4 text-base leading-8 text-zinc-300">
+            <p class="mt-4 max-w-2xl text-base leading-8 text-zinc-200">
               Browse available services now, or contact us if you want help with something specific.
             </p>
           </div>
           <div class="flex flex-wrap gap-3">
-            <a href="services.html" class="pulse-cta rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500 to-yellow-300 px-5 py-3 text-sm font-semibold text-black">
+            <a href="services.html" class="cta-btn pulse-cta rounded-2xl border border-yellow-500/40 bg-gradient-to-r from-yellow-500 to-yellow-300 px-6 py-3.5 text-sm font-semibold text-black shadow-[0_18px_42px_rgba(234,179,8,0.25)]">
               Explore Services
             </a>
-            <a href="contact.html" class="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:border-yellow-500/30 hover:bg-yellow-500/10">
+            <a href="contact.html" class="rounded-2xl border border-white/15 bg-white/[0.06] px-5 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:border-yellow-500/40 hover:bg-yellow-500/10">
               Contact Us
             </a>
-            <a href="faq.html" class="rounded-2xl border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-zinc-200 transition hover:border-yellow-500/30 hover:bg-white/[0.04] hover:text-white">
+            <a href="faq.html" class="rounded-2xl border border-white/10 bg-transparent px-5 py-3.5 text-sm font-semibold text-zinc-200 transition hover:border-yellow-500/30 hover:bg-white/[0.05] hover:text-white">
               View FAQ
             </a>
           </div>
@@ -1180,7 +1581,7 @@
 
   </main>
 
-  <footer class="relative z-10 border-t border-white/10 bg-[#080808]">
+  <footer class="site-footer relative z-10 border-t border-white/10 bg-[#080808]">
     <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:px-8">
       <div>
         <div class="flex items-center gap-3">
