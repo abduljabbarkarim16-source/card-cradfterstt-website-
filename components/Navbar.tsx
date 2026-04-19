@@ -26,7 +26,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-accent-gold/10 bg-dark-950/88 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto pl-0 pr-2 sm:pr-4 lg:pr-8">
+      <div className="w-full pl-4 pr-4 sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
@@ -87,8 +87,25 @@ export default function Navbar() {
                 </span>
               )}
             </button>
-            <Link href="/services" className="btn btn-primary text-xs md:text-sm">
-              Services
+            <Link
+              href="/profile"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-gray-200 transition hover:border-accent-gold hover:text-accent-gold"
+              aria-label="User profile"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
             </Link>
           </div>
 
@@ -141,11 +158,25 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/services"
-              className="block px-4 py-2 mt-2 btn btn-primary text-xs text-center"
+              href="/profile"
+              className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 mt-2 text-sm font-semibold text-gray-200 hover:border-accent-gold hover:text-accent-gold transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              Services
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+              Profile
             </Link>
             <button
               type="button"
