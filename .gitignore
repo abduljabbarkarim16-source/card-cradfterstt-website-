@@ -1,0 +1,11 @@
+.claude
+node_modules
+.next
+out
+build
+*.tsbuildinfo
+next-env.d.ts
+.env*.local
+*.zip
+legacy
+Dcore Wasl Website
