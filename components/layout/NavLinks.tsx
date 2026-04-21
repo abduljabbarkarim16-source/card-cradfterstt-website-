@@ -25,7 +25,7 @@ export function NavLinks() {
           key={l.href}
           href={l.href}
           className={cn(
-            "relative rounded-full px-3.5 py-2 text-sm font-medium transition",
+            "relative rounded-full px-4 py-2 text-sm font-medium transition",
             isActive(l.href) ? "text-ink-50" : "text-ink-200 hover:text-ink-50",
           )}
         >

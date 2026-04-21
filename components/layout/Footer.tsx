@@ -23,7 +23,7 @@ const payments = ["Bank Transfer", "EndCash", "Quick Pay", "VISA", "MasterCard"]
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-ink-900/90 pt-16">
+    <footer className="border-t border-white/5 bg-ink-900/90 pt-32 pb-16">
       <Container>
         <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div>
@@ -67,7 +67,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 py-6 text-xs text-ink-300 sm:flex-row">
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 py-12 text-xs text-ink-300 sm:flex-row">
           <span>© {new Date().getFullYear()} Card Crafters Limited — Trinidad &amp; Tobago</span>
           <span>Crafted with care.</span>
         </div>

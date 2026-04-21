@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
@@ -5,22 +8,48 @@ import { CartButton } from "@/components/cart/CartButton";
 import { NavLinks } from "./NavLinks";
 
 export function Header() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+
+      // Show header when at the top
+      if (currentScrollPos < 50) {
+        setIsVisible(true);
+      } else if (currentScrollPos > prevScrollPos) {
+        // Scrolling down - hide header
+        setIsVisible(false);
+      } else {
+        // Scrolling up - show header
+        setIsVisible(true);
+      }
+
+      setPrevScrollPos(currentScrollPos);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos]);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-900/70 backdrop-blur-md">
-      <Container className="flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="Card Crafters home">
+    <header
+      className="sticky top-0 z-40 border-b border-white/5 bg-ink-900/70 backdrop-blur-md transition-transform duration-300"
+      style={{
+        transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+      }}
+    >
+      <Container className="flex h-28 items-center justify-between gap-4 !px-3 sm:!px-4">
+        <Link href="/" className="flex items-center gap-3" aria-label="Card Crafters home">
           <Image
-            src="/brand/monogram-glow.png"
-            alt=""
-            width={32}
-            height={32}
+            src="/brand/Logo long 1.png"
+            alt="Card Crafters Limited Logo"
+            width={160}
+            height={60}
             priority
-            className="h-8 w-8"
+            className="h-12 w-auto object-contain"
           />
-          <span className="display text-lg font-semibold tracking-tight">
-            <span className="text-ink-50">Card</span>{" "}
-            <span className="text-accent-soft">Crafters</span>
-          </span>
         </Link>
 
         <NavLinks />
@@ -28,12 +57,12 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Link
             href="/profile"
-            className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-ink-200 hover:bg-white/10 hover:text-ink-50 sm:inline-flex"
+            className="hidden items-center justify-center rounded-full border border-white/10 bg-white/5 p-2 text-ink-200 hover:bg-white/10 hover:text-ink-50 sm:inline-flex"
+            aria-label="Profile"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 6v1h16v-1c0-4-4-6-8-6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
             </svg>
-            Profile
           </Link>
           <CartButton />
         </div>
