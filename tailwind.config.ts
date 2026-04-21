@@ -24,6 +24,7 @@ const config: Config = {
           DEFAULT: "#eab308",
           soft: "#facc15",
           deep: "#a16207",
+          cool: "#dde7ff",
         },
       },
       fontFamily: {
@@ -47,11 +48,17 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(12px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         sheen: "sheen 2.8s ease-in-out infinite",
         badgePulse: "badgePulse 2s ease-in-out infinite",
         fadeUp: "fadeUp 0.5s ease-out both",
+        marquee: "marquee 35s linear infinite",
+        "marquee-slow": "marquee 60s linear infinite",
       },
     },
   },

@@ -1,48 +1,54 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Container } from "@/components/ui/Container";
+import { CartMockup } from "./CartMockup";
+import { LogoMarquee } from "./LogoMarquee";
 
-const tiles = [
-  { src: "/products/netflix-premium.png", label: "Netflix" },
-  { src: "/products/disney-plus.png", label: "Disney+" },
-  { src: "/products/prime-video.png", label: "Prime" },
-  { src: "/products/spotify.png", label: "Spotify" },
-  { src: "/products/hbo-non-shared.png", label: "HBO" },
-  { src: "/products/crunchyroll-shared.png", label: "Crunchyroll" },
-  { src: "/products/amazon.png", label: "Amazon" },
-  { src: "/products/steam.png", label: "Steam" },
-  { src: "/products/playstation.png", label: "PlayStation" },
-  { src: "/products/xbox.png", label: "Xbox" },
-  { src: "/products/google-play.png", label: "Google Play" },
-  { src: "/products/itunes.png", label: "Apple" },
+const marqueeLogos = [
+  { src: "/products/netflix-premium.png", alt: "Netflix" },
+  { src: "/products/disney-plus.png", alt: "Disney+" },
+  { src: "/products/prime-video.png", alt: "Prime Video" },
+  { src: "/products/spotify.png", alt: "Spotify" },
+  { src: "/products/hbo-non-shared.png", alt: "HBO" },
+  { src: "/products/crunchyroll-shared.png", alt: "Crunchyroll" },
+  { src: "/products/amazon.png", alt: "Amazon" },
+  { src: "/products/steam.png", alt: "Steam" },
+  { src: "/products/playstation.png", alt: "PlayStation" },
+  { src: "/products/xbox.png", alt: "Xbox" },
+  { src: "/products/google-play.png", alt: "Google Play" },
+  { src: "/products/itunes.png", alt: "Apple" },
 ];
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-white/5">
+    <section className="relative overflow-hidden border-b border-white/5 pb-10">
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute -top-32 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl" />
+        <div className="absolute right-[-20%] top-[10%] h-[700px] w-[900px] rounded-full bg-accent/15 blur-[120px]" />
+        <div className="absolute left-[-10%] bottom-[-30%] h-[500px] w-[700px] rounded-full bg-accent-cool/[0.04] blur-[120px]" />
       </div>
-      <Container className="grid gap-14 py-16 sm:py-24 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+      <div aria-hidden className="absolute left-8 top-0 hidden h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent lg:block" />
+
+      <Container className="grid gap-16 pt-20 sm:pt-28 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-10">
         <div className="max-w-xl animate-fadeUp">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ink-200">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-soft" />
             Trinidad &amp; Tobago · Digital services
           </span>
-          <h1 className="display mt-6 text-4xl font-semibold leading-[1.05] sm:text-5xl lg:text-6xl">
-            Streaming, gift cards &amp;{" "}
-            <span className="bg-gradient-to-r from-accent-soft to-accent bg-clip-text text-transparent">
-              bills — sorted.
+          <h1 className="display mt-7 text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl lg:text-[68px]">
+            Streaming, gift cards
+            <br />
+            &amp; bills{" "}
+            <span className="relative inline-block">
+              sorted.
+              <span aria-hidden className="absolute inset-x-0 -bottom-1.5 h-2 -skew-x-6 bg-accent/40" />
             </span>
           </h1>
-          <p className="mt-5 text-lg text-ink-200 leading-relaxed">
-            One calm, fast place to grab a Netflix subscription, a Steam gift card, pay your T&amp;TEC bill,
-            or get us to buy something from abroad and land it at your door.
+          <p className="mt-7 max-w-md text-base text-ink-200 leading-relaxed">
+            One calm, fast place to grab a Netflix subscription, a Steam gift card, or pay your T&amp;TEC bill — all from Trinidad.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap items-center gap-5">
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-accent-soft to-accent px-6 py-3 text-sm font-semibold text-ink-900 transition hover:brightness-110 hover:shadow-glow"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-accent-soft to-accent px-6 py-3.5 text-sm font-semibold text-ink-900 transition hover:brightness-110 hover:shadow-glow"
             >
               Browse services
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -50,38 +56,25 @@ export function Hero() {
               </svg>
             </Link>
             <Link
-              href="/#how-it-works"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-ink-50 hover:bg-white/10"
+              href="/contact"
+              className="text-sm font-medium text-ink-200 underline-offset-4 transition hover:text-accent-cool hover:underline"
             >
-              How it works
+              Or text us on WhatsApp →
             </Link>
           </div>
         </div>
 
-        <div className="relative animate-fadeUp [animation-delay:120ms]">
-          <div aria-hidden className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/10 via-transparent to-accent/5 blur-2xl" />
-          <ul className="relative grid grid-cols-3 gap-3 sm:grid-cols-4">
-            {tiles.map((t, i) => (
-              <li
-                key={t.label}
-                style={{ animationDelay: `${i * 60}ms` }}
-                className="group relative aspect-square animate-fadeUp overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/[0.06]"
-              >
-                <Image
-                  src={t.src}
-                  alt={t.label}
-                  fill
-                  sizes="120px"
-                  className="object-contain p-3 transition duration-500 group-hover:scale-[1.06]"
-                />
-                <span className="absolute inset-x-0 bottom-0 pointer-events-none bg-gradient-to-t from-ink-900/80 to-transparent p-2 text-[10px] font-medium text-ink-200 opacity-0 transition-opacity group-hover:opacity-100">
-                  {t.label}
-                </span>
-              </li>
-            ))}
-          </ul>
+        <div className="relative flex animate-fadeUp justify-center [animation-delay:160ms] lg:justify-end">
+          <CartMockup />
         </div>
       </Container>
+
+      <div className="mt-20 sm:mt-28">
+        <p className="mb-5 text-center text-[11px] font-medium uppercase tracking-[0.25em] text-ink-300">
+          Brands &amp; services we cover
+        </p>
+        <LogoMarquee logos={marqueeLogos} />
+      </div>
     </section>
   );
 }

@@ -28,7 +28,7 @@ export function Section({
           </p>
         )}
         {title && (
-          <h2 className="display text-3xl sm:text-4xl font-semibold text-ink-50">{title}</h2>
+          <h2 className="display text-2xl sm:text-3xl font-semibold text-ink-50">{title}</h2>
         )}
         {lead && <p className="mt-3 text-ink-200 text-base leading-relaxed">{lead}</p>}
       </header>

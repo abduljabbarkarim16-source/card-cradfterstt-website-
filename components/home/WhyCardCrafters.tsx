@@ -1,17 +1,17 @@
-import { Section } from "@/components/ui/Section";
+import { Container } from "@/components/ui/Container";
 
 const features = [
   {
     title: "Transparent by default",
-    body: "Landed cost, FX rate and fees are shown before you confirm. No padded invoices, no surprise line items.",
+    body: "Landed cost, FX rate and fees shown before you confirm. No padded invoices, no surprise line items.",
   },
   {
     title: "Local-first support",
-    body: "WhatsApp and phone support from Trinidad — real humans who understand your bank and your cable provider.",
+    body: "WhatsApp and phone support from Trinidad — real humans who know your bank and your cable provider.",
   },
   {
     title: "Faster digital delivery",
-    body: "Gift-card codes are sent once payment clears. Streaming access typically within the same business day.",
+    body: "Gift-card codes sent once payment clears. Streaming access typically within the same business day.",
   },
   {
     title: "One cart, mixed services",
@@ -19,46 +19,46 @@ const features = [
   },
 ];
 
-const factCards = [
-  { k: "4", v: "Core service lanes" },
-  { k: "1", v: "Unified cart & checkout" },
-  { k: "TTD", v: "Pricing in your currency" },
-  { k: "T&T", v: "Trinidad-based operations" },
-];
-
 export function WhyCardCrafters() {
   return (
-    <Section
-      id="why"
-      eyebrow="Why Card Crafters"
-      title="Built for repeat customers, not first-time tourists."
-      lead="This isn't a reseller dashboard bolted onto Trinidad. The whole site is shaped around how people actually use it — streaming plus bills plus shopping, in one calm flow."
-    >
-      <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {features.map((f) => (
-            <li key={f.title} className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-              <h3 className="display text-base font-semibold text-ink-50">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-200">{f.body}</p>
-            </li>
-          ))}
-        </ul>
+    <section id="why" className="py-24 sm:py-32">
+      <Container>
+        <div className="grid gap-14 lg:grid-cols-[5fr_7fr] lg:gap-16">
+          <div className="lg:pr-6">
+            <p className="mb-5 text-xs font-medium uppercase tracking-[0.25em] text-accent">Why Card Crafters</p>
+            <p className="display text-3xl font-semibold leading-[1.15] text-ink-50 sm:text-[34px]">
+              <span className="text-ink-50">Built in Trinidad. Tested by people who actually need a Steam card on a Sunday.</span>
+            </p>
+            <div className="mt-8 space-y-3 text-sm text-ink-200">
+              <p className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cool" />
+                Operating hours: Mon–Sat, 9am–9pm AST
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cool" />
+                WhatsApp support: +1 (868) 465-1282
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cool" />
+                Settled in TTD — no surprise FX line items
+              </p>
+            </div>
+          </div>
 
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-accent/10 to-transparent p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-soft">At a glance</p>
-          <ul className="mt-4 grid grid-cols-2 gap-4">
-            {factCards.map((c) => (
-              <li key={c.v} className="rounded-2xl border border-white/10 bg-ink-900/50 p-4">
-                <p className="display text-2xl font-semibold text-ink-50">{c.k}</p>
-                <p className="mt-1 text-xs text-ink-300">{c.v}</p>
+          <ul className="grid gap-6 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10">
+            {features.map((f, i) => (
+              <li
+                key={f.title}
+                className={`relative pl-5 sm:pl-6 ${i % 2 === 1 ? "sm:mt-10" : ""}`}
+              >
+                <span aria-hidden className="absolute left-0 top-1.5 h-6 w-px bg-accent-soft/60" />
+                <h3 className="display text-base font-semibold text-ink-50">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-200">{f.body}</p>
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-ink-300">
-            Factual descriptors — we don’t publish customer testimonials or invented statistics.
-          </p>
         </div>
-      </div>
-    </Section>
+      </Container>
+    </section>
   );
 }
