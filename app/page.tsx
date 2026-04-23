@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/Hero";
+import { TrustRibbon } from "@/components/home/TrustRibbon";
 import { CategoriesBand } from "@/components/home/CategoriesBand";
 import { WhyCardCrafters } from "@/components/home/WhyCardCrafters";
 import { HowItWorks } from "@/components/home/HowItWorks";
@@ -13,6 +14,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
+      <TrustRibbon />
       <CategoriesBand categories={categories} />
       <Section
         eyebrow="Popular this month"

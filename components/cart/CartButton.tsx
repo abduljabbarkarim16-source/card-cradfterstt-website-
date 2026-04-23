@@ -17,7 +17,7 @@ export function CartButton({ className }: { className?: string }) {
         className,
       )}
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path
           d="M5 8h14l-1.5 10a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7L5 8zm4-3a3 3 0 1 1 6 0"
           stroke="currentColor"
