@@ -14,7 +14,14 @@ body {
   background-image:
     radial-gradient(at 15% 10%, rgba(234, 179, 8, 0.08), transparent 45%),
     radial-gradient(at 85% 110%, rgba(234, 179, 8, 0.05), transparent 50%);
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+@supports (content-visibility: auto) {
+  .deferred-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 780px;
+  }
 }
 
 ::selection {
@@ -350,9 +357,19 @@ body {
 .trust-ribbon {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(90deg, #0a0a0a 0%, #0d0a04 50%, #0a0a0a 100%);
+  background:
+    radial-gradient(60rem 14rem at 50% -30%, rgba(234, 179, 8, 0.05), transparent 60%),
+    linear-gradient(180deg, rgba(7, 7, 7, 0.18) 0%, rgba(7, 7, 7, 0.34) 100%);
   border-top: 1px solid rgba(234, 179, 8, 0.18);
   border-bottom: 1px solid rgba(234, 179, 8, 0.18);
+}
+
+.trust-ribbon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 38%);
 }
 
 .trust-ribbon::after {
@@ -360,9 +377,9 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.12), transparent);
   transform: translateX(-100%);
-  animation: ribbonShimmer 7s ease-in-out infinite;
+  animation: ribbonShimmer 10s ease-in-out infinite;
 }
 
 .marquee-mask {
@@ -485,13 +502,14 @@ body {
 .heroSection {
   position: relative;
   margin-top: -6.25rem;
-  padding: 0 0 4rem;
+  padding: 0;
   overflow: clip;
 }
 
 .heroShell {
   position: relative;
   min-height: 46rem;
+  --hero-rows-offset: 2rem;
   overflow: hidden;
   background:
     radial-gradient(56rem 30rem at 88% 18%, rgba(234, 179, 8, 0.12), transparent 60%),
@@ -514,7 +532,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(7, 7, 7, 0) 0%, rgba(7, 7, 7, 0.08) 46%, rgba(7, 7, 7, 0.42) 100%);
+  background: linear-gradient(180deg, rgba(7, 7, 7, 0) 0%, rgba(7, 7, 7, 0.08) 46%, rgba(7, 7, 7, 0.28) 100%);
   pointer-events: none;
 }
 
@@ -532,9 +550,9 @@ body {
   width: 36rem;
   height: 36rem;
   border-radius: 999px;
-  background: rgba(240, 199, 94, 0.1);
-  filter: blur(90px);
-  animation: heroGlowDrift 12s ease-in-out infinite;
+  background: rgba(240, 199, 94, 0.06);
+  filter: blur(56px);
+  animation: heroGlowDrift 20s ease-in-out infinite;
 }
 
 .heroBackground::after {
@@ -550,25 +568,32 @@ body {
 
 .heroRows {
   position: absolute;
-  inset: 0;
+  top: var(--hero-rows-offset);
+  right: 0;
+  bottom: calc(var(--hero-rows-offset) * -1);
+  left: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.35rem;
   padding: 4rem 0;
   transform: rotate(-1deg) scale(1.04);
+  contain: layout paint;
 }
 
 .heroRow {
   overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent, black 7%, black 93%, transparent);
   mask-image: linear-gradient(90deg, transparent, black 7%, black 93%, transparent);
+  contain: paint;
 }
 
 .heroRowTrack {
   display: flex;
   width: max-content;
-  animation: heroMarquee var(--row-duration, 54s) linear infinite;
+  animation: heroMarquee var(--row-duration, 180s) linear infinite;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .heroRow.isReverse .heroRowTrack {
@@ -587,13 +612,11 @@ body {
 }
 
 .heroRow-mid {
-  opacity: 0.52;
-  filter: blur(0.8px);
+  opacity: 0.48;
 }
 
 .heroRow-far {
-  opacity: 0.38;
-  filter: blur(1.6px);
+  opacity: 0.32;
 }
 
 .heroCard {
@@ -603,7 +626,7 @@ body {
   gap: 0.65rem;
   width: clamp(11rem, 16vw, 14rem);
   min-width: clamp(11rem, 16vw, 14rem);
-  height: clamp(7.25rem, 10vw, 8.75rem);
+  height: clamp(8rem, 11vw, 9.5rem);
   padding: 0.9rem 1rem 0.95rem;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -611,9 +634,9 @@ body {
   background: linear-gradient(180deg, rgba(18, 18, 18, 0.92), rgba(10, 10, 10, 0.72));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 -32px 58px -36px color-mix(in srgb, var(--accent) 18%, transparent),
-    0 24px 44px -30px rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(10px);
+    inset 0 -24px 40px -30px color-mix(in srgb, var(--accent) 14%, transparent),
+    0 18px 34px -28px rgba(0, 0, 0, 0.88);
+  contain: layout paint style;
 }
 
 .heroCard::before {
@@ -654,8 +677,8 @@ body {
   border-radius: 999px;
   background: var(--accent);
   box-shadow:
-    0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent),
-    0 0 16px color-mix(in srgb, var(--accent) 72%, transparent);
+    0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent),
+    0 0 10px color-mix(in srgb, var(--accent) 52%, transparent);
 }
 
 .heroCardMedia {
@@ -670,9 +693,9 @@ body {
 .heroCardImage {
   width: auto;
   max-width: 84%;
-  max-height: 3rem;
+  max-height: 3.4rem;
   object-fit: contain;
-  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.38));
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.26));
 }
 
 .heroCardFooter {
@@ -730,9 +753,9 @@ body {
   background:
     radial-gradient(circle at 32% 44%, rgba(234, 179, 8, 0.16) 0%, rgba(234, 179, 8, 0.08) 24%, transparent 56%),
     radial-gradient(circle at 46% 54%, rgba(255, 255, 255, 0.035) 0%, transparent 58%);
-  filter: blur(20px);
+  filter: blur(14px);
   z-index: -1;
-  animation: heroAmbientPulse 10s ease-in-out infinite;
+  animation: heroAmbientPulse 14s ease-in-out infinite;
 }
 
 .heroCopy > * {
@@ -744,55 +767,75 @@ body {
 .heroCopy > *:nth-child(2) { animation-delay: 0.16s; }
 .heroCopy > *:nth-child(3) { animation-delay: 0.24s; }
 .heroCopy > *:nth-child(4) { animation-delay: 0.32s; }
-.heroCopy > *:nth-child(5) { animation-delay: 0.4s; }
 
 .heroEyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.625rem;
+  justify-content: center;
   padding: 0.65rem 1rem;
   border: 1px solid rgba(201, 163, 74, 0.22);
   border-radius: 999px;
   background: rgba(9, 9, 9, 0.48);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 16px 36px rgba(0, 0, 0, 0.22);
+    0 10px 24px rgba(0, 0, 0, 0.18);
   color: #e9c76a;
   font-size: 0.64rem;
   font-weight: 500;
   font-family: var(--font-manrope), system-ui, sans-serif;
   letter-spacing: 0.2em;
+  text-align: center;
   text-transform: uppercase;
-  backdrop-filter: blur(12px);
-}
-
-.heroEyebrowPip {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 999px;
-  background: #f0c75e;
-  box-shadow:
-    0 0 0 3px rgba(240, 199, 94, 0.12),
-    0 0 12px rgba(240, 199, 94, 0.58);
+  backdrop-filter: blur(8px);
 }
 
 .heroTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.08em;
   margin: 0;
-  max-width: 11ch;
-  font-size: clamp(3.15rem, 7vw, 6.2rem);
+  max-width: none;
+  font-size: clamp(3.15rem, 6.8vw, 6.2rem);
   font-weight: 500;
-  line-height: 0.96;
-  letter-spacing: -0.055em;
-  text-wrap: balance;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
 }
 
-.heroAccent {
-  display: inline;
+.heroTitleLine {
+  display: block;
+  font-size: 0.62em;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  color: #f3efe6;
+  white-space: nowrap;
+}
+
+.heroAccentLine {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  padding-bottom: 0.24em;
+}
+
+.heroAccentText {
+  display: inline-block;
   background: linear-gradient(180deg, #f8e6a0 0%, #f0c75e 45%, #c9a34a 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 30px rgba(240, 199, 94, 0.08);
+  text-shadow: 0 0 18px rgba(240, 199, 94, 0.05);
+  white-space: nowrap;
+}
+
+.heroAccentUnderline {
+  position: absolute;
+  left: 0;
+  bottom: -0.01em;
+  width: 100%;
+  height: 0.28em;
+  overflow: visible;
+  filter: drop-shadow(0 2px 8px rgba(240, 199, 94, 0.12));
 }
 
 .heroSubtitle {
@@ -832,18 +875,17 @@ body {
 }
 
 .heroPrimary {
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(212, 172, 71, 0.14);
   background: linear-gradient(180deg, #f8e6a0, #d4ac47);
   color: #070707;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-    0 18px 42px -16px rgba(240, 199, 94, 0.62);
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 14px 30px -16px rgba(240, 199, 94, 0.42);
 }
 
 .heroPrimary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 22px 44px -16px rgba(240, 199, 94, 0.74);
+  box-shadow: 0 18px 36px -16px rgba(240, 199, 94, 0.52);
 }
 
 .heroGhost {
@@ -851,50 +893,15 @@ body {
   background: rgba(255, 255, 255, 0.03);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 16px 34px -22px rgba(0, 0, 0, 0.68);
+    0 12px 24px -22px rgba(0, 0, 0, 0.58);
   color: #f6f1e3;
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
 }
 
 .heroGhost:hover {
   transform: translateY(-2px);
   border-color: rgba(240, 199, 94, 0.45);
   background: rgba(240, 199, 94, 0.07);
-}
-
-.heroTrust {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
-  width: min(100%, 46rem);
-  margin-top: 0.35rem;
-}
-
-.heroTrustItem {
-  padding: 1rem 1.05rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.1rem;
-  background: linear-gradient(180deg, rgba(18, 18, 18, 0.72), rgba(10, 10, 10, 0.54));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 18px 36px -24px rgba(0, 0, 0, 0.62);
-  text-align: left;
-}
-
-.heroTrustItem b {
-  display: block;
-  color: #f0c75e;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  margin-bottom: 0.45rem;
-}
-
-.heroTrustItem span {
-  color: rgba(196, 188, 173, 0.84);
-  font-size: 0.88rem;
-  line-height: 1.45;
 }
 
 @keyframes heroMarquee {
@@ -946,6 +953,7 @@ body {
 @media (max-width: 1100px) {
   .heroShell {
     min-height: 42rem;
+    --hero-rows-offset: 1.75rem;
   }
 
   .heroRows {
@@ -966,18 +974,20 @@ body {
     font-size: clamp(3rem, 8vw, 5rem);
   }
 
-  .heroTrust {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .heroTitleLine {
+    white-space: normal;
+    text-wrap: balance;
   }
 }
 
 @media (max-width: 767px) {
   .heroSection {
-    padding: 0 0 3rem;
+    padding: 0;
   }
 
   .heroShell {
     min-height: 40rem;
+    --hero-rows-offset: 1.25rem;
   }
 
   .heroBackground::after {
@@ -987,7 +997,7 @@ body {
   }
 
   .heroRows {
-    gap: 0.8rem;
+    gap: 1rem;
     padding: 4.5rem 0 2.5rem;
     transform: rotate(-0.4deg) scale(1.05);
   }
@@ -1000,7 +1010,7 @@ body {
   .heroCard {
     width: 10.75rem;
     min-width: 10.75rem;
-    height: 7rem;
+    height: 7.75rem;
     padding: 0.8rem 0.85rem 0.85rem;
     border-radius: 1rem;
   }
@@ -1011,7 +1021,7 @@ body {
   }
 
   .heroCardImage {
-    max-height: 2.45rem;
+    max-height: 2.8rem;
     max-width: 86%;
   }
 
@@ -1029,6 +1039,20 @@ body {
     padding: 7rem 0 2.75rem;
   }
 
+  .heroCopy {
+    align-items: center;
+    width: min(100%, 32rem);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .heroCopy::before {
+    inset: -3rem -1.5rem -2rem;
+    background:
+      radial-gradient(circle at 50% 48%, rgba(234, 179, 8, 0.14) 0%, rgba(234, 179, 8, 0.08) 28%, transparent 62%),
+      radial-gradient(circle at 50% 58%, rgba(255, 255, 255, 0.04) 0%, transparent 58%);
+  }
+
   .heroEyebrow {
     font-size: 0.56rem;
     letter-spacing: 0.16em;
@@ -1036,11 +1060,29 @@ body {
   }
 
   .heroTitle {
-    max-width: 9.5ch;
-    font-size: clamp(2.7rem, 13vw, 4.35rem);
+    align-items: center;
+    font-size: clamp(2.45rem, 11vw, 4.1rem);
+    text-align: center;
+  }
+
+  .heroTitleLine {
+    font-size: 0.58em;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .heroAccentLine {
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .heroAccentText {
+    white-space: normal;
+    text-wrap: balance;
   }
 
   .heroSubtitle {
+    margin-inline: auto;
     max-width: 30rem;
     font-size: 0.98rem;
     line-height: 1.6;
@@ -1049,18 +1091,13 @@ body {
   .heroActions {
     width: 100%;
     flex-direction: column;
+    align-items: center;
   }
 
   .heroPrimary,
   .heroGhost {
     width: 100%;
     min-width: 0;
-  }
-
-  .heroTrust {
-    width: 100%;
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
   }
 }
 

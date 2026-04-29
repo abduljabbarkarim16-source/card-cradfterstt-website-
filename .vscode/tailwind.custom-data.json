@@ -1,0 +1,33 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@tailwind",
+      "description": "Tailwind CSS directive used to inject the base, components, and utilities layers."
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS directive used to inline existing utility classes into a custom rule."
+    },
+    {
+      "name": "@layer",
+      "description": "Tailwind CSS directive used to place custom styles into the base, components, or utilities layer."
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS directive used to point a stylesheet at a specific Tailwind config file."
+    },
+    {
+      "name": "@screen",
+      "description": "Tailwind CSS directive used to wrap styles in a configured breakpoint."
+    },
+    {
+      "name": "@responsive",
+      "description": "Legacy Tailwind CSS directive for generating responsive variants."
+    },
+    {
+      "name": "@variants",
+      "description": "Legacy Tailwind CSS directive for generating state variants."
+    }
+  ]
+}

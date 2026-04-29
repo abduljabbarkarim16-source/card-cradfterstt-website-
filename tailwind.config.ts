@@ -32,7 +32,7 @@ const config: Config = {
         display: ["var(--font-sora)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 40px -10px rgba(234, 179, 8, 0.35)",
+        glow: "0 0 28px -12px rgba(234, 179, 8, 0.24)",
         panel: "0 1px 0 rgba(255,255,255,0.04) inset, 0 10px 40px -20px rgba(0,0,0,0.8)",
       },
       keyframes: {
@@ -41,8 +41,8 @@ const config: Config = {
           "100%": { transform: "translateX(220%) skewX(-20deg)" },
         },
         badgePulse: {
-          "0%,100%": { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(234,179,8,0.6)" },
-          "50%": { transform: "scale(1.08)", boxShadow: "0 0 0 8px rgba(234,179,8,0)" },
+          "0%,76%,100%": { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(234,179,8,0.6)" },
+          "88%": { transform: "scale(1.08)", boxShadow: "0 0 0 8px rgba(234,179,8,0)" },
         },
         fadeUp: {
           "0%": { opacity: "0", transform: "translateY(12px)" },
@@ -55,7 +55,7 @@ const config: Config = {
       },
       animation: {
         sheen: "sheen 2.8s ease-in-out infinite",
-        badgePulse: "badgePulse 2s ease-in-out infinite",
+        badgePulse: "badgePulse 9s ease-in-out infinite",
         fadeUp: "fadeUp 0.5s ease-out both",
         marquee: "marquee 35s linear infinite",
         "marquee-slow": "marquee 60s linear infinite",

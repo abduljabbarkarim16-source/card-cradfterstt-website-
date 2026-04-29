@@ -21,7 +21,7 @@ const features = [
 
 export function WhyCardCrafters() {
   return (
-    <section id="why" className="py-24 sm:py-32">
+    <section id="why" className="deferred-section py-24 sm:py-32">
       <Container>
         <div className="grid gap-14 lg:grid-cols-[5fr_7fr] lg:gap-16">
           <div className="lg:pr-6">

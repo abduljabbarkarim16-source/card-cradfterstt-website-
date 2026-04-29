@@ -42,7 +42,7 @@ export function Section({
   );
 
   return (
-    <section id={id} className={cn("py-16 sm:py-20", className)}>
+    <section id={id} className={cn("deferred-section py-16 sm:py-20", className)}>
       {contained ? <Container>{body}</Container> : body}
     </section>
   );

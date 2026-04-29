@@ -36,29 +36,14 @@ const heroBrands: HeroBrand[] = [
   { name: "Battle.net", category: "Gaming", image: "/products/blizzard.png", accent: "#60a5fa" },
 ];
 
-const trustItems = [
-  {
-    label: "TTD pricing",
-    detail: "No surprise FX or hidden conversion fees.",
-  },
-  {
-    label: "23+ services",
-    detail: "Streaming, gift cards, bill payments, and more.",
-  },
-  {
-    label: "Local team",
-    detail: "Trinidad-based support with same-day fulfilment.",
-  },
-];
-
 function rotateBrands(offset: number): HeroBrand[] {
   return heroBrands.map((_, index) => heroBrands[(index + offset) % heroBrands.length]);
 }
 
 const heroRows: HeroRow[] = [
-  { id: "near", brands: rotateBrands(0), duration: "54s", direction: "left", tone: "near" },
-  { id: "mid", brands: rotateBrands(5), duration: "46s", direction: "right", tone: "mid" },
-  { id: "far", brands: rotateBrands(10), duration: "62s", direction: "left", tone: "far" },
+  { id: "near", brands: rotateBrands(0), duration: "200s", direction: "left", tone: "near" },
+  { id: "mid", brands: rotateBrands(5), duration: "180s", direction: "right", tone: "mid" },
+  { id: "far", brands: rotateBrands(10), duration: "220s", direction: "left", tone: "far" },
 ];
 
 function ArrowIcon() {
@@ -126,7 +111,8 @@ export function Hero() {
                               aria-hidden="true"
                               width={320}
                               height={180}
-                              sizes="(max-width: 767px) 38vw, (max-width: 1100px) 24vw, 14rem"
+                              sizes="(max-width: 767px) 34vw, (max-width: 1100px) 20vw, 13rem"
+                              quality={65}
                               className="heroCardImage"
                             />
                           </div>
@@ -145,20 +131,38 @@ export function Hero() {
           </div>
         </div>
 
-        <Container className="heroContentFrame !max-w-[1280px] !px-4 sm:!px-6 lg:!px-8">
+        <Container className="heroContentFrame !max-w-[1360px] !px-3 sm:!px-5 lg:!px-6">
           <div className="heroCopy">
-            <span className="heroEyebrow">
-              <span className="heroEyebrowPip" />
-              TTD checkout &middot; Same-day digital fulfilment
-            </span>
+            <span className="heroEyebrow">Trusted Digital Services</span>
 
             <h1 className="heroTitle font-display">
-              Streaming, cards &amp; bills, <span className="heroAccent">handled cleanly.</span>
+              <span className="heroTitleLine">Your favorite digital services,</span>
+              <span className="heroAccentLine">
+                <span className="heroAccentText">all in one place</span>
+                <svg
+                  className="heroAccentUnderline"
+                  viewBox="0 0 460 30"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="hero-underline-fill" x1="0%" y1="50%" x2="100%" y2="50%">
+                      <stop offset="0%" stopColor="#c99218" />
+                      <stop offset="50%" stopColor="#f2c94c" />
+                      <stop offset="100%" stopColor="#c99218" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M8 25 C96 11 364 11 452 25 C362 20 98 20 8 25 Z"
+                    fill="url(#hero-underline-fill)"
+                    opacity="0.95"
+                  />
+                </svg>
+              </span>
             </h1>
 
             <p className="heroSubtitle">
-              One place to order Netflix, Steam, Flow, T&amp;TEC and more with clear TTD pricing, fast delivery, and
-              a Trinidad-based team behind every order.
+              Shop streaming access, gift cards, bill payments, and shopping help with fast support and easy ordering.
             </p>
 
             <div className="heroActions">
@@ -171,15 +175,6 @@ export function Hero() {
                 <WhatsAppIcon />
                 Chat on WhatsApp
               </a>
-            </div>
-
-            <div className="heroTrust">
-              {trustItems.map((item) => (
-                <div key={item.label} className="heroTrustItem">
-                  <b>{item.label}</b>
-                  <span>{item.detail}</span>
-                </div>
-              ))}
             </div>
           </div>
         </Container>

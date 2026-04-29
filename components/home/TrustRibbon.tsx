@@ -51,7 +51,7 @@ export const trustRibbonItems: TrustRibbonItem[] = [
 
 function TrustRibbonCard({ title, description, icon }: TrustRibbonItem) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-4">
+    <div className="flex flex-col items-center justify-center gap-3 px-4 py-4 text-center sm:flex-row sm:justify-start sm:px-5 sm:text-left">
       <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/10 text-accent-soft">
         {icon}
       </span>
@@ -66,7 +66,7 @@ function TrustRibbonCard({ title, description, icon }: TrustRibbonItem) {
 export function TrustRibbon() {
   return (
     <section className="trust-ribbon section-band -mt-px">
-      <Container className="grid max-w-7xl grid-cols-1 divide-y divide-white/5 px-0 py-3 sm:grid-cols-2 sm:divide-x sm:divide-y-0 sm:py-4 md:grid-cols-4">
+      <Container className="grid grid-cols-1 divide-y divide-white/5 py-3 sm:grid-cols-2 sm:divide-x sm:divide-y-0 sm:py-4 md:grid-cols-4">
         {trustRibbonItems.map((item) => (
           <TrustRibbonCard key={item.title} {...item} />
         ))}

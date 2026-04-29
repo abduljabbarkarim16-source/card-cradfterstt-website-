@@ -10,53 +10,85 @@ import { NavLinks } from "./NavLinks";
 
 export function Header() {
   const [isVisible, setIsVisible] = useState(true);
-  const [scrollY, setScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollBucket, setScrollBucket] = useState(0);
   const prevScrollPosRef = useRef(0);
+  const frameRef = useRef<number | null>(null);
+  const visibleRef = useRef(true);
+  const scrolledRef = useRef(false);
+  const scrollBucketRef = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const updateHeaderState = () => {
+      frameRef.current = null;
+
       const currentScrollPos = window.scrollY;
       const previousScrollPos = prevScrollPosRef.current;
-      setScrollY(currentScrollPos);
+      const nextIsVisible = currentScrollPos < 50 || currentScrollPos <= previousScrollPos;
+      const nextIsScrolled = currentScrollPos > 24;
+      const nextScrollBucket = nextIsScrolled
+        ? Math.min(Math.ceil(Math.min(currentScrollPos, 180) / 45), 4)
+        : 0;
 
-      if (currentScrollPos < 50) {
-        setIsVisible(true);
-      } else if (currentScrollPos > previousScrollPos) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
+      if (visibleRef.current !== nextIsVisible) {
+        visibleRef.current = nextIsVisible;
+        setIsVisible(nextIsVisible);
+      }
+
+      if (scrolledRef.current !== nextIsScrolled) {
+        scrolledRef.current = nextIsScrolled;
+        setIsScrolled(nextIsScrolled);
+      }
+
+      if (scrollBucketRef.current !== nextScrollBucket) {
+        scrollBucketRef.current = nextScrollBucket;
+        setScrollBucket(nextScrollBucket);
       }
 
       prevScrollPosRef.current = currentScrollPos;
     };
 
-    handleScroll();
+    const handleScroll = () => {
+      if (frameRef.current !== null) {
+        return;
+      }
+
+      frameRef.current = window.requestAnimationFrame(updateHeaderState);
+    };
+
+    updateHeaderState();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current);
+      }
+
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const scrollProgress = Math.min(scrollY / 180, 1);
-  const isScrolled = scrollY > 24;
+  const scrollProgress = scrollBucket / 4;
 
   return (
     <header
       className="sticky top-0 z-40 transition-transform duration-300"
       style={{
-        transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+        transform: isVisible ? "translate3d(0, 0, 0)" : "translate3d(0, -100%, 0)",
         borderBottom: isScrolled
           ? `1px solid rgba(255, 255, 255, ${0.03 + scrollProgress * 0.09})`
           : "1px solid transparent",
         background: isScrolled
           ? `linear-gradient(180deg,
-              rgba(7, 7, 7, ${0.82 + scrollProgress * 0.08}) 0%,
-              rgba(7, 7, 7, ${0.48 + scrollProgress * 0.12}) 58%,
+              rgba(7, 7, 7, ${0.8 + scrollProgress * 0.08}) 0%,
+              rgba(7, 7, 7, ${0.46 + scrollProgress * 0.1}) 58%,
               rgba(7, 7, 7, ${0.12 + scrollProgress * 0.08}) 100%)`
           : "transparent",
-        backdropFilter: isScrolled ? `blur(${10 + scrollProgress * 8}px)` : "none",
-        boxShadow: isScrolled ? `0 18px 40px rgba(0, 0, 0, ${0.18 + scrollProgress * 0.14})` : "none",
+        backdropFilter: isScrolled ? `blur(${7 + scrollProgress * 5}px)` : "none",
+        boxShadow: isScrolled ? `0 14px 30px rgba(0, 0, 0, ${0.16 + scrollProgress * 0.12})` : "none",
+        willChange: "transform",
       }}
     >
-      <Container className="relative flex h-[6.25rem] items-center !max-w-[1280px] !px-3 sm:!px-4 lg:!px-6">
+      <Container className="relative flex h-[6.25rem] items-center !max-w-[1360px] !px-3 sm:!px-5 lg:!px-6">
         <Link
           href="/"
           className="relative z-10 flex items-center gap-3 px-4 py-2.5"
